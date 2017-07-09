@@ -1,8 +1,0 @@
-<component name="ArtifactManager">
-  <artifact type="war" name="admin-bot:war">
-    <output-path>$PROJECT_DIR$/admin-bot/target</output-path>
-    <root id="archive" name="admin-bot-1.0-SNAPSHOT.war">
-      <element id="artifact" artifact-name="admin-bot:war exploded" />
-    </root>
-  </artifact>
-</component>

@@ -1,0 +1,101 @@
+#GITIGNORE
+
+/wenger-external/src/local/*
+/wenger-external/src/local
+/wenger-internal/src/resources/retention_result
+/swagger/service-api-web/info-14*.json
+
+# Mobile Tools for Java (J2ME)
+.mtj.tmp/
+
+.svn
+
+*.orig
+
+# Package Files #
+*.jar
+*.war
+*.ear
+
+# encrypted files from SecureLocalPersistence
+*.lok
+
+# virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
+hs_err_pid*
+
+# Intellij
+.idea
+atlassian-ide-plugin.xml
+*.iml
+*.ipr
+*.iws
+
+# Eclipse
+.settings
+.project
+.classpath
+
+#gradle
+.gradle/
+
+# Mac
+.DS_Store
+
+# Maven
+target/
+
+# Log files
+*.log
+
+# Java
+out/**
+*.class
+build/
+
+# Python
+*.pyc
+
+gs-implementation/
+commons/zookeeper/local-config.json
+tools/local-bootstrap.json
+esquery/data
+aggregated-jacoco.html
+integrationtests/test-output
+integrationtests/src/test/resources/testdata/bootstrap_users_*.js
+integrationtests/src/test/resources/configs/local.properties
+
+**/local-config-all.json
+
+integrationtests/local.properties
+PodUsersToDirectory.csv
+PodUsersToDirectory.temp
+
+#secure local persistance left overs
+*.lok
+
+#logs
+symphony.log
+symphony.log.*
+
+#
+# Dependency reduce thing
+#
+sdk/dependency-reduced-pom.xml
+
+# docker image exclusions
+docker/base-images/sbe/files/keystore
+docker/sfe/
+docker/base-images/xpod/docker-compose-quickstart-xpodclient.yml
+docker/base-images/content-export/symphony_cecs/configuration.properties
+docker/base-images/sbe-mt/config.cfg
+settings.xml
+# docker inclusions
+!docker/base-images/jenkins-k8s-slave/*.jar
+!docker/base-images/agent-mt/files/*/*.jar
+
+**/try.story
+
+*.sink
+
+ajcore.*.txt
+integrationtests-robots/src/test/resources/config/pau1.yaml
