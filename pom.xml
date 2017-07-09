@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>com.symphony.bots</groupId>
+    <artifactId>symphony-admin-bot</artifactId>
+    <packaging>pom</packaging>
+    <version>1.0-SNAPSHOT</version>
+    <modules>
+        <module>symphony-client</module>
+        <module>admin-bot</module>
+    </modules>
+
+    <dependencies>
+        <dependency>
+            <groupId>org.bouncycastle</groupId>
+            <artifactId>bcpkix-jdk15on</artifactId>
+            <version>1.51</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+            <version>1.7.5</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-log4j12</artifactId>
+            <version>1.7.5</version>
+        </dependency>
+
+        <dependency>
+            <groupId>javax.mail</groupId>
+            <artifactId>mail</artifactId>
+            <version>1.4.7</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.google.apis</groupId>
+            <artifactId>google-api-services-gmail</artifactId>
+            <version>v1-rev67-1.22.0</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.google.api-client</groupId>
+            <artifactId>google-api-client-gson</artifactId>
+            <version>1.22.0</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.symphonyoss.symphony</groupId>
+            <artifactId>symphony-authenticator-java-jersey2-client</artifactId>
+            <version>${symphony-api-version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.symphonyoss.symphony</groupId>
+            <artifactId>symphony-agent-java-jersey2-client</artifactId>
+            <version>${symphony-api-version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.symphonyoss.symphony</groupId>
+            <artifactId>symphony-pod-java-jersey2-client</artifactId>
+            <version>${symphony-api-version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>commons-configuration</groupId>
+            <artifactId>commons-configuration</artifactId>
+            <version>1.6</version>
+        </dependency>
+
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>4.12</version>
+        </dependency>
+        <dependency>
+            <groupId>commons-io</groupId>
+            <artifactId>commons-io</artifactId>
+            <version>2.5</version>
+        </dependency>
+    </dependencies>
+
+    <properties>
+        <build.helper.plugin.version>1.10</build.helper.plugin.version>
+        <symphony-api-version>1.46.0</symphony-api-version>
+        <war.plugin.version>2.6</war.plugin.version>
+    </properties>
+
+    <developers>
+        <developer>
+            <id>tarsillon1</id>
+            <name>Nicholas Tarsillo</name>
+            <email />
+            <url>http://github.com/tarsillon1</url>
+            <organization>Symphony</organization>
+            <organizationUrl>https://symphony</organizationUrl>
+            <timezone />
+            <roles>
+                <role>Software Engineer Intern</role>
+                <role>Developer</role>
+            </roles>
+        </developer>
+    </developers>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-war-plugin</artifactId>
+                <version>${war.plugin.version}</version>
+                <configuration>
+                    <webappDirectory>${basedir}/web</webappDirectory>
+                    <attachClasses>true</attachClasses>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <source>1.8</source>
+                    <target>1.8</target>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+
+</project>

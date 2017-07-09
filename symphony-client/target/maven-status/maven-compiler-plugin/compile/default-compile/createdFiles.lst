@@ -1,0 +1,11 @@
+com/symphony/clients/SessionClient.class
+com/symphony/clients/UsersClient.class
+com/symphony/clients/model/SymphonyUser.class
+com/symphony/clients/StreamsClient.class
+com/symphony/clients/SymphonyClient.class
+com/symphony/clients/model/SymphonyAuth.class
+com/symphony/clients/SecurityClient.class
+com/symphony/clients/AuthorizationClient.class
+com/symphony/clients/AttachmentsClient.class
+com/symphony/clients/MessagesClient.class
+com/symphony/clients/SymphonyClient$1.class
