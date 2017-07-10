@@ -59,6 +59,7 @@ public class AdminBot extends HttpServlet {
       tomcatCertManager.buildStoresFromCerts();
       tomcatCertManager.refreshStores(8444);
       tomcatCertManager.generateKeyMap();
+      tomcatCertManager.setSSLStores();
     } catch (Exception e) {
       LOG.error("Could not set up cert manager for tomcat: ", e);
     }

@@ -129,6 +129,7 @@ public class TomcatCertManager {
 
     keyStore.store(new FileOutputStream(keyStoreFile), keyOutPass);
     trustStore.store(new FileOutputStream(trustStoreFile), trustOutPass);
+
   }
 
   public void refreshStores(int httpsPort) throws Exception {
@@ -197,6 +198,14 @@ public class TomcatCertManager {
   public String getKeyPath(X509Certificate certificate){
     String publicKey = certificate.getPublicKey().toString();
     return keyMap.get(publicKey).getAbsolutePath();
+  }
+
+  public void setSSLStores(){
+    System.setProperty("javax.net.ssl.trustStore", trustStoreFile);
+    System.setProperty("javax.net.ssl.trustStorePassword", new String(trustOutPass));
+    System.setProperty("javax.net.ssl.keyStore", keyStoreFile);
+    System.setProperty("javax.net.ssl.keyStorePassword", new String(keyOutPass));
+    System.setProperty("javax.net.ssl.keyStoreType", "JKS");
   }
 
   private boolean DERExists(byte[] pem, String beginDelimiter, String endDelimiter){
