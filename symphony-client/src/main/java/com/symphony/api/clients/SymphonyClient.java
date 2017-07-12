@@ -1,6 +1,6 @@
-package com.symphony.clients;
+package com.symphony.api.clients;
 
-import com.symphony.clients.model.SymphonyAuth;
+import com.symphony.api.clients.model.SymphonyAuth;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -14,16 +14,16 @@ import java.util.TimerTask;
  */
 public class SymphonyClient {
   private final Logger LOG = LoggerFactory.getLogger(SymphonyClient.class);
-  private static final long SYMAUTH_REFRESH_TIME = 7200000;
+  protected static final long SYMAUTH_REFRESH_TIME = 7200000;
 
-  private AttachmentsClient attachmentsClient;
-  private MessagesClient messagesClient;
-  private SecurityClient securityClient;
-  private StreamsClient streamsClient;
-  private UsersClient usersClient;
-  private SessionClient sessionClient;
+  protected AttachmentsClient attachmentsClient;
+  protected MessagesClient messagesClient;
+  protected SecurityClient securityClient;
+  protected StreamsClient streamsClient;
+  protected UsersClient usersClient;
+  protected SessionClient sessionClient;
 
-  private SymphonyAuth symAuth;
+  protected SymphonyAuth symAuth;
 
   /**
    * Initialize clients with required parameters.
@@ -49,7 +49,7 @@ public class SymphonyClient {
   /**
    * Sets timer to refresh auth every so often.
    */
-  private void startAuthRefresh(){
+  protected void startAuthRefresh(){
     Timer timer = new Timer(true);
     timer.scheduleAtFixedRate(new TimerTask() {
       @Override
@@ -57,6 +57,12 @@ public class SymphonyClient {
         AuthorizationClient authorizationClient = new AuthorizationClient(symAuth);
         try {
           setSymAuth(authorizationClient.authenticate());
+          attachmentsClient.setSymphonyAuth(symAuth);
+          messagesClient.setSymphonyAuth(symAuth);
+          securityClient.setSymphonyAuth(symAuth);
+          streamsClient.setSymphonyAuth(symAuth);
+          usersClient.setSymphonyAuth(symAuth);
+          sessionClient.setSymphonyAuth(symAuth);
         } catch (ApiException e) {
           LOG.error("Auth refresh failed: " + e.getStackTrace());
         }

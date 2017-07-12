@@ -1,9 +1,9 @@
-package com.symphony.adminbot.model.signup.setup;
+package com.symphony.adminbot.model.bootstrap.setup;
 
 import com.symphony.adminbot.config.BotConfig;
-import com.symphony.adminbot.model.signup.PartnerState;
-import com.symphony.clients.AttachmentsClient;
-import com.symphony.clients.SecurityClient;
+import com.symphony.adminbot.model.bootstrap.DeveloperState;
+import com.symphony.api.clients.AttachmentsClient;
+import com.symphony.api.clients.SecurityClient;
 import com.symphony.adminbot.commons.BotConstants;
 import com.symphony.adminbot.util.file.FileUtil;
 
@@ -58,15 +58,15 @@ import javax.ws.rs.InternalServerErrorException;
 /**
  * Created by nick.tarsillo on 7/2/17.
  */
-public class PartnerCompanyCertSetup {
-  private static final Logger LOG = LoggerFactory.getLogger(PartnerCompanyCertSetup.class);
+public class DeveloperCompanyCertSetup {
+  private static final Logger LOG = LoggerFactory.getLogger(DeveloperCompanyCertSetup.class);
 
   private AttachmentsClient attachmentsClient;
   private SecurityClient securityClient;
 
   private int botId = -1;
 
-  public PartnerCompanyCertSetup(SecurityClient securityClient, AttachmentsClient attachmentsClient){
+  public DeveloperCompanyCertSetup(SecurityClient securityClient, AttachmentsClient attachmentsClient){
     this.securityClient = securityClient;
     this.attachmentsClient = attachmentsClient;
   }
@@ -114,21 +114,21 @@ public class PartnerCompanyCertSetup {
 
   /**
    * Uploads certs as a zip attachment to partner IM
-   * @param partnerState the current state of the partner in the sign up process
+   * @param developerState the current state of the partner in the sign up process
    */
-  public void uploadCerts(PartnerState partnerState){
+  public void uploadCerts(DeveloperState developerState){
     try {
       String path = System.getProperty(BotConfig.P12_DIR);
-      String outputPath = path + partnerState.getPartner().getEmail() + ".zip";
+      String outputPath = path + developerState.getDeveloper().getEmail() + ".zip";
       Set<String> certPaths = new HashSet<>();
-      certPaths.add(path + partnerState.getPartnerSignUpForm().getBotEmail().split("@")[0] + ".pkcs12");
-      certPaths.add(path + partnerState.getPartnerSignUpForm().getAppName() + ".pkcs12");
+      certPaths.add(path + developerState.getDeveloperSignUpForm().getBotEmail().split("@")[0] + ".pkcs12");
+      certPaths.add(path + developerState.getDeveloperSignUpForm().getAppName() + ".pkcs12");
       File zip = FileUtil.zipFiles(outputPath, certPaths);
 
       Set<File> attachments = new HashSet<>();
       attachments.add(zip);
 
-      partnerState.setCertAttachmentInfo(attachmentsClient.uploadAttachments(partnerState.getPartnerIM(), attachments));
+      developerState.setCertAttachmentInfo(attachmentsClient.uploadAttachments(developerState.getPartnerIM(), attachments));
     } catch (Exception e){
       LOG.error("Error occurred when uploading attachments: ", e);
       throw new InternalServerErrorException(BotConstants.INTERNAL_ERROR);

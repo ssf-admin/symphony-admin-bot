@@ -1,6 +1,6 @@
-package com.symphony.clients;
+package com.symphony.api.clients;
 
-import com.symphony.clients.model.SymphonyAuth;
+import com.symphony.api.clients.model.SymphonyAuth;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -11,13 +11,7 @@ import org.symphonyoss.symphony.authenticator.invoker.Configuration;
 
 import java.io.FileInputStream;
 import java.security.KeyStore;
-import java.security.cert.CertificateException;
-import java.security.cert.X509Certificate;
 
-import javax.net.ssl.HttpsURLConnection;
-import javax.net.ssl.SSLContext;
-import javax.net.ssl.TrustManager;
-import javax.net.ssl.X509TrustManager;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
 

@@ -25,7 +25,7 @@ public class MessageTemplate {
   private String replace(String template, String replace, String replacement){
     String doReplacement = template;
     if(replacement != null){
-      doReplacement.replace(replace, replacement);
+      doReplacement = doReplacement.replace(replace, replacement);
     }
 
     return doReplacement;

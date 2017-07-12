@@ -1,33 +1,32 @@
 package com.symphony.adminbot.api.impl;
 
 import com.symphony.adminbot.model.core.AdminSession;
-import com.symphony.api.adminbot.api.NotFoundException;
 import com.symphony.api.adminbot.api.V1ApiService;
-import com.symphony.api.adminbot.model.Partner;
-import com.symphony.api.adminbot.model.PartnerSignUpForm;
+import com.symphony.api.adminbot.model.Developer;
+import com.symphony.api.adminbot.model.DeveloperSignUpForm;
 
 import javax.ws.rs.core.Response;
-import javax.ws.rs.core.SecurityContext;
 
 /**
  * Created by nick.tarsillo on 7/5/17.
  */
 public abstract  class AbstractV1AdminService implements V1ApiService {
-  public abstract Response bootstrapPartner(AdminSession adminSession, Partner partner);
+  public abstract Response bootstrapDeveloper(AdminSession adminSession, Developer developer);
 
-  public abstract Response sendPartnerWelcome(AdminSession adminSession, PartnerSignUpForm signUpForm);
+  public abstract Response sendDeveloperWelcome(AdminSession adminSession, DeveloperSignUpForm signUpForm);
 
   public abstract AdminSession getAdminSession(String sessionToken, String keyManagerToken);
 
   @Override
-  public Response v1BootstrapPartnerPost(String sessionToken, String keyManagerToken, Partner partner) {
+  public Response v1BootstrapDeveloperPost(String sessionToken, String keyManagerToken, Developer
+      developer) {
     AdminSession adminSession = getAdminSession(sessionToken, keyManagerToken);
-    return bootstrapPartner(adminSession, partner);
+    return bootstrapDeveloper(adminSession, developer);
   }
 
   @Override
-  public Response v1SendPartnerWelcomePost(String sessionToken, String keyManagerToken, PartnerSignUpForm signUpForm){
+  public Response v1SendDeveloperWelcomePost(String sessionToken, String keyManagerToken, DeveloperSignUpForm signUpForm){
     AdminSession adminSession = getAdminSession(sessionToken, keyManagerToken);
-    return sendPartnerWelcome(adminSession, signUpForm);
+    return sendDeveloperWelcome(adminSession, signUpForm);
   }
 }

@@ -1,6 +1,6 @@
-package com.symphony.clients;
+package com.symphony.api.clients;
 
-import com.symphony.clients.model.SymphonyAuth;
+import com.symphony.api.clients.model.SymphonyAuth;
 
 import org.symphonyoss.symphony.agent.api.MessagesApi;
 import org.symphonyoss.symphony.agent.invoker.ApiClient;
@@ -15,7 +15,7 @@ import org.symphonyoss.symphony.pod.model.Stream;
  */
 public class MessagesClient {
   private final ApiClient apiClient;
-  private final SymphonyAuth symAuth;
+  private SymphonyAuth symAuth;
 
   public MessagesClient(SymphonyAuth symAuth, String agentUrl) {
     this.symAuth = symAuth;
@@ -57,4 +57,7 @@ public class MessagesClient {
     return v2Message;
   }
 
+  public void setSymphonyAuth(SymphonyAuth symAuth){
+    this.symAuth = symAuth;
+  }
 }

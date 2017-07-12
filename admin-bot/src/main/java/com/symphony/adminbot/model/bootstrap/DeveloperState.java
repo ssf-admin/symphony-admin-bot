@@ -1,9 +1,9 @@
-package com.symphony.adminbot.model.signup;
+package com.symphony.adminbot.model.bootstrap;
 
 
-import com.symphony.api.adminbot.model.Partner;
-import com.symphony.api.adminbot.model.PartnerBootstrapInfo;
-import com.symphony.api.adminbot.model.PartnerSignUpForm;
+import com.symphony.api.adminbot.model.Developer;
+import com.symphony.api.adminbot.model.DeveloperSignUpForm;
+import com.symphony.api.adminbot.model.DeveloperBootstrapInfo;
 
 import org.symphonyoss.symphony.agent.model.AttachmentInfo;
 import org.symphonyoss.symphony.pod.model.Stream;
@@ -16,18 +16,18 @@ import java.util.Set;
 /**
  * Created by nick.tarsillo on 7/2/17.
  *
- * Represents the current state of partner in the sign up process.
+ * Represents the current state of developer in the sign up process.
  */
-public class PartnerState {
-  private Partner partner;
-  private PartnerSignUpForm partnerSignUpForm;
-  private Set<Partner> teamMembers;
+public class DeveloperState {
+  private Developer developer;
+  private DeveloperSignUpForm developerSignUpForm;
+  private Set<Developer> teamMembers;
   private UserCreate userCreate;
   private UserDetail userDetail;
   private String password;
   private Stream partnerIM;
   private List<AttachmentInfo> certAttachmentInfo;
-  private PartnerBootstrapInfo bootstrapInfo;
+  private DeveloperBootstrapInfo bootstrapInfo;
 
   public UserCreate getUserCreate() {
     return userCreate;
@@ -37,19 +37,19 @@ public class PartnerState {
     this.userCreate = userCreate;
   }
 
-  public Partner getPartner() {
-    return partner;
+  public Developer getDeveloper() {
+    return developer;
   }
 
-  public void setPartner(Partner partner) {
-    this.partner = partner;
+  public void setDeveloper(Developer developer) {
+    this.developer = developer;
   }
 
-  public Set<Partner> getTeamMembers() {
+  public Set<Developer> getTeamMembers() {
     return teamMembers;
   }
 
-  public void setTeamMembers(Set<Partner> teamMembers) {
+  public void setTeamMembers(Set<Developer> teamMembers) {
     this.teamMembers = teamMembers;
   }
 
@@ -61,12 +61,12 @@ public class PartnerState {
     this.password = password;
   }
 
-  public PartnerSignUpForm getPartnerSignUpForm() {
-    return partnerSignUpForm;
+  public DeveloperSignUpForm getDeveloperSignUpForm() {
+    return developerSignUpForm;
   }
 
-  public void setPartnerSignUpForm(PartnerSignUpForm partnerSignUpForm) {
-    this.partnerSignUpForm = partnerSignUpForm;
+  public void setDeveloperSignUpForm(DeveloperSignUpForm developerSignUpForm) {
+    this.developerSignUpForm = developerSignUpForm;
   }
 
   public UserDetail getUserDetail() {
@@ -94,11 +94,11 @@ public class PartnerState {
     this.partnerIM = partnerIM;
   }
 
-  public PartnerBootstrapInfo getBootstrapInfo() {
+  public DeveloperBootstrapInfo getBootstrapInfo() {
     return bootstrapInfo;
   }
 
-  public void setBootstrapInfo(PartnerBootstrapInfo bootstrapInfo) {
+  public void setBootstrapInfo(DeveloperBootstrapInfo bootstrapInfo) {
     this.bootstrapInfo = bootstrapInfo;
   }
 }

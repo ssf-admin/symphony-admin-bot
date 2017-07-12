@@ -1,13 +1,14 @@
 package com.symphony.adminbot.model.core;
 
 import com.symphony.adminbot.config.BotConfig;
-import com.symphony.adminbot.model.signup.PartnerSignUpService;
-import com.symphony.clients.SessionClient;
-import com.symphony.clients.SymphonyClient;
-import com.symphony.clients.UsersClient;
-import com.symphony.clients.model.SymphonyUser;
+import com.symphony.adminbot.model.bootstrap.DeveloperBootstrapService;
+import com.symphony.api.clients.SessionClient;
+import com.symphony.api.clients.SymphonyClient;
+import com.symphony.api.clients.UsersClient;
+import com.symphony.api.clients.model.SymphonyUser;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.symphonyoss.symphony.pod.invoker.ApiException;
 import org.symphonyoss.symphony.pod.model.StringList;
 import org.symphonyoss.symphony.pod.model.UserDetail;
 
@@ -24,10 +25,9 @@ public class AdminSession {
 
   private SymphonyUser symphonyUser;
   private SymphonyClient symClient;
-  private PartnerSignUpService signUpService;
+  private DeveloperBootstrapService signUpService;
 
-  public AdminSession(SymphonyClient symClient)
-      throws org.symphonyoss.symphony.pod.invoker.ApiException, IOException {
+  public AdminSession(SymphonyClient symClient) throws ApiException, IOException {
     this.symClient = symClient;
 
     //Get user info
@@ -45,10 +45,10 @@ public class AdminSession {
     }
 
     //Init session services
-    signUpService = new PartnerSignUpService(symClient);
+    signUpService = new DeveloperBootstrapService(symClient);
   }
 
-  public PartnerSignUpService getSignUpService() {
+  public DeveloperBootstrapService getSignUpService() {
     return signUpService;
   }
 

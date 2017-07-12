@@ -1,9 +1,9 @@
-package com.symphony.adminbot.model.signup.setup;
+package com.symphony.adminbot.model.bootstrap.setup;
 
 import com.symphony.adminbot.commons.BotConstants;
 import com.symphony.adminbot.config.BotConfig;
-import com.symphony.adminbot.model.signup.PartnerState;
-import com.symphony.adminbot.model.signup.template.PartnerTemplateData;
+import com.symphony.adminbot.model.bootstrap.DeveloperState;
+import com.symphony.adminbot.model.bootstrap.template.DeveloperTemplateData;
 import com.symphony.adminbot.util.file.FileUtil;
 import com.symphony.adminbot.util.template.MessageTemplate;
 
@@ -17,13 +17,13 @@ import javax.ws.rs.InternalServerErrorException;
 /**
  * Created by nick.tarsillo on 7/3/17.
  */
-public class PartnerConfirmationSetup {
-  private static final Logger LOG = LoggerFactory.getLogger(PartnerConfirmationSetup.class);
+public class DeveloperConfirmationSetup {
+  private static final Logger LOG = LoggerFactory.getLogger(DeveloperConfirmationSetup.class);
   private String subjectTemplate;
   private String messageTemplate;
   private GoogleEmailClient googleEmailClient;
 
-  public PartnerConfirmationSetup() {
+  public DeveloperConfirmationSetup() {
     try {
       googleEmailClient = GoogleEmailClient.getInstance(
           BotConstants.ADMIN_BOT_NAME,
@@ -38,26 +38,26 @@ public class PartnerConfirmationSetup {
       messageTemplate = FileUtil.readFile(System.getProperty(BotConfig.EMAIL_MESSAGE_TEMPLATE));
       LOG.info("Loaded message template: " + messageTemplate);
     }catch(Exception e){
-      LOG.error("Partner email confirmation setup failed: ", e);
+      LOG.error("Developer email confirmation setup failed: ", e);
     }
   }
 
   /**
    * Sends welcome email
    * Should contain username and temporary password
-   * @param partnerState the current state of the partner in the sign up process
+   * @param developerState the current state of the partner in the sign up process
    */
-  public void sendWelcomeEmail(PartnerState partnerState) {
+  public void sendWelcomeEmail(DeveloperState developerState) {
     try {
       String url = System.getProperty(BotConfig.POD_URL);
-      PartnerTemplateData partnerTemplateData = new PartnerTemplateData(partnerState.getPartner(),
-          partnerState.getPartnerSignUpForm(), partnerState.getPassword(), url);
+      DeveloperTemplateData developerTemplateData = new DeveloperTemplateData(developerState.getDeveloper(),
+          developerState.getDeveloperSignUpForm(), developerState.getPassword(), url);
       MessageTemplate subTemplate = new MessageTemplate(subjectTemplate);
       MessageTemplate emailTemplate = new MessageTemplate(messageTemplate);
 
-      String newSubject = subTemplate.buildFromData(partnerTemplateData);
-      String newEmail = emailTemplate.buildFromData(partnerTemplateData);
-      googleEmailClient.sendEmail(partnerState.getPartner().getEmail(),  newSubject, newEmail);
+      String newSubject = subTemplate.buildFromData(developerTemplateData);
+      String newEmail = emailTemplate.buildFromData(developerTemplateData);
+      googleEmailClient.sendEmail(developerState.getDeveloper().getEmail(),  newSubject, newEmail);
     } catch(Exception e){
       LOG.error("Error occurred when sending confirmation email: ", e);
       throw new InternalServerErrorException(BotConstants.INTERNAL_ERROR);

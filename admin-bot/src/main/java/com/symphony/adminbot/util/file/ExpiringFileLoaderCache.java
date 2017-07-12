@@ -1,6 +1,6 @@
 package com.symphony.adminbot.util.file;
 
-import com.symphony.adminbot.model.signup.setup.PartnerCompanyCertSetup;
+import com.symphony.adminbot.model.bootstrap.setup.DeveloperCompanyCertSetup;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.cache.CacheBuilder;
@@ -22,7 +22,7 @@ import java.util.concurrent.TimeUnit;
  * Cache will load unknown keys from file (if they exists).
  */
 public class ExpiringFileLoaderCache<K, V> {
-  private static final Logger LOG = LoggerFactory.getLogger(PartnerCompanyCertSetup.class);
+  private static final Logger LOG = LoggerFactory.getLogger(DeveloperCompanyCertSetup.class);
 
   private final ObjectMapper MAPPER = new ObjectMapper();
   private LoadingCache<K, V> cache;

@@ -12,7 +12,7 @@ schemes:
   - https
 basePath: '/adminbot'
 paths:
-  '/v1/sendPartnerWelcome':
+  '/v1/sendDeveloperWelcome':
     post:
       summary: Sends user welcome messages and emails.
       description:
@@ -32,7 +32,7 @@ paths:
           in: body
           required: true
           schema:
-            $ref: '#/definitions/PartnerSignUpForm'
+            $ref: '#/definitions/DeveloperSignUpForm'
       consumes:
         - application/json
       produces:
@@ -42,14 +42,14 @@ paths:
           description: OK
       tags:
         - SignUp
-  '/v1/bootstrapPartner':
+  '/v1/bootstrapDeveloper':
     post:
-      summary: Bootstraps a partner.
+      summary: Bootstraps a developer.
       description:
           If not already created -
             Creates and registers bot cert, creates bot user.
             Creates and registers app cert, creates app.
-          Sends partner bootstrap package within symphony.
+          Sends developer bootstrap package within symphony.
       parameters:
         - name: sessionToken
           in: header
@@ -59,11 +59,11 @@ paths:
           in: header
           required: true
           type: string
-        - name: partner
+        - name: developer
           in: body
           required: true
           schema:
-            $ref: '#/definitions/Partner'
+            $ref: '#/definitions/Developer'
       consumes:
         - application/json
       produces:
@@ -71,20 +71,20 @@ paths:
       responses:
         '200':
           schema:
-            $ref: '#/definitions/PartnerBootstrapInfo'
+            $ref: '#/definitions/DeveloperBootstrapInfo'
       tags:
         - SignUp
 
 definitions:
-  PartnerSignUpForm:
+  DeveloperSignUpForm:
     type: object
     properties:
       creator:
-        $ref: '#/definitions/Partner'
+        $ref: '#/definitions/Developer'
       team:
         type: array
         items:
-          $ref: '#/definitions/Partner'
+          $ref: '#/definitions/Developer'
       appName:
         type: string
       appUrl:
@@ -99,7 +99,7 @@ definitions:
         type: string
       botEmail:
         type: string
-  Partner:
+  Developer:
     type: object
     properties:
       firstName:
@@ -108,7 +108,7 @@ definitions:
         type: string
       email:
         type: string
-  PartnerBootstrapInfo:
+  DeveloperBootstrapInfo:
     type: object
     properties:
       botUsername:

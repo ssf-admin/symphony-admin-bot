@@ -7,9 +7,9 @@ import com.symphony.adminbot.model.core.AdminSession;
 import com.symphony.adminbot.model.core.AdminSessionManager;
 import com.symphony.adminbot.util.TomcatCertManager;
 import com.symphony.api.adminbot.api.factories.V1ApiServiceFactory;
-import com.symphony.clients.AuthorizationClient;
-import com.symphony.clients.SymphonyClient;
-import com.symphony.clients.model.SymphonyAuth;
+import com.symphony.api.clients.AuthorizationClient;
+import com.symphony.api.clients.SymphonyClient;
+import com.symphony.api.clients.model.SymphonyAuth;
 
 import org.apache.log4j.BasicConfigurator;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
@@ -27,6 +27,7 @@ import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.ws.rs.ForbiddenException;
 
 /**
  * Created by nick.tarsillo on 7/1/17.
@@ -79,9 +80,9 @@ public class AdminBot extends HttpServlet {
       X509Certificate[] certs =
           (X509Certificate[]) req.getAttribute("javax.servlet.request.X509Certificate");
 
-      if(certs == null || certs.length == 0) {
+      if (certs == null || certs.length == 0) {
         LOG.error("Req has no certs attached.");
-        handleError(res, out,400, BotConstants.NO_CERT);
+        handleError(res, out, 400, BotConstants.NO_CERT);
         return;
       }
 
@@ -112,10 +113,10 @@ public class AdminBot extends HttpServlet {
       adminSessionManager.putAdminSession(sessionToken, keyManagerToken, adminSession);
 
       out.println("{\"sessionToken\":\"" + sessionToken + "\", "
-                 + "\"keyManagerToken\":\"" + keyManagerToken + "\"}");
+          + "\"keyManagerToken\":\"" + keyManagerToken + "\"}");
       res.setStatus(200);
       out.close();
-    } catch (ApiException e) {
+    } catch (ApiException | ForbiddenException e) {
       LOG.error("User entitlement check failed: ", e);
       handleError(res, out,400, BotConstants.NOT_ENTITLED);
     } catch (org.symphonyoss.symphony.pod.invoker.ApiException e) {

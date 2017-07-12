@@ -1,7 +1,7 @@
-package com.symphony.clients;
+package com.symphony.api.clients;
 
-import com.symphony.clients.model.SymphonyAuth;
-import com.symphony.clients.model.SymphonyUser;
+import com.symphony.api.clients.model.SymphonyUser;
+import com.symphony.api.clients.model.SymphonyAuth;
 
 import org.symphonyoss.symphony.pod.api.UserApi;
 import org.symphonyoss.symphony.pod.api.UsersApi;
@@ -21,7 +21,7 @@ import javax.ws.rs.core.Response;
  */
 public class UsersClient {
   private final ApiClient apiClient;
-  private final SymphonyAuth symAuth;
+  private SymphonyAuth symAuth;
 
   public UsersClient(SymphonyAuth symAuth, String serviceUrl) {
     this.symAuth = symAuth;
@@ -101,5 +101,9 @@ public class UsersClient {
     }
 
     return userV2 != null;
+  }
+
+  public void setSymphonyAuth(SymphonyAuth symAuth){
+    this.symAuth = symAuth;
   }
 }

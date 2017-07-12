@@ -1,19 +1,17 @@
 package com.symphony.adminbot.api;
 
-import com.symphony.adminbot.bots.AdminBot;
-import com.symphony.adminbot.model.core.AdminSession;
-import com.symphony.adminbot.model.core.AdminSessionManager;
 import com.symphony.adminbot.api.impl.AbstractV1AdminService;
 import com.symphony.adminbot.commons.BotConstants;
-import com.symphony.adminbot.model.signup.PartnerSignUpService;
-import com.symphony.api.adminbot.model.Partner;
-import com.symphony.api.adminbot.model.PartnerBootstrapInfo;
-import com.symphony.api.adminbot.model.PartnerSignUpForm;
+import com.symphony.adminbot.model.core.AdminSession;
+import com.symphony.adminbot.model.core.AdminSessionManager;
+import com.symphony.adminbot.model.bootstrap.DeveloperBootstrapService;
+import com.symphony.api.adminbot.model.Developer;
+import com.symphony.api.adminbot.model.DeveloperBootstrapInfo;
+import com.symphony.api.adminbot.model.DeveloperSignUpForm;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.symphonyoss.symphony.pod.invoker.ApiException;
-import org.symphonyoss.symphony.pod.invoker.StringUtil;
 
 import javax.ws.rs.BadRequestException;
 import javax.ws.rs.core.Response;
@@ -31,11 +29,11 @@ public class V1AdminApi extends AbstractV1AdminService {
   }
 
   @Override
-  public Response bootstrapPartner(AdminSession adminSession, Partner partner) {
-    PartnerSignUpService signUpService = adminSession.getSignUpService();
+  public Response bootstrapDeveloper(AdminSession adminSession, Developer developer) {
+    DeveloperBootstrapService signUpService = adminSession.getSignUpService();
     try {
-      signUpService.bootstrapPartner(partner);
-      PartnerBootstrapInfo partnerBootstrapInfo = signUpService.sendBootstrapPackage(partner);
+      signUpService.bootstrapPartner(developer);
+      DeveloperBootstrapInfo partnerBootstrapInfo = signUpService.sendBootstrapPackage(developer);
 
       return Response.ok().entity(partnerBootstrapInfo).build();
     } catch (Exception e) {
@@ -44,28 +42,31 @@ public class V1AdminApi extends AbstractV1AdminService {
   }
 
   @Override
-  public Response sendPartnerWelcome(AdminSession adminSession, PartnerSignUpForm signUpForm) {
-    PartnerSignUpService signUpService = adminSession.getSignUpService();
+  public Response sendDeveloperWelcome(AdminSession adminSession, DeveloperSignUpForm signUpForm) {
+    DeveloperBootstrapService signUpService = adminSession.getSignUpService();
     try {
       signUpService.validateSignUpForm(signUpForm);
       signUpService.welcomePartner(signUpForm);
-    } catch (BadRequestException e) {
-      return handleError(Response.Status.BAD_REQUEST, e.getMessage());
     } catch (ApiException e) {
       LOG.error("Send partner welcome failed:", e);
       return handleError(Response.Status.INTERNAL_SERVER_ERROR, BotConstants.INTERNAL_ERROR);
     }
 
-    return Response.ok().build();
+    return Response.ok("Developer welcome succeeded.").build();
   }
 
   @Override
   public AdminSession getAdminSession(String sessionToken, String keyManagerToken) {
-    return adminSessionManager.getAdminSession(sessionToken, keyManagerToken);
+    AdminSession adminSession = adminSessionManager.getAdminSession(sessionToken, keyManagerToken);
+    if(adminSession == null) {
+      throw new BadRequestException("Admin session not found.");
+    }
+
+    return adminSession;
   }
 
   private Response handleError(Response.Status status, String responseBody){
     return Response.status(status).entity("{\"code\":" + status.getStatusCode()
-        + "\"message\": \"" + responseBody + "\"}").build();
+        + ", \"message\": \"" + responseBody + "\"}").build();
   }
 }

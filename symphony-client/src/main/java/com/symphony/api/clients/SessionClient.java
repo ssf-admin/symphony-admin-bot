@@ -1,20 +1,19 @@
-package com.symphony.clients;
+package com.symphony.api.clients;
 
-import com.symphony.clients.model.SymphonyAuth;
-import com.symphony.clients.model.SymphonyUser;
+import com.symphony.api.clients.model.SymphonyAuth;
+import com.symphony.api.clients.model.SymphonyUser;
 
 import org.symphonyoss.symphony.pod.api.SessionApi;
 import org.symphonyoss.symphony.pod.invoker.ApiClient;
 import org.symphonyoss.symphony.pod.invoker.ApiException;
 import org.symphonyoss.symphony.pod.invoker.Configuration;
-import org.symphonyoss.symphony.pod.model.UserV2;
 
 /**
  * Created by nick.tarsillo on 7/6/17.
  */
 public class SessionClient {
   private final ApiClient apiClient;
-  private final SymphonyAuth symAuth;
+  private SymphonyAuth symAuth;
 
   public SessionClient(SymphonyAuth symAuth, String serviceUrl) {
     this.symAuth = symAuth;
@@ -35,5 +34,9 @@ public class SessionClient {
     }
 
     return symUser;
+  }
+
+  public void setSymphonyAuth(SymphonyAuth symAuth){
+    this.symAuth = symAuth;
   }
 }

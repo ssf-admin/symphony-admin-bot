@@ -1,6 +1,6 @@
-package com.symphony.clients;
+package com.symphony.api.clients;
 
-import com.symphony.clients.model.SymphonyAuth;
+import com.symphony.api.clients.model.SymphonyAuth;
 
 import org.symphonyoss.symphony.agent.api.AttachmentsApi;
 import org.symphonyoss.symphony.agent.invoker.ApiClient;
@@ -19,7 +19,7 @@ import java.util.Set;
  */
 public class AttachmentsClient {
   private final ApiClient apiClient;
-  private final SymphonyAuth symAuth;
+  private SymphonyAuth symAuth;
 
   public AttachmentsClient(SymphonyAuth symAuth, String agentUrl) {
     this.symAuth = symAuth;
@@ -44,5 +44,9 @@ public class AttachmentsClient {
     }
 
     return attachmentInfoList;
+  }
+
+  public void setSymphonyAuth(SymphonyAuth symAuth){
+    this.symAuth = symAuth;
   }
 }

@@ -1,4 +1,4 @@
-package com.symphony.clients.model;
+package com.symphony.api.clients.model;
 
 import org.symphonyoss.symphony.pod.model.UserV2;
 

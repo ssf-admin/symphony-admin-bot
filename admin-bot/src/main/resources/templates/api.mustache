@@ -64,7 +64,11 @@ public class {{classname}}  {
             return Response.status(Response.Status.BAD_REQUEST).entity("{\"code\": 400, \"message\": \""+e.getMessage()+"\"}").build();
         }
 
-		return delegate.{{nickname}}({{#allParams}}{{^isFormParam}}{{paramName}}{{/isFormParam}}{{#isFormParam}}{{#notFile}}({{paramName}} != null && {{paramName}}.size() > 0) ? {{paramName}}.get(0).getValue() : null{{/notFile}}{{#isFile}}{{paramName}}{{/isFile}}{{/isFormParam}}{{#hasMore}}, {{/hasMore}}{{/allParams}});
+        try {
+		    return delegate.{{nickname}}({{#allParams}}{{^isFormParam}}{{paramName}}{{/isFormParam}}{{#isFormParam}}{{#notFile}}({{paramName}} != null && {{paramName}}.size() > 0) ? {{paramName}}.get(0).getValue() : null{{/notFile}}{{#isFile}}{{paramName}}{{/isFile}}{{/isFormParam}}{{#hasMore}}, {{/hasMore}}{{/allParams}});
+        } catch (ClientErrorException e) {
+            return handleError(e.getResponse().getStatus(), e.getMessage());
+        }
     }
 {{/operation}}
 
@@ -108,6 +112,10 @@ public class {{classname}}  {
 			}
 		}
 	}
+
+    private Response handleError(int status, String responseBody){
+        return Response.status(status).entity("{\"code\":" + status + ", \"message\": \"" + responseBody + "\"}").build();
+    }
 
 }
 {{/operations}}

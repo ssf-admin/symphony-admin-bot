@@ -1,15 +1,14 @@
-package com.symphony.adminbot.model.signup.setup;
+package com.symphony.adminbot.model.bootstrap.setup;
 
-import com.symphony.api.adminbot.model.Partner;
-import com.symphony.api.adminbot.model.PartnerSignUpForm;
-import com.symphony.clients.UsersClient;
-import com.symphony.adminbot.model.signup.PartnerState;
+import com.symphony.api.adminbot.model.Developer;
+import com.symphony.api.adminbot.model.DeveloperSignUpForm;
+import com.symphony.api.clients.UsersClient;
+import com.symphony.adminbot.model.bootstrap.DeveloperState;
 
 import org.apache.commons.lang.WordUtils;
 import org.symphonyoss.symphony.pod.invoker.ApiException;
 import org.symphonyoss.symphony.pod.model.Feature;
 import org.symphonyoss.symphony.pod.model.FeatureList;
-import org.symphonyoss.symphony.pod.model.Password;
 import org.symphonyoss.symphony.pod.model.UserAttributes;
 import org.symphonyoss.symphony.pod.model.UserCreate;
 import org.symphonyoss.symphony.pod.model.UserDetail;
@@ -24,7 +23,7 @@ import java.util.Set;
 /**
  * Created by nick.tarsillo on 7/2/17.
  */
-public class PartnerUserSetup {
+public class DeveloperUserSetup {
   enum FeaturesEnum{
     EXTERNAL("isExternalIMEnabled"),
     SHARE_FILES_EXTERNAL("canShareFilesExternally"),
@@ -54,7 +53,7 @@ public class PartnerUserSetup {
 
   private UsersClient usersClient;
 
-  public PartnerUserSetup(UsersClient usersClient){
+  public DeveloperUserSetup(UsersClient usersClient){
     this.usersClient = usersClient;
   }
 
@@ -63,22 +62,22 @@ public class PartnerUserSetup {
    * @param signUpForm the sign up form
    * @return the initial partner states
    */
-  public Set<PartnerState> getPartnerSetupStates(PartnerSignUpForm signUpForm){
-    Set<Partner> partnerSet = new HashSet<>();
-    partnerSet.add(signUpForm.getCreator());
-    partnerSet.addAll(signUpForm.getTeam());
+  public Set<DeveloperState> getPartnerSetupStates(DeveloperSignUpForm signUpForm){
+    Set<Developer> developerSet = new HashSet<>();
+    developerSet.add(signUpForm.getCreator());
+    developerSet.addAll(signUpForm.getTeam());
 
-    Set<PartnerState> partnerStates = new HashSet<>();
-    for(Partner partner: partnerSet) {
+    Set<DeveloperState> developerStates = new HashSet<>();
+    for(Developer developer : developerSet) {
       UserCreate userCreate = new UserCreate();
       UserAttributes userAttributes = new UserAttributes();
       userAttributes.setAccountType(UserAttributes.AccountTypeEnum.NORMAL);
-      userAttributes.setEmailAddress(partner.getEmail());
-      userAttributes.setFirstName(partner.getFirstName());
-      userAttributes.setLastName(partner.getLastName());
-      userAttributes.setUserName(partner.getFirstName().toLowerCase()
-          + WordUtils.capitalize(partner.getLastName()));
-      userAttributes.displayName(partner.getFirstName() + " " + partner.getLastName());
+      userAttributes.setEmailAddress(developer.getEmail());
+      userAttributes.setFirstName(developer.getFirstName());
+      userAttributes.setLastName(developer.getLastName());
+      userAttributes.setUserName(developer.getFirstName().toLowerCase()
+          + WordUtils.capitalize(developer.getLastName()));
+      userAttributes.displayName(developer.getFirstName() + " " + developer.getLastName());
       userAttributes.setDepartment(signUpForm.getAppCompanyName());
       userCreate.setUserAttributes(userAttributes);
 
@@ -95,27 +94,27 @@ public class PartnerUserSetup {
       roles.add("INDIVIDUAL");
       userCreate.setRoles(roles);
 
-      PartnerState partnerState = new PartnerState();
-      partnerState.setPartner(partner);
-      partnerState.setPartnerSignUpForm(signUpForm);
-      partnerState.setUserCreate(userCreate);
-      partnerState.setPassword(randomPassword);
+      DeveloperState developerState = new DeveloperState();
+      developerState.setDeveloper(developer);
+      developerState.setDeveloperSignUpForm(signUpForm);
+      developerState.setUserCreate(userCreate);
+      developerState.setPassword(randomPassword);
 
-      Set<Partner> teamMembers = new HashSet<>(partnerSet);
-      teamMembers.remove(partner);
-      partnerState.setTeamMembers(teamMembers);
+      Set<Developer> teamMembers = new HashSet<>(developerSet);
+      teamMembers.remove(developer);
+      developerState.setTeamMembers(teamMembers);
 
-      partnerStates.add(partnerState);
+      developerStates.add(developerState);
     }
 
-    return partnerStates;
+    return developerStates;
   }
 
   /**
    * Creates a symphony user for the partner.
    * @param state the partner's current state in the sign up process
    */
-  public void createPartnerUser(PartnerState state) throws ApiException {
+  public void createPartnerUser(DeveloperState state) throws ApiException {
     UserDetail userDetail = usersClient.createUser(state.getUserCreate());
     state.setUserDetail(userDetail);
 
@@ -133,7 +132,7 @@ public class PartnerUserSetup {
    * Creates a symphony service bot
    * @param signUpForm the sign up form to base the bot on
    */
-  public void createBot(PartnerSignUpForm signUpForm) throws ApiException {
+  public void createBot(DeveloperSignUpForm signUpForm) throws ApiException {
     String userName = signUpForm.getBotEmail().split("@")[0];
 
     UserCreate userCreate = new UserCreate();
@@ -162,11 +161,11 @@ public class PartnerUserSetup {
    * @param signUpForm the sign up form containing the partners
    * @return if all partners do not exist as symphony users
    */
-  public boolean allPartnersDoNotExist(PartnerSignUpForm signUpForm) throws ApiException {
+  public boolean allPartnersDoNotExist(DeveloperSignUpForm signUpForm) throws ApiException {
     Set<String> allEmails = new HashSet<>();
     String creatorEmail = signUpForm.getCreator().getEmail();
-    for(Partner partner: signUpForm.getTeam()) {
-      allEmails.add(partner.getEmail());
+    for(Developer developer : signUpForm.getTeam()) {
+      allEmails.add(developer.getEmail());
     }
     allEmails.add(creatorEmail);
 
@@ -180,11 +179,11 @@ public class PartnerUserSetup {
 
   /**
    * Checks if bot or app already exists
-   * @param partnerSignUpForm the sign up form to base the bot and app info on
+   * @param developerSignUpForm the sign up form to base the bot and app info on
    * @return if the bot and app does not exist
    */
-  public boolean botAndAppDoNotExist(PartnerSignUpForm partnerSignUpForm) throws ApiException {
-    return usersClient.userExistsByEmail(partnerSignUpForm.getBotEmail());
+  public boolean botAndAppDoNotExist(DeveloperSignUpForm developerSignUpForm) throws ApiException {
+    return usersClient.userExistsByEmail(developerSignUpForm.getBotEmail());
   }
 
 }

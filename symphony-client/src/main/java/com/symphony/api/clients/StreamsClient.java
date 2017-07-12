@@ -1,6 +1,6 @@
-package com.symphony.clients;
+package com.symphony.api.clients;
 
-import com.symphony.clients.model.SymphonyAuth;
+import com.symphony.api.clients.model.SymphonyAuth;
 
 import org.symphonyoss.symphony.pod.api.StreamsApi;
 import org.symphonyoss.symphony.pod.invoker.ApiClient;
@@ -13,8 +13,8 @@ import org.symphonyoss.symphony.pod.model.UserIdList;
  * Created by nick.tarsillo on 7/1/17.
  */
 public class StreamsClient {
-  private final SymphonyAuth symAuth;
   private final ApiClient apiClient;
+  private SymphonyAuth symAuth;
 
   public StreamsClient(SymphonyAuth symAuth, String serviceUrl) {
     this.symAuth = symAuth;
@@ -40,4 +40,7 @@ public class StreamsClient {
     return stream;
   }
 
+  public void setSymphonyAuth(SymphonyAuth symAuth){
+    this.symAuth = symAuth;
+  }
 }

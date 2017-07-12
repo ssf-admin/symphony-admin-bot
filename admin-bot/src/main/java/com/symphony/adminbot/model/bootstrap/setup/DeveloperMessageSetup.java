@@ -1,12 +1,12 @@
-package com.symphony.adminbot.model.signup.setup;
+package com.symphony.adminbot.model.bootstrap.setup;
 
-import com.symphony.clients.MessagesClient;
-import com.symphony.clients.StreamsClient;
+import com.symphony.api.clients.MessagesClient;
+import com.symphony.api.clients.StreamsClient;
 import com.symphony.adminbot.commons.BotConstants;
 import com.symphony.adminbot.config.BotConfig;
 import com.symphony.adminbot.util.template.MessageTemplate;
-import com.symphony.adminbot.model.signup.PartnerState;
-import com.symphony.adminbot.model.signup.template.PartnerTemplateData;
+import com.symphony.adminbot.model.bootstrap.DeveloperState;
+import com.symphony.adminbot.model.bootstrap.template.DeveloperTemplateData;
 import com.symphony.adminbot.util.file.FileUtil;
 
 import org.slf4j.Logger;
@@ -21,8 +21,8 @@ import javax.ws.rs.InternalServerErrorException;
 /**
  * Created by nick.tarsillo on 7/3/17.
  */
-public class PartnerMessageSetup {
-  private static final Logger LOG = LoggerFactory.getLogger(PartnerMessageSetup.class);
+public class DeveloperMessageSetup {
+  private static final Logger LOG = LoggerFactory.getLogger(DeveloperMessageSetup.class);
 
   private MessagesClient messagesClient;
   private StreamsClient streamsClient;
@@ -31,7 +31,7 @@ public class PartnerMessageSetup {
   private String directionalMessage;
   private String welcomeMessage;
 
-  public PartnerMessageSetup(MessagesClient messagesClient, StreamsClient streamsClient){
+  public DeveloperMessageSetup(MessagesClient messagesClient, StreamsClient streamsClient){
     this.messagesClient = messagesClient;
     this.streamsClient = streamsClient;
 
@@ -52,17 +52,17 @@ public class PartnerMessageSetup {
   /**
    * Sends a directional message to the symphony user
    * Should specify how to reset password and finish sign up process
-   * @param partnerState the current state of the partner in the sign up process
+   * @param developerState the current state of the partner in the sign up process
    */
-  public void sendDirectionalMessage(PartnerState partnerState) {
+  public void sendDirectionalMessage(DeveloperState developerState) {
     try {
-      PartnerTemplateData partnerTemplateData =
-          new PartnerTemplateData(partnerState.getPartner(), null, null,
+      DeveloperTemplateData developerTemplateData =
+          new DeveloperTemplateData(developerState.getDeveloper(), null, null,
               directionalUrl);
       MessageTemplate partnerDocumentTemplate = new MessageTemplate(directionalMessage);
-      String message = partnerDocumentTemplate.buildFromData(partnerTemplateData);
+      String message = partnerDocumentTemplate.buildFromData(developerTemplateData);
 
-      Long partnerId = partnerState.getUserDetail().getUserSystemInfo().getId();
+      Long partnerId = developerState.getUserDetail().getUserSystemInfo().getId();
       UserIdList userIdList = new UserIdList();
       userIdList.add(partnerId);
 
@@ -70,7 +70,7 @@ public class PartnerMessageSetup {
       v2Message.setMessage(message);
 
       Stream stream = streamsClient.createIM(userIdList);
-      partnerState.setPartnerIM(stream);
+      developerState.setPartnerIM(stream);
       messagesClient.sendMessage(stream, v2Message, V2MessageSubmission.FormatEnum.MESSAGEML);
     } catch (Exception e) {
       LOG.error("Error occurred when sending directional message: ", e);
@@ -80,23 +80,23 @@ public class PartnerMessageSetup {
 
   /**
    * Sends message containing bootstrap package.
-   * @param partnerState the current state of the user in the sign up process
+   * @param developerState the current state of the user in the sign up process
    */
-  public void sendBootstrapMessage(PartnerState partnerState) {
+  public void sendBootstrapMessage(DeveloperState developerState) {
     try {
-      PartnerTemplateData partnerTemplateData = new PartnerTemplateData(partnerState.getPartner(),
-          partnerState.getPartnerSignUpForm(), null, System.getProperty(BotConfig.DIRECTIONAL_URL));
+      DeveloperTemplateData developerTemplateData = new DeveloperTemplateData(developerState.getDeveloper(),
+          developerState.getDeveloperSignUpForm(), null, System.getProperty(BotConfig.DIRECTIONAL_URL));
       MessageTemplate partnerDocumentTemplate = new MessageTemplate(welcomeMessage);
-      String message = partnerDocumentTemplate.buildFromData(partnerTemplateData);
+      String message = partnerDocumentTemplate.buildFromData(developerTemplateData);
 
-      Long partnerId = partnerState.getUserDetail().getUserSystemInfo().getId();
+      Long partnerId = developerState.getUserDetail().getUserSystemInfo().getId();
       UserIdList userIdList = new UserIdList();
       userIdList.add(partnerId);
 
       V2Message v2Message = new V2Message();
       v2Message.setMessage(message);
 
-      messagesClient.sendMessage(partnerState.getPartnerIM(), v2Message, V2MessageSubmission.FormatEnum.MESSAGEML);
+      messagesClient.sendMessage(developerState.getPartnerIM(), v2Message, V2MessageSubmission.FormatEnum.MESSAGEML);
     } catch (Exception e) {
       LOG.error("Error occurred when sending directional message: ", e);
       throw new InternalServerErrorException(BotConstants.INTERNAL_ERROR);
