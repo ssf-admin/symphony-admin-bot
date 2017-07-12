@@ -30,6 +30,7 @@ paths:
           type: string
         - name: signUpForm
           in: body
+          required: true
           schema:
             $ref: '#/definitions/PartnerSignUpForm'
       consumes:

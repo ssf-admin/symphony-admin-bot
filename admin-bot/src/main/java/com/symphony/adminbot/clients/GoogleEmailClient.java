@@ -8,6 +8,9 @@ import com.google.api.client.util.Base64;
 import com.google.api.services.gmail.Gmail;
 import com.google.api.services.gmail.GmailScopes;
 import com.google.api.services.gmail.model.Message;
+import com.google.common.cache.CacheBuilder;
+import com.google.common.cache.CacheLoader;
+import com.google.common.cache.LoadingCache;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -16,6 +19,7 @@ import java.security.GeneralSecurityException;
 import java.util.HashSet;
 import java.util.Properties;
 import java.util.Set;
+import java.util.concurrent.ExecutionException;
 
 import javax.mail.MessagingException;
 import javax.mail.Session;
@@ -27,41 +31,52 @@ import javax.mail.internet.MimeMessage;
  */
 public class GoogleEmailClient {
   private static final GsonFactory JSON_FACTORY = GsonFactory.getDefaultInstance();
+  private static LoadingCache<String, GoogleEmailClient> clientLoadingCache;
 
   private Gmail service;
   private String from;
 
+  public static GoogleEmailClient getInstance(String appName, String email, String serviceId,
+      String credPath) throws ExecutionException {
+    if (clientLoadingCache == null) {
+      clientLoadingCache = CacheBuilder.newBuilder().build(
+          new CacheLoader<String, GoogleEmailClient>() {
+            @Override
+            public GoogleEmailClient load(String s) throws Exception {
+              return new GoogleEmailClient(appName, email, serviceId, credPath);
+            }
+          });
+    }
+
+    return clientLoadingCache.get(serviceId);
+  }
+
   /**
    * Authenticate with gmail api's and create gmail service
-   * @param appName the name of this application
-   * @param email the email to send messages from
-   * @param serviceId the gmail service user id
-   * @param credPath the path to the service user cert
    */
   public GoogleEmailClient(String appName, String email, String serviceId, String credPath)
       throws GeneralSecurityException, IOException {
     this.from = email;
-
-    HttpTransport httpTransport = GoogleNetHttpTransport.newTrustedTransport();
-
     Set<String> scopes = new HashSet<>();
     scopes.add(GmailScopes.GMAIL_SEND);
     scopes.add(GmailScopes.GMAIL_COMPOSE);
     scopes.add(GmailScopes.GMAIL_MODIFY);
     scopes.add(GmailScopes.MAIL_GOOGLE_COM);
 
+    HttpTransport httpTransport = GoogleNetHttpTransport.newTrustedTransport();
     GoogleCredential credential = new GoogleCredential.Builder()
         .setTransport(httpTransport)
         .setJsonFactory(JSON_FACTORY)
         .setServiceAccountId(serviceId)
         .setServiceAccountPrivateKeyFromP12File(new File(credPath))
         .setServiceAccountScopes(scopes)
-        .setServiceAccountUser(from)
+        .setServiceAccountUser(email)
         .build();
 
     credential.refreshToken();
 
-    service = new Gmail.Builder(httpTransport, JSON_FACTORY, credential).setApplicationName(appName).build();
+    service = new Gmail.Builder(httpTransport,
+        JSON_FACTORY, credential).setApplicationName(appName).build();
   }
 
   /**

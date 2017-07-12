@@ -51,7 +51,7 @@ public class MessagesClient {
           symAuth.getSessionToken().getToken(),
           messageSubmission, symAuth.getKeyToken().getToken());
     } catch (ApiException e) {
-      throw new ApiException("Message send failed: " + e.getStackTrace());
+      throw new ApiException("Message send failed: " + e);
     }
 
     return v2Message;

@@ -5,7 +5,7 @@ import com.symphony.adminbot.commons.BotConstants;
 import com.symphony.adminbot.config.BotConfig;
 import com.symphony.adminbot.model.core.AdminSession;
 import com.symphony.adminbot.model.core.AdminSessionManager;
-import com.symphony.adminbot.util.file.TomcatCertManager;
+import com.symphony.adminbot.util.TomcatCertManager;
 import com.symphony.api.adminbot.api.factories.V1ApiServiceFactory;
 import com.symphony.clients.AuthorizationClient;
 import com.symphony.clients.SymphonyClient;
@@ -57,13 +57,12 @@ public class AdminBot extends HttpServlet {
           System.getProperty(BotConfig.CERTS_DIR),
           System.getProperty(BotConfig.KEYS_PASSWORD_FILE));
       tomcatCertManager.buildStoresFromCerts();
-      tomcatCertManager.refreshStores(8444);
+      tomcatCertManager.refreshStores(Integer.parseInt(System.getProperty(BotConfig.AUTH_PORT)));
       tomcatCertManager.generateKeyMap();
       tomcatCertManager.setSSLStores();
     } catch (Exception e) {
       LOG.error("Could not set up cert manager for tomcat: ", e);
     }
-
     adminSessionManager = new AdminSessionManager();
     V1ApiServiceFactory.setService(new V1AdminApi(adminSessionManager));
   }

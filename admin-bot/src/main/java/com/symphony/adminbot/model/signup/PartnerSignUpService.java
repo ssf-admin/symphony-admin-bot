@@ -40,7 +40,7 @@ public class PartnerSignUpService {
 
   public PartnerSignUpService(SymphonyClient symClient){
     partnerStateCache = new ExpiringFileLoaderCache<>(
-        System.getProperty(BotConfig.FILES_JSON),
+        System.getProperty(BotConfig.JSON_DIR),
         (partner) -> partner.getEmail(),
         BotConstants.EXPIRE_TIME_DAYS,
         TimeUnit.DAYS,
@@ -115,8 +115,8 @@ public class PartnerSignUpService {
     for(PartnerState partnerState : welcomeStates){
       partnerStateCache.put(partnerState.getPartner(), partnerState);
 
-      partnerConfirmationSetup.sendWelcomeEmail(partnerState);
       partnerUserSetup.createPartnerUser(partnerState);
+      partnerConfirmationSetup.sendWelcomeEmail(partnerState);
       partnerMessageSetup.sendDirectionalMessage(partnerState);
     }
   }

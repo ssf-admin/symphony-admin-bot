@@ -19,13 +19,13 @@ import javax.ws.rs.InternalServerErrorException;
  */
 public class PartnerConfirmationSetup {
   private static final Logger LOG = LoggerFactory.getLogger(PartnerConfirmationSetup.class);
-  private GoogleEmailClient googleEmailClient;
   private String subjectTemplate;
   private String messageTemplate;
+  private GoogleEmailClient googleEmailClient;
 
   public PartnerConfirmationSetup() {
     try {
-      googleEmailClient = new GoogleEmailClient(
+      googleEmailClient = GoogleEmailClient.getInstance(
           BotConstants.ADMIN_BOT_NAME,
           System.getProperty(BotConfig.GMAIL_ADDRESS),
           System.getProperty(BotConfig.GOOGLE_SERVICE_ID),
@@ -49,7 +49,7 @@ public class PartnerConfirmationSetup {
    */
   public void sendWelcomeEmail(PartnerState partnerState) {
     try {
-      String url = System.getProperty(BotConfig.BOT_URL) + BotConstants.CONFIRMATION_PATH;
+      String url = System.getProperty(BotConfig.POD_URL);
       PartnerTemplateData partnerTemplateData = new PartnerTemplateData(partnerState.getPartner(),
           partnerState.getPartnerSignUpForm(), partnerState.getPassword(), url);
       MessageTemplate subTemplate = new MessageTemplate(subjectTemplate);

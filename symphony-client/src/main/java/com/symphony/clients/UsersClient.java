@@ -12,6 +12,7 @@ import org.symphonyoss.symphony.pod.model.FeatureList;
 import org.symphonyoss.symphony.pod.model.SuccessResponse;
 import org.symphonyoss.symphony.pod.model.UserCreate;
 import org.symphonyoss.symphony.pod.model.UserDetail;
+import org.symphonyoss.symphony.pod.model.UserV2;
 
 import javax.ws.rs.core.Response;
 
@@ -88,17 +89,17 @@ public class UsersClient {
   public boolean userExistsByEmail(String email) throws ApiException {
     UsersApi userApi = new UsersApi(apiClient);
 
-    boolean userExists = true;
+    UserV2 userV2;
     try {
-      userApi.v2UserGet(symAuth.getSessionToken().getToken(), null, email, null, false);
+      userV2 = userApi.v2UserGet(symAuth.getSessionToken().getToken(), null, email, null, false);
     } catch (ApiException e) {
       if (e.getCode() == Response.Status.NO_CONTENT.getStatusCode()) {
-        userExists = false;
+        return false;
       } else {
         throw new ApiException("User search failed: " + e);
       }
     }
 
-    return userExists;
+    return userV2 != null;
   }
 }

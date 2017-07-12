@@ -16,28 +16,43 @@ public class PartnerTemplateData extends TemplateData {
     Partner partner = partnerState.getPartner();
     PartnerSignUpForm partnerSignUpForm = partnerState.getPartnerSignUpForm();
 
-    addData(SymphonyReplacementEnums.FIRST_NAME.getReplacement(), partner.getFirstName());
-    addData(SymphonyReplacementEnums.LAST_NAME.getReplacement(), partner.getLastName());
-    addData(SymphonyReplacementEnums.EMAIL.getReplacement(), partner.getEmail());
-    addData(SymphonyReplacementEnums.APP_NAME.getReplacement(), partnerSignUpForm.getAppName());
-    addData(SymphonyReplacementEnums.APP_ID.getReplacement(), getCommonName(partnerSignUpForm.getAppName()));
-    addData(SymphonyReplacementEnums.COMPANY_NAME.getReplacement(), partnerSignUpForm.getAppCompanyName());
-    addData(SymphonyReplacementEnums.BOT_NAME.getReplacement(), partnerSignUpForm.getBotName());
-    addData(SymphonyReplacementEnums.BOT_ID.getReplacement(), partnerState.getBootstrapInfo().getBotUsername());
-    addData(SymphonyReplacementEnums.BOT_EMAIL.getReplacement(), partnerSignUpForm.getBotEmail());
-    addData(SymphonyReplacementEnums.PASSWORD.getReplacement(), partnerState.getPassword());
+    if(partner != null) {
+      addData(SymphonyReplacementEnums.FIRST_NAME.getReplacement(), partner.getFirstName());
+      addData(SymphonyReplacementEnums.LAST_NAME.getReplacement(), partner.getLastName());
+      addData(SymphonyReplacementEnums.EMAIL.getReplacement(), partner.getEmail());
+    }
+    if(partnerSignUpForm != null) {
+      addData(SymphonyReplacementEnums.APP_NAME.getReplacement(), partnerSignUpForm.getAppName());
+      addData(SymphonyReplacementEnums.APP_ID.getReplacement(),
+          getCommonName(partnerSignUpForm.getAppName()));
+      addData(SymphonyReplacementEnums.COMPANY_NAME.getReplacement(),
+          partnerSignUpForm.getAppCompanyName());
+      addData(SymphonyReplacementEnums.BOT_NAME.getReplacement(), partnerSignUpForm.getBotName());
+    }
+    if(partnerSignUpForm != null) {
+      addData(SymphonyReplacementEnums.BOT_ID.getReplacement(),
+          partnerState.getBootstrapInfo().getBotUsername());
+      addData(SymphonyReplacementEnums.BOT_EMAIL.getReplacement(), partnerSignUpForm.getBotEmail());
+    }
+    if(partnerState != null) {
+      addData(SymphonyReplacementEnums.PASSWORD.getReplacement(), partnerState.getPassword());
+    }
     addData(SymphonyReplacementEnums.URL.getReplacement(), url);
   }
 
   public PartnerTemplateData(Partner partner, PartnerSignUpForm partnerSignUpForm, String password, String url){
-    addData(SymphonyReplacementEnums.FIRST_NAME.getReplacement(), partner.getFirstName());
-    addData(SymphonyReplacementEnums.LAST_NAME.getReplacement(), partner.getLastName());
-    addData(SymphonyReplacementEnums.EMAIL.getReplacement(), partner.getEmail());
-    addData(SymphonyReplacementEnums.APP_NAME.getReplacement(), partnerSignUpForm.getAppName());
-    addData(SymphonyReplacementEnums.APP_ID.getReplacement(), getCommonName(partnerSignUpForm.getAppName()));
-    addData(SymphonyReplacementEnums.COMPANY_NAME.getReplacement(), partnerSignUpForm.getAppCompanyName());
-    addData(SymphonyReplacementEnums.BOT_NAME.getReplacement(), partnerSignUpForm.getBotName());
-    addData(SymphonyReplacementEnums.BOT_EMAIL.getReplacement(), partnerSignUpForm.getBotEmail());
+    if(partnerSignUpForm != null){
+      addData(SymphonyReplacementEnums.APP_NAME.getReplacement(), partnerSignUpForm.getAppName());
+      addData(SymphonyReplacementEnums.APP_ID.getReplacement(), getCommonName(partnerSignUpForm.getAppName()));
+      addData(SymphonyReplacementEnums.COMPANY_NAME.getReplacement(), partnerSignUpForm.getAppCompanyName());
+      addData(SymphonyReplacementEnums.BOT_NAME.getReplacement(), partnerSignUpForm.getBotName());
+      addData(SymphonyReplacementEnums.BOT_EMAIL.getReplacement(), partnerSignUpForm.getBotEmail());
+    }
+    if(partner != null) {
+      addData(SymphonyReplacementEnums.FIRST_NAME.getReplacement(), partner.getFirstName());
+      addData(SymphonyReplacementEnums.LAST_NAME.getReplacement(), partner.getLastName());
+      addData(SymphonyReplacementEnums.EMAIL.getReplacement(), partner.getEmail());
+    }
     addData(SymphonyReplacementEnums.PASSWORD.getReplacement(), password);
     addData(SymphonyReplacementEnums.URL.getReplacement(), url);
   }

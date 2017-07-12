@@ -85,7 +85,7 @@ public class PartnerCompanyCertSetup {
       X509Certificate certificate = generateCertificate(
           commonName, keys, BotConstants.VALID_DURATION);
       writeCert(commonName, certificate, keys,
-          System.getProperty(BotConfig.FILES_P12), password.toCharArray());
+          System.getProperty(BotConfig.P12_DIR), password.toCharArray());
 
       CompanyCert companyCert = new CompanyCert();
       companyCert.setPem(convertCertificateToPEM(certificate));
@@ -118,7 +118,7 @@ public class PartnerCompanyCertSetup {
    */
   public void uploadCerts(PartnerState partnerState){
     try {
-      String path = System.getProperty(BotConfig.FILES_P12);
+      String path = System.getProperty(BotConfig.P12_DIR);
       String outputPath = path + partnerState.getPartner().getEmail() + ".zip";
       Set<String> certPaths = new HashSet<>();
       certPaths.add(path + partnerState.getPartnerSignUpForm().getBotEmail().split("@")[0] + ".pkcs12");

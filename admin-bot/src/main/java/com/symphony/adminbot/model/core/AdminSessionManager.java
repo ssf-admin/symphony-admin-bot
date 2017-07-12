@@ -25,7 +25,6 @@ public class AdminSessionManager {
   public AdminSessionManager(){
     adminSessionMap = CacheBuilder.newBuilder()
         .concurrencyLevel(4)
-        .weakKeys()
         .maximumSize(10000)
         .expireAfterAccess(BotConstants.MANAGER_EXPIRE_MINUTES, TimeUnit.MINUTES)
         .build();
@@ -57,6 +56,7 @@ public class AdminSessionManager {
       keys.add(sessionCacheKey);
     } else {
       keys = new HashSet<>();
+      keys.add(sessionCacheKey);
       validationMap.put(userKey, keys);
     }
   }

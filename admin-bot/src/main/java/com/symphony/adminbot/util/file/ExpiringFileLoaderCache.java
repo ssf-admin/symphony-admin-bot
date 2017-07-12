@@ -34,7 +34,6 @@ public class ExpiringFileLoaderCache<K, V> {
       long expireTime, TimeUnit unit, Class<V> classRef){
     cache =  CacheBuilder.newBuilder()
         .concurrencyLevel(4)
-        .weakKeys()
         .maximumSize(10000)
         .expireAfterWrite(expireTime, unit)
         .build(new CacheLoader<K, V>() {

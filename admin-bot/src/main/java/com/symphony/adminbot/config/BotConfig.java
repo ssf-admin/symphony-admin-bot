@@ -30,16 +30,18 @@ public class BotConfig {
   public final static String GOOGLE_CRED_FILE_ENV = "GOOGLE_CRED";
   public final static String GOOGLE_SERVICE_ID_ENV = "GOOGLE_SERVICE_ID";
   public final static String GMAIL_ADDRESS_ENV = "GMAIL_ADDRESS";
-  public final static String FILES_JSON_ENV = "FILES_JSON";
-  public final static String FILES_P12_ENV = "FILES_P12";
+  public final static String JSON_DIR_ENV = "JSON_DIR";
+  public final static String P12_DIR_ENV = "P12_DIR";
   public static final String ROLES_FILE_ENV = "ROLES_FILE";
   public static final String EMAIL_SUBJECT_TEMPLATE_ENV = "EMAIL_SUBJECT_TEMPLATE";
   public static final String EMAIL_MESSAGE_TEMPLATE_ENV = "EMAIL_MESSAGE_TEMPLATE";
   public static final String MESSAGE_DIRECTIONAL_TEMPLATE_ENV = "MESSAGE_DIRECTIONAL_TEMPLATE";
   public static final String MESSAGE_WELCOME_TEMPLATE_ENV = "MESSAGE_WELCOME_TEMPLATE";
-  public static final String BOT_URL_ENV = "BOT_URL";
+  public static final String POD_URL_ENV = "POD_URL";
   public static final String BOT_SIGNUP_ID_ENV = "BOT_SIGNUP_ID";
   public static final String DIRECTIONAL_URL_ENV = "DIRECTIONAL_URL";
+  public static final String AUTH_PORT_ENV = "AUTH_PORT";
+  public static final String SWAGGER_PORT_ENV = "SWAGGER_PORT";
 
   //_____________________________Properties_____________________________//
   /**
@@ -62,15 +64,15 @@ public class BotConfig {
   public final static String KEYAUTH_URL = "keyauth.url";
   public final static String SYMPHONY_POD = "symphony.agent.pod.url";
   public final static String SYMPHONY_AGENT = "symphony.agent.agent.url";
-  public static final String BOT_URL = "adminbot.bot.url";
+  public static final String POD_URL = "adminbot.pod.url";
   public static final String DIRECTIONAL_URL = "adminbot.directional.url";
 
   /**
    * DIRECTORIES
    */
   public final static String CERTS_DIR = "certs.dir";
-  public final static String FILES_JSON = "adminbot.files.json";
-  public final static String FILES_P12 = "adminbot.files.p12";
+  public final static String JSON_DIR = "adminbot.json.dir";
+  public final static String P12_DIR = "adminbot.p12.dir";
 
   /**
    * FILES
@@ -95,6 +97,12 @@ public class BotConfig {
    */
   public final static String GMAIL_ADDRESS = "adminbot.gmail.address";
 
+  /**
+   * Ports
+   */
+  public final static String AUTH_PORT = "adminbot.auth.port";
+  public final static String SWAGGER_PORT = "adminbot.swagger.port";
+
   static{
     PROPERTY_SET.add(new EnvironmentConfigProperty(KEYSTORE_PASSWORD_ENV, KEYSTORE_PASSWORD));
     PROPERTY_SET.add(new EnvironmentConfigProperty(TRUSTSTORE_PASSWORD_ENV, TRUSTSTORE_PASSWORD));
@@ -109,16 +117,18 @@ public class BotConfig {
     PROPERTY_SET.add(new EnvironmentConfigProperty(GOOGLE_CRED_FILE_ENV, GOOGLE_CRED_FILE));
     PROPERTY_SET.add(new EnvironmentConfigProperty(GOOGLE_SERVICE_ID_ENV, GOOGLE_SERVICE_ID));
     PROPERTY_SET.add(new EnvironmentConfigProperty(GMAIL_ADDRESS_ENV, GMAIL_ADDRESS));
-    PROPERTY_SET.add(new EnvironmentConfigProperty(FILES_JSON_ENV, FILES_JSON));
-    PROPERTY_SET.add(new EnvironmentConfigProperty(FILES_P12_ENV, FILES_P12));
+    PROPERTY_SET.add(new EnvironmentConfigProperty(JSON_DIR_ENV, JSON_DIR));
+    PROPERTY_SET.add(new EnvironmentConfigProperty(P12_DIR_ENV, P12_DIR));
     PROPERTY_SET.add(new EnvironmentConfigProperty(ROLES_FILE_ENV, ROLES_FILE));
     PROPERTY_SET.add(new EnvironmentConfigProperty(EMAIL_SUBJECT_TEMPLATE_ENV, EMAIL_SUBJECT_TEMPLATE));
     PROPERTY_SET.add(new EnvironmentConfigProperty(EMAIL_MESSAGE_TEMPLATE_ENV, EMAIL_MESSAGE_TEMPLATE));
     PROPERTY_SET.add(new EnvironmentConfigProperty(MESSAGE_DIRECTIONAL_TEMPLATE_ENV, MESSAGE_DIRECTIONAL_TEMPLATE));
     PROPERTY_SET.add(new EnvironmentConfigProperty(MESSAGE_WELCOME_TEMPLATE_ENV, MESSAGE_WELCOME_TEMPLATE));
-    PROPERTY_SET.add(new EnvironmentConfigProperty(BOT_URL_ENV, BOT_URL));
+    PROPERTY_SET.add(new EnvironmentConfigProperty(POD_URL_ENV, POD_URL));
     PROPERTY_SET.add(new EnvironmentConfigProperty(BOT_SIGNUP_ID_ENV, BOT_SIGNUP_ID));
     PROPERTY_SET.add(new EnvironmentConfigProperty(DIRECTIONAL_URL_ENV, DIRECTIONAL_URL));
+    PROPERTY_SET.add(new EnvironmentConfigProperty(AUTH_PORT_ENV, AUTH_PORT));
+    PROPERTY_SET.add(new EnvironmentConfigProperty(SWAGGER_PORT_ENV, SWAGGER_PORT));
   }
 
   /**

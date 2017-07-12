@@ -9,11 +9,7 @@ import java.util.Map;
  * Data to generate template from
  */
 public class TemplateData {
-  private Map<String, String> replacementHash;
-
-  public TemplateData(){
-    replacementHash = new HashMap<>();
-  }
+  private Map<String, String> replacementHash = new HashMap<>();
 
   public void addData(String replace, String replacement){
     replacementHash.put(replace, replacement);

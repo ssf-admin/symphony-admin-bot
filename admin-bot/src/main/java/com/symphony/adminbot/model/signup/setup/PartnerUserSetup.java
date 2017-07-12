@@ -26,15 +26,9 @@ import java.util.Set;
  */
 public class PartnerUserSetup {
   enum FeaturesEnum{
-    WRITE("imWriteEnabled"),
-    POST_READ("postReadEnabled"),
-    POST_WRITE("postWriteEnabled"),
-    ROOM_READ("roomReadEnabled"),
-    ROOM_WRITE("roomWriteEnabled"),
     EXTERNAL("isExternalIMEnabled"),
     SHARE_FILES_EXTERNAL("canShareFilesExternally"),
     CREATE_PUBLIC_ROOM("canCreatePublicRoom"),
-    READ_IM("imReadEnabled"),
     SEND_FILES("sendFilesEnabled");
 
     private String entitlement;
@@ -89,13 +83,13 @@ public class PartnerUserSetup {
       userCreate.setUserAttributes(userAttributes);
 
       SecureRandom random = new SecureRandom();
-      String randomPassword = new BigInteger(130, random).toString();
-      Password pass = new Password();
-      pass.setHPassword(randomPassword);
-      pass.setHSalt(randomPassword);
-      pass.setKhPassword(randomPassword);
-      pass.setKhSalt(randomPassword);
-      userCreate.setPassword(pass);
+      String randomPassword = new BigInteger(256, random).toString();
+//      Password pass = new Password();
+//      pass.setHPassword(randomPassword);
+//      pass.setHSalt(randomPassword);
+//      pass.setKhPassword(randomPassword);
+//      pass.setKhSalt(randomPassword);
+//      userCreate.setPassword(pass);
 
       List<String> roles = new ArrayList<>();
       roles.add("INDIVIDUAL");
@@ -127,15 +121,9 @@ public class PartnerUserSetup {
 
     FeatureList features = new FeatureList();
 
-    features.add(FeaturesEnum.WRITE.enabled());
     features.add(FeaturesEnum.CREATE_PUBLIC_ROOM.enabled());
     features.add(FeaturesEnum.EXTERNAL.enabled());
     features.add(FeaturesEnum.SHARE_FILES_EXTERNAL.enabled());
-    features.add(FeaturesEnum.ROOM_READ.enabled());
-    features.add(FeaturesEnum.POST_WRITE.enabled());
-    features.add(FeaturesEnum.POST_READ.enabled());
-    features.add(FeaturesEnum.ROOM_WRITE.enabled());
-    features.add(FeaturesEnum.READ_IM.enabled());
     features.add(FeaturesEnum.SEND_FILES.enabled());
 
     usersClient.updateEntitlements(userDetail.getUserSystemInfo().getId(), features);
@@ -161,15 +149,9 @@ public class PartnerUserSetup {
 
     FeatureList features = new FeatureList();
 
-    features.add(FeaturesEnum.WRITE.enabled());
     features.add(FeaturesEnum.CREATE_PUBLIC_ROOM.enabled());
     features.add(FeaturesEnum.EXTERNAL.enabled());
     features.add(FeaturesEnum.SHARE_FILES_EXTERNAL.enabled());
-    features.add(FeaturesEnum.ROOM_READ.enabled());
-    features.add(FeaturesEnum.POST_WRITE.enabled());
-    features.add(FeaturesEnum.POST_READ.enabled());
-    features.add(FeaturesEnum.ROOM_WRITE.enabled());
-    features.add(FeaturesEnum.READ_IM.enabled());
     features.add(FeaturesEnum.SEND_FILES.enabled());
 
     usersClient.updateEntitlements(userV2.getUserSystemInfo().getId(), features);
