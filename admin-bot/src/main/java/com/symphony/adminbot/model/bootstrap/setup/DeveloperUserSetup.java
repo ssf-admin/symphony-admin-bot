@@ -4,11 +4,13 @@ import com.symphony.api.adminbot.model.Developer;
 import com.symphony.api.adminbot.model.DeveloperSignUpForm;
 import com.symphony.api.clients.UsersClient;
 import com.symphony.adminbot.model.bootstrap.DeveloperState;
+import com.symphony.api.multipart.MultiPartUserClient;
 
 import org.apache.commons.lang.WordUtils;
 import org.symphonyoss.symphony.pod.invoker.ApiException;
 import org.symphonyoss.symphony.pod.model.Feature;
 import org.symphonyoss.symphony.pod.model.FeatureList;
+import org.symphonyoss.symphony.pod.model.Password;
 import org.symphonyoss.symphony.pod.model.UserAttributes;
 import org.symphonyoss.symphony.pod.model.UserCreate;
 import org.symphonyoss.symphony.pod.model.UserDetail;
@@ -53,8 +55,11 @@ public class DeveloperUserSetup {
 
   private UsersClient usersClient;
 
-  public DeveloperUserSetup(UsersClient usersClient){
+  private MultiPartUserClient multiPartUserClient;
+
+  public DeveloperUserSetup(UsersClient usersClient, MultiPartUserClient multiPartUserClient){
     this.usersClient = usersClient;
+    this.multiPartUserClient = multiPartUserClient;
   }
 
   /**
@@ -83,12 +88,12 @@ public class DeveloperUserSetup {
 
       SecureRandom random = new SecureRandom();
       String randomPassword = new BigInteger(256, random).toString();
-//      Password pass = new Password();
-//      pass.setHPassword(randomPassword);
-//      pass.setHSalt(randomPassword);
-//      pass.setKhPassword(randomPassword);
-//      pass.setKhSalt(randomPassword);
-//      userCreate.setPassword(pass);
+      Password pass = new Password();
+      pass.setHPassword(randomPassword);
+      pass.setHSalt(randomPassword);
+      pass.setKhPassword(randomPassword);
+      pass.setKhSalt(randomPassword);
+      userCreate.setPassword(pass);
 
       List<String> roles = new ArrayList<>();
       roles.add("INDIVIDUAL");
@@ -115,7 +120,7 @@ public class DeveloperUserSetup {
    * @param state the partner's current state in the sign up process
    */
   public void createPartnerUser(DeveloperState state) throws ApiException {
-    UserDetail userDetail = usersClient.createUser(state.getUserCreate());
+    UserDetail userDetail = multiPartUserClient.createUserV1(state.getUserCreate());
     state.setUserDetail(userDetail);
 
     FeatureList features = new FeatureList();
@@ -144,7 +149,7 @@ public class DeveloperUserSetup {
     userAttributes.setDepartment(signUpForm.getAppCompanyName());
     userCreate.setUserAttributes(userAttributes);
 
-    UserDetail userV2 = usersClient.createUser(userCreate);
+    UserDetail userV2 = multiPartUserClient.createUserV1(userCreate);
 
     FeatureList features = new FeatureList();
 

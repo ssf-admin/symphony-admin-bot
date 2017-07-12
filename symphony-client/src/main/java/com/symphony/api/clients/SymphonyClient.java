@@ -1,7 +1,9 @@
 package com.symphony.api.clients;
 
 import com.symphony.api.clients.model.SymphonyAuth;
+import com.symphony.api.multipart.MultiPartUserClient;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.symphonyoss.symphony.authenticator.invoker.ApiException;
@@ -13,17 +15,27 @@ import java.util.TimerTask;
  * Created by nick.tarsillo on 7/1/17.
  */
 public class SymphonyClient {
+  private static ObjectMapper MAPPER = new ObjectMapper();
+
   private final Logger LOG = LoggerFactory.getLogger(SymphonyClient.class);
-  protected static final long SYMAUTH_REFRESH_TIME = 7200000;
+  private static final long SYMAUTH_REFRESH_TIME = 7200000;
 
-  protected AttachmentsClient attachmentsClient;
-  protected MessagesClient messagesClient;
-  protected SecurityClient securityClient;
-  protected StreamsClient streamsClient;
-  protected UsersClient usersClient;
-  protected SessionClient sessionClient;
+  /**
+   * Clients
+   */
+  private AttachmentsClient attachmentsClient;
+  private MessagesClient messagesClient;
+  private SecurityClient securityClient;
+  private StreamsClient streamsClient;
+  private UsersClient usersClient;
+  private SessionClient sessionClient;
 
-  protected SymphonyAuth symAuth;
+  /**
+   * Test/Hacks clients
+   */
+  private MultiPartUserClient multiPartUserClient;
+
+  private SymphonyAuth symAuth;
 
   /**
    * Initialize clients with required parameters.
@@ -43,13 +55,15 @@ public class SymphonyClient {
     usersClient = new UsersClient(symAuth, serviceUrl);
     sessionClient = new SessionClient(symAuth, serviceUrl);
 
+    multiPartUserClient = new MultiPartUserClient(symAuth, serviceUrl);
+
     startAuthRefresh();
   }
 
   /**
    * Sets timer to refresh auth every so often.
    */
-  protected void startAuthRefresh(){
+  private void startAuthRefresh(){
     Timer timer = new Timer(true);
     timer.scheduleAtFixedRate(new TimerTask() {
       @Override
@@ -63,6 +77,8 @@ public class SymphonyClient {
           streamsClient.setSymphonyAuth(symAuth);
           usersClient.setSymphonyAuth(symAuth);
           sessionClient.setSymphonyAuth(symAuth);
+
+          multiPartUserClient.setSymphonyAuth(symAuth);
         } catch (ApiException e) {
           LOG.error("Auth refresh failed: " + e.getStackTrace());
         }
@@ -96,5 +112,9 @@ public class SymphonyClient {
 
   public SessionClient getSessionClient() {
     return sessionClient;
+  }
+
+  public MultiPartUserClient getMultiPartUserClient() {
+    return multiPartUserClient;
   }
 }

@@ -52,7 +52,7 @@ public class V1AdminApi extends AbstractV1AdminService {
       return handleError(Response.Status.INTERNAL_SERVER_ERROR, BotConstants.INTERNAL_ERROR);
     }
 
-    return Response.ok("Developer welcome succeeded.").build();
+    return Response.ok("{\"message\":\"Developer welcome succeeded.\"}").build();
   }
 
   @Override

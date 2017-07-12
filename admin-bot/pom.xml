@@ -14,7 +14,7 @@
     <properties>
         <swagger.source>${basedir}/src/main/resources/adminbot-api.yaml</swagger.source>
         <templates.source>${basedir}/src/main/resources/templates</templates.source>
-        <jackson.version>2.8.9</jackson.version>
+        <jackson.version>2.7.3</jackson.version>
         <jersey.version>2.25.1</jersey.version>
         <swagger-codegen-plugin-version>2.2.2</swagger-codegen-plugin-version>
         <swagger-annotations-version>1.5.13</swagger-annotations-version>
@@ -45,12 +45,6 @@
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-annotations</artifactId>
             <version>${jackson.version}</version>
-        </dependency>
-
-        <dependency>
-            <groupId>org.codehaus.jackson</groupId>
-            <artifactId>jackson-mapper-asl</artifactId>
-            <version>1.5.0</version>
         </dependency>
 
         <dependency>
