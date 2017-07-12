@@ -25,7 +25,7 @@ public class DeveloperState {
   private UserCreate userCreate;
   private UserDetail userDetail;
   private String password;
-  private Stream partnerIM;
+  private Stream developerIM;
   private List<AttachmentInfo> certAttachmentInfo;
   private DeveloperBootstrapInfo bootstrapInfo;
 
@@ -86,12 +86,12 @@ public class DeveloperState {
     this.certAttachmentInfo = certAttachmentInfo;
   }
 
-  public Stream getPartnerIM() {
-    return partnerIM;
+  public Stream getDeveloperIM() {
+    return developerIM;
   }
 
-  public void setPartnerIM(Stream partnerIM) {
-    this.partnerIM = partnerIM;
+  public void setDeveloperIM(Stream developerIM) {
+    this.developerIM = developerIM;
   }
 
   public DeveloperBootstrapInfo getBootstrapInfo() {

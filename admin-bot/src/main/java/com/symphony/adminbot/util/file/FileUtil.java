@@ -44,17 +44,21 @@ public class FileUtil {
   public static File zipFiles(String outputPath, Set<String> filePaths)
       throws IOException {
     ZipOutputStream out = new ZipOutputStream(new FileOutputStream(outputPath));
-    for (String path : filePaths) {
-      ZipEntry entry = new ZipEntry(path);
-      out.putNextEntry(entry);
+    byte[] buf = new byte[1024];
+    for (String path: filePaths) {
+      File file = new File(path);
+      FileInputStream in = new FileInputStream(file);
+      // Add ZIP entry to output stream.
+      out.putNextEntry(new ZipEntry(file.getName()));
+      // Transfer bytes from the file to the ZIP file
+      int len;
+      while ((len = in.read(buf)) > 0) {
+        out.write(buf, 0, len);
+      }
+
+      out.closeEntry();
+      in.close();
     }
-
-    StringBuilder sb = new StringBuilder();
-    sb.append("Certs");
-
-    byte[] data = sb.toString().getBytes();
-    out.write(data, 0, data.length);
-    out.closeEntry();
     out.close();
 
     return new File(outputPath);

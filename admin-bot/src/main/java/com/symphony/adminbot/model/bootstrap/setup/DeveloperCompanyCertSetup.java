@@ -2,6 +2,7 @@ package com.symphony.adminbot.model.bootstrap.setup;
 
 import com.symphony.adminbot.config.BotConfig;
 import com.symphony.adminbot.model.bootstrap.DeveloperState;
+import com.symphony.api.adminbot.model.Developer;
 import com.symphony.api.clients.AttachmentsClient;
 import com.symphony.api.clients.SecurityClient;
 import com.symphony.adminbot.commons.BotConstants;
@@ -91,14 +92,14 @@ public class DeveloperCompanyCertSetup {
       companyCert.setPem(convertCertificateToPEM(certificate));
 
       CompanyCertAttributes companyCertAttributes = new CompanyCertAttributes();
-      companyCertAttributes.setName(BotConstants.CERT_NAME);
+      companyCertAttributes.setName(commonName + ".cer");
 
       CompanyCertStatus status = new CompanyCertStatus();
       status.setType(CompanyCertStatus.TypeEnum.TRUSTED);
       companyCertAttributes.setStatus(status);
 
       CompanyCertType certType = new CompanyCertType();
-      certType.setType(CompanyCertType.TypeEnum.USERSIGNING);
+      certType.setType(CompanyCertType.TypeEnum.USER);
       companyCertAttributes.setType(certType);
       companyCert.attributes(companyCertAttributes);
 
@@ -119,16 +120,20 @@ public class DeveloperCompanyCertSetup {
   public void uploadCerts(DeveloperState developerState){
     try {
       String path = System.getProperty(BotConfig.P12_DIR);
-      String outputPath = path + developerState.getDeveloper().getEmail() + ".zip";
+      Developer developer = developerState.getDeveloper();
+      String outputPath = path + developer.getFirstName() + developer.getLastName() + "Certs.zip";
       Set<String> certPaths = new HashSet<>();
-      certPaths.add(path + developerState.getDeveloperSignUpForm().getBotEmail().split("@")[0] + ".pkcs12");
-      certPaths.add(path + developerState.getDeveloperSignUpForm().getAppName() + ".pkcs12");
+      certPaths.add(path + getCommonName(developerState.getBootstrapInfo().getBotUsername()) + ".p12");
+
+      if(StringUtils.isNotBlank(developerState.getDeveloperSignUpForm().getAppName())) {
+        certPaths.add(path + getCommonName(developerState.getDeveloperSignUpForm().getAppName()) + ".p12");
+      }
       File zip = FileUtil.zipFiles(outputPath, certPaths);
 
       Set<File> attachments = new HashSet<>();
       attachments.add(zip);
 
-      developerState.setCertAttachmentInfo(attachmentsClient.uploadAttachments(developerState.getPartnerIM(), attachments));
+      developerState.setCertAttachmentInfo(attachmentsClient.uploadAttachments(developerState.getDeveloperIM(), attachments));
     } catch (Exception e){
       LOG.error("Error occurred when uploading attachments: ", e);
       throw new InternalServerErrorException(BotConstants.INTERNAL_ERROR);
@@ -143,7 +148,9 @@ public class DeveloperCompanyCertSetup {
     try {
       String path = System.getProperty(BotConfig.BOT_SIGNUP_ID);
       if (botId == -1) {
-        botId = Integer.parseInt(FileUtil.readFile(path));
+        String text = FileUtil.readFile(path).replace("\n", "");
+        botId = Integer.parseInt(text);
+        botId += 1;
       } else {
         botId += 1;
         FileUtil.writeFile("" + botId, path);
@@ -250,7 +257,7 @@ public class DeveloperCompanyCertSetup {
       KeyStore outStore = KeyStore.getInstance("PKCS12");
       outStore.load(null, password);
       outStore.setKeyEntry(alias, keys.getPrivate(), password, outChain);
-      OutputStream outputStream = new FileOutputStream(path + alias + ".pkcs12");
+      OutputStream outputStream = new FileOutputStream(path + alias + ".p12");
       outStore.store(outputStream, password);
       outputStream.flush();
       outputStream.close();

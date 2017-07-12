@@ -15,8 +15,6 @@ import java.util.TimerTask;
  * Created by nick.tarsillo on 7/1/17.
  */
 public class SymphonyClient {
-  private static ObjectMapper MAPPER = new ObjectMapper();
-
   private final Logger LOG = LoggerFactory.getLogger(SymphonyClient.class);
   private static final long SYMAUTH_REFRESH_TIME = 7200000;
 

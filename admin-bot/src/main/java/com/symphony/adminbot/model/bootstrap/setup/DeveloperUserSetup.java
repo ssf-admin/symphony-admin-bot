@@ -21,6 +21,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.UUID;
 
 /**
  * Created by nick.tarsillo on 7/2/17.
@@ -83,8 +84,7 @@ public class DeveloperUserSetup {
       userAttributes.setDepartment(signUpForm.getAppCompanyName());
       userCreate.setUserAttributes(userAttributes);
 
-      SecureRandom random = new SecureRandom();
-      String randomPassword = new BigInteger(256, random).toString();
+      String randomPassword = UUID.randomUUID().toString().replace("-", "");
       Password pass = new Password();
       pass.setHPassword(randomPassword);
       pass.setHSalt(randomPassword);
@@ -145,6 +145,10 @@ public class DeveloperUserSetup {
     userAttributes.setEmailAddress(signUpForm.getBotEmail());
     userAttributes.setDepartment(signUpForm.getAppCompanyName());
     userCreate.setUserAttributes(userAttributes);
+
+    List<String> roles = new ArrayList<>();
+    roles.add("INDIVIDUAL");
+    userCreate.setRoles(roles);
 
     UserDetail userV2 = usersClient.createUser(userCreate);
 

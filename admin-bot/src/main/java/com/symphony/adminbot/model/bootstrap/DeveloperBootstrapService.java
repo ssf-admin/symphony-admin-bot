@@ -78,16 +78,17 @@ public class DeveloperBootstrapService {
 
       developerUserSetup.createBot(signUpForm);
 
-      DeveloperBootstrapInfo DeveloperBootstrapInfo = new DeveloperBootstrapInfo();
-      DeveloperBootstrapInfo.setBotUsername(botUsername);
-      DeveloperBootstrapInfo.setAppId(appUsername);
-      DeveloperBootstrapInfo.setAppName(signUpForm.getAppName());
-      DeveloperBootstrapInfo.setBotEmail(signUpForm.getBotEmail());
+      DeveloperBootstrapInfo developerBootstrapInfo = new DeveloperBootstrapInfo();
+      developerBootstrapInfo.setBotUsername(botUsername);
+      developerBootstrapInfo.setAppId(appUsername);
+      developerBootstrapInfo.setAppName(signUpForm.getAppName());
+      developerBootstrapInfo.setBotEmail(signUpForm.getBotEmail());
       for(Developer teamMember: developerState.getTeamMembers()){
         DeveloperState teamMemberState = partnerStateCache.get(teamMember);
         teamMemberState.setCertAttachmentInfo(developerState.getCertAttachmentInfo());
-        teamMemberState.setBootstrapInfo(DeveloperBootstrapInfo);
+        teamMemberState.setBootstrapInfo(developerBootstrapInfo);
       }
+      developerState.setBootstrapInfo(developerBootstrapInfo);
     }
   }
 

@@ -3,6 +3,8 @@ package com.symphony.api.clients;
 
 import com.symphony.api.clients.model.SymphonyAuth;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.symphonyoss.symphony.pod.api.SecurityApi;
 import org.symphonyoss.symphony.pod.invoker.ApiClient;
 import org.symphonyoss.symphony.pod.invoker.ApiException;
@@ -14,6 +16,8 @@ import org.symphonyoss.symphony.pod.model.SuccessResponse;
  * Created by nick.tarsillo on 7/1/17.
  */
 public class SecurityClient {
+  private final Logger LOG = LoggerFactory.getLogger(SecurityClient.class);
+
   private final ApiClient apiClient;
   private SymphonyAuth symAuth;
 
@@ -41,6 +45,7 @@ public class SecurityClient {
     try {
       response = securityApi.v1CompanycertCreatePost(symAuth.getSessionToken().getToken(), cert);
     } catch (ApiException e) {
+      LOG.error("Create cert failed: ", e);
       throw new ApiException("Create cert failed: " + e.getStackTrace());
     }
 

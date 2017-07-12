@@ -70,7 +70,7 @@ public class DeveloperMessageSetup {
       v2Message.setMessage(message);
 
       Stream stream = streamsClient.createIM(userIdList);
-      developerState.setPartnerIM(stream);
+      developerState.setDeveloperIM(stream);
       messagesClient.sendMessage(stream, v2Message, V2MessageSubmission.FormatEnum.MESSAGEML);
     } catch (Exception e) {
       LOG.error("Error occurred when sending directional message: ", e);
@@ -84,8 +84,8 @@ public class DeveloperMessageSetup {
    */
   public void sendBootstrapMessage(DeveloperState developerState) {
     try {
-      DeveloperTemplateData developerTemplateData = new DeveloperTemplateData(developerState.getDeveloper(),
-          developerState.getDeveloperSignUpForm(), null, System.getProperty(BotConfig.DIRECTIONAL_URL));
+      DeveloperTemplateData developerTemplateData = new DeveloperTemplateData(developerState,
+          System.getProperty(BotConfig.DIRECTIONAL_URL));
       MessageTemplate partnerDocumentTemplate = new MessageTemplate(welcomeMessage);
       String message = partnerDocumentTemplate.buildFromData(developerTemplateData);
 
@@ -96,7 +96,7 @@ public class DeveloperMessageSetup {
       V2Message v2Message = new V2Message();
       v2Message.setMessage(message);
 
-      messagesClient.sendMessage(developerState.getPartnerIM(), v2Message, V2MessageSubmission.FormatEnum.MESSAGEML);
+      messagesClient.sendMessage(developerState.getDeveloperIM(), v2Message, V2MessageSubmission.FormatEnum.MESSAGEML);
     } catch (Exception e) {
       LOG.error("Error occurred when sending directional message: ", e);
       throw new InternalServerErrorException(BotConstants.INTERNAL_ERROR);

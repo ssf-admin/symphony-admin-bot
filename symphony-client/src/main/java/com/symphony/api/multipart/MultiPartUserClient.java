@@ -76,15 +76,19 @@ public class MultiPartUserClient {
     int beginIndex = toJson.indexOf("\"" + fieldName);
     int endIndex = 0;
     int currentComma = 0;
-    for(int index = beginIndex; index < toJson.length(); index ++){
-      if(toJson.charAt(index) == '"'){
-        currentComma ++;
-        if(currentComma == 4){
-          endIndex = index + 2;
+
+    if(beginIndex != -1) {
+      for (int index = beginIndex; index < toJson.length(); index++) {
+        if (toJson.charAt(index) == '"') {
+          currentComma++;
+          if (currentComma == 4) {
+            endIndex = index + 2;
+          }
         }
       }
+      return toJson.replace(toJson.substring(beginIndex, endIndex), "");
     }
-    return toJson.replace(toJson.substring(beginIndex, endIndex), "");
+    return json;
   }
 
   public void setSymphonyAuth(SymphonyAuth symAuth){

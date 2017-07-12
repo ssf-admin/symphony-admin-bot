@@ -35,8 +35,9 @@ public class V1AdminApi extends AbstractV1AdminService {
       signUpService.bootstrapPartner(developer);
       DeveloperBootstrapInfo partnerBootstrapInfo = signUpService.sendBootstrapPackage(developer);
 
-      return Response.ok().entity(partnerBootstrapInfo).build();
+      return Response.ok(partnerBootstrapInfo).build();
     } catch (Exception e) {
+      LOG.error("Bootstrap partner welcome failed:", e);
       return handleError(Response.Status.INTERNAL_SERVER_ERROR, BotConstants.INTERNAL_ERROR);
     }
   }
