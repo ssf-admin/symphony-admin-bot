@@ -2,6 +2,7 @@ package com.symphony.api.clients;
 
 import com.symphony.api.clients.model.SymphonyUser;
 import com.symphony.api.clients.model.SymphonyAuth;
+import com.symphony.api.multipart.MultiPartUserClient;
 
 import org.symphonyoss.symphony.pod.api.UserApi;
 import org.symphonyoss.symphony.pod.api.UsersApi;
@@ -23,12 +24,19 @@ public class UsersClient {
   private final ApiClient apiClient;
   private SymphonyAuth symAuth;
 
+  /**
+   * For testing and hacks
+   */
+  private MultiPartUserClient multiPartUserClient;
+
   public UsersClient(SymphonyAuth symAuth, String serviceUrl) {
     this.symAuth = symAuth;
 
     //Get Service clients to query for userID.
     apiClient = Configuration.getDefaultApiClient();
     apiClient.setBasePath(serviceUrl);
+
+    multiPartUserClient = new MultiPartUserClient(symAuth, serviceUrl);
   }
 
   public UserDetail createUser(UserCreate user) throws ApiException {
@@ -36,7 +44,8 @@ public class UsersClient {
 
     UserDetail userDetail;
     try {
-      userDetail = userApi.v1AdminUserCreatePost(symAuth.getSessionToken().getToken(), user);
+//      userDetail = userApi.v1AdminUserCreatePost(symAuth.getSessionToken().getToken(), user);
+        userDetail =multiPartUserClient.createUserV1(symAuth.getSessionToken().getToken(), user);
     } catch (ApiException e) {
       throw new ApiException("Could not create user: " + e);
     }

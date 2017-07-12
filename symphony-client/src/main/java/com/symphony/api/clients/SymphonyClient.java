@@ -30,11 +30,6 @@ public class SymphonyClient {
   private UsersClient usersClient;
   private SessionClient sessionClient;
 
-  /**
-   * Test/Hacks clients
-   */
-  private MultiPartUserClient multiPartUserClient;
-
   private SymphonyAuth symAuth;
 
   /**
@@ -54,8 +49,6 @@ public class SymphonyClient {
     streamsClient = new StreamsClient(symAuth, serviceUrl);
     usersClient = new UsersClient(symAuth, serviceUrl);
     sessionClient = new SessionClient(symAuth, serviceUrl);
-
-    multiPartUserClient = new MultiPartUserClient(symAuth, serviceUrl);
 
     startAuthRefresh();
   }
@@ -77,8 +70,6 @@ public class SymphonyClient {
           streamsClient.setSymphonyAuth(symAuth);
           usersClient.setSymphonyAuth(symAuth);
           sessionClient.setSymphonyAuth(symAuth);
-
-          multiPartUserClient.setSymphonyAuth(symAuth);
         } catch (ApiException e) {
           LOG.error("Auth refresh failed: " + e.getStackTrace());
         }
@@ -112,9 +103,5 @@ public class SymphonyClient {
 
   public SessionClient getSessionClient() {
     return sessionClient;
-  }
-
-  public MultiPartUserClient getMultiPartUserClient() {
-    return multiPartUserClient;
   }
 }

@@ -7,6 +7,7 @@ import org.symphonyoss.symphony.pod.api.SessionApi;
 import org.symphonyoss.symphony.pod.invoker.ApiClient;
 import org.symphonyoss.symphony.pod.invoker.ApiException;
 import org.symphonyoss.symphony.pod.invoker.Configuration;
+import org.symphonyoss.symphony.pod.model.SessionInfo;
 
 /**
  * Created by nick.tarsillo on 7/6/17.
@@ -35,6 +36,8 @@ public class SessionClient {
 
     return symUser;
   }
+
+
 
   public void setSymphonyAuth(SymphonyAuth symAuth){
     this.symAuth = symAuth;

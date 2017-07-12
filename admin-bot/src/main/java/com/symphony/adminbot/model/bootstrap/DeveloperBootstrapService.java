@@ -47,8 +47,7 @@ public class DeveloperBootstrapService {
         DeveloperState.class);
 
     developerConfirmationSetup = new DeveloperConfirmationSetup();
-    developerUserSetup = new DeveloperUserSetup(symClient.getUsersClient(),
-        symClient.getMultiPartUserClient());
+    developerUserSetup = new DeveloperUserSetup(symClient.getUsersClient());
     developerMessageSetup = new DeveloperMessageSetup(symClient.getMessagesClient(),
         symClient.getStreamsClient());
     developerCompanyCertSetup = new DeveloperCompanyCertSetup(symClient.getSecurityClient(),

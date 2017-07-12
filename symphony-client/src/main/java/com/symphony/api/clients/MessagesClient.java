@@ -47,9 +47,11 @@ public class MessagesClient {
 
     V2Message v2Message;
     try {
-      v2Message = messagesApi.v3StreamSidMessageCreatePost(stream.getId(),
-          symAuth.getSessionToken().getToken(),
-          messageSubmission, symAuth.getKeyToken().getToken());
+//      v2Message = messagesApi.v3StreamSidMessageCreatePost(stream.getId(),
+//          symAuth.getSessionToken().getToken(),
+//          messageSubmission, symAuth.getKeyToken().getToken());
+      v2Message = messagesApi.v2StreamSidMessageCreatePost(stream.getId(), symAuth.getSessionToken().getToken(),
+          symAuth.getKeyToken().getToken(), messageSubmission);
     } catch (ApiException e) {
       throw new ApiException("Message send failed: " + e);
     }

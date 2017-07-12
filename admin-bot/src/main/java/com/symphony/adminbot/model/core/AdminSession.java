@@ -9,6 +9,7 @@ import com.symphony.api.clients.model.SymphonyUser;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.symphonyoss.symphony.pod.invoker.ApiException;
+import org.symphonyoss.symphony.pod.model.SessionInfo;
 import org.symphonyoss.symphony.pod.model.StringList;
 import org.symphonyoss.symphony.pod.model.UserDetail;
 
@@ -30,12 +31,13 @@ public class AdminSession {
   public AdminSession(SymphonyClient symClient) throws ApiException, IOException {
     this.symClient = symClient;
 
-    //Get user info
     SessionClient sessionClient = symClient.getSessionClient();
+    UsersClient usersClient = symClient.getUsersClient();
+
+    //Get user info
     symphonyUser = sessionClient.getSessionInfo();
 
     //Check entitlements
-    UsersClient usersClient = symClient.getUsersClient();
     UserDetail userDetail = usersClient.getUserDetail(symphonyUser.getId());
     StringList stringList = userDetail.getRoles();
     StringList required = MAPPER.readValue(new File(System.getProperty(BotConfig.ROLES_FILE)), StringList.class);

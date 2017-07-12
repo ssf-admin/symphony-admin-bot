@@ -41,9 +41,9 @@ public class MultiPartUserClient {
   /**
    * This method is being used to get around a bug with setting passwords using OSS
    */
-  public UserDetail createUserV1(UserCreate userCreate) throws ApiException {
+  public UserDetail createUserV1(String sessionToken, UserCreate userCreate) throws ApiException {
     Map<String, String> headers = new HashMap<>();
-    headers.put(SESSION_TOKEN_NAME, symAuth.getSessionToken().getToken());
+    headers.put(SESSION_TOKEN_NAME, sessionToken);
     Request request = new Request();
     request.setHeaders(headers);
     request.setReturnObjectType(UserDetail.class);

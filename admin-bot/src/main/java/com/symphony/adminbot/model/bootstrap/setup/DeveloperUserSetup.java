@@ -55,11 +55,8 @@ public class DeveloperUserSetup {
 
   private UsersClient usersClient;
 
-  private MultiPartUserClient multiPartUserClient;
-
-  public DeveloperUserSetup(UsersClient usersClient, MultiPartUserClient multiPartUserClient){
+  public DeveloperUserSetup(UsersClient usersClient){
     this.usersClient = usersClient;
-    this.multiPartUserClient = multiPartUserClient;
   }
 
   /**
@@ -120,7 +117,7 @@ public class DeveloperUserSetup {
    * @param state the partner's current state in the sign up process
    */
   public void createPartnerUser(DeveloperState state) throws ApiException {
-    UserDetail userDetail = multiPartUserClient.createUserV1(state.getUserCreate());
+    UserDetail userDetail = usersClient.createUser(state.getUserCreate());
     state.setUserDetail(userDetail);
 
     FeatureList features = new FeatureList();
@@ -149,7 +146,7 @@ public class DeveloperUserSetup {
     userAttributes.setDepartment(signUpForm.getAppCompanyName());
     userCreate.setUserAttributes(userAttributes);
 
-    UserDetail userV2 = multiPartUserClient.createUserV1(userCreate);
+    UserDetail userV2 = usersClient.createUser(userCreate);
 
     FeatureList features = new FeatureList();
 
