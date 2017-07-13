@@ -11,6 +11,8 @@ import com.symphony.api.clients.AuthorizationClient;
 import com.symphony.api.clients.SymphonyClient;
 import com.symphony.api.clients.model.SymphonyAuth;
 
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.log4j.BasicConfigurator;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.slf4j.Logger;

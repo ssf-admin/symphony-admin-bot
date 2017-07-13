@@ -20,6 +20,7 @@ import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Random;
 import java.util.Set;
 import java.util.UUID;
 
@@ -85,6 +86,10 @@ public class DeveloperUserSetup {
       userCreate.setUserAttributes(userAttributes);
 
       String randomPassword = UUID.randomUUID().toString().replace("-", "");
+      int randomBegin = (int)(Math.random() * (randomPassword.length() - 3));
+      int randomEnd = randomBegin + (int)(Math.random() * randomPassword.length());
+      randomPassword.replace(randomPassword.substring(randomBegin, randomEnd),
+          randomPassword.substring(randomBegin, randomEnd).toUpperCase());
       Password pass = new Password();
       pass.setHPassword(randomPassword);
       pass.setHSalt(randomPassword);

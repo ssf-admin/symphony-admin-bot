@@ -4,6 +4,13 @@ import com.symphony.api.clients.model.SymphonyUser;
 import com.symphony.api.clients.model.SymphonyAuth;
 import com.symphony.api.multipart.MultiPartUserClient;
 
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider;
+import org.glassfish.jersey.client.ClientConfig;
+import org.glassfish.jersey.filter.LoggingFilter;
+import org.glassfish.jersey.jackson.JacksonFeature;
+import org.glassfish.jersey.media.multipart.MultiPartFeature;
 import org.symphonyoss.symphony.pod.api.UserApi;
 import org.symphonyoss.symphony.pod.api.UsersApi;
 import org.symphonyoss.symphony.pod.invoker.ApiClient;
@@ -15,6 +22,7 @@ import org.symphonyoss.symphony.pod.model.UserCreate;
 import org.symphonyoss.symphony.pod.model.UserDetail;
 import org.symphonyoss.symphony.pod.model.UserV2;
 
+import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.core.Response;
 
 /**
@@ -24,11 +32,6 @@ public class UsersClient {
   private final ApiClient apiClient;
   private SymphonyAuth symAuth;
 
-  /**
-   * For testing and hacks
-   */
-  private MultiPartUserClient multiPartUserClient;
-
   public UsersClient(SymphonyAuth symAuth, String serviceUrl) {
     this.symAuth = symAuth;
 
@@ -36,16 +39,30 @@ public class UsersClient {
     apiClient = Configuration.getDefaultApiClient();
     apiClient.setBasePath(serviceUrl);
 
-    multiPartUserClient = new MultiPartUserClient(symAuth, serviceUrl);
+    ClientConfig clientConfig = new ClientConfig();
+    clientConfig.register(MultiPartFeature.class);
+    clientConfig.register(apiClient.getJSON());
+    clientConfig.register(JacksonFeature.class);
+
+    ObjectMapper objectMapper = new ObjectMapper();
+    objectMapper.setVisibility(objectMapper.getSerializationConfig().getDefaultVisibilityChecker()
+        .withFieldVisibility(JsonAutoDetect.Visibility.ANY)
+        .withGetterVisibility(JsonAutoDetect.Visibility.NONE)
+        .withSetterVisibility(JsonAutoDetect.Visibility.NONE)
+        .withCreatorVisibility(JsonAutoDetect.Visibility.NONE));
+
+    clientConfig.register(new JacksonJsonProvider(objectMapper));
+
+    apiClient.setHttpClient(ClientBuilder.newClient(clientConfig));
   }
 
   public UserDetail createUser(UserCreate user) throws ApiException {
     UserApi userApi = new UserApi(apiClient);
 
+
     UserDetail userDetail;
     try {
-//      userDetail = userApi.v1AdminUserCreatePost(symAuth.getSessionToken().getToken(), user);
-        userDetail =multiPartUserClient.createUserV1(symAuth.getSessionToken().getToken(), user);
+      userDetail = userApi.v1AdminUserCreatePost(symAuth.getSessionToken().getToken(), user);
     } catch (ApiException e) {
       throw new ApiException("Could not create user: " + e);
     }
