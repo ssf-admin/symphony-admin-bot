@@ -2,6 +2,7 @@ package com.symphony.adminbot.util.file;
 
 import com.symphony.adminbot.model.bootstrap.setup.DeveloperCompanyCertSetup;
 
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
@@ -42,6 +43,12 @@ public class ExpiringFileLoaderCache<K, V> {
             return attemptLoadFromFile(key);
           }
         });
+
+    MAPPER.setVisibility(MAPPER.getSerializationConfig().getDefaultVisibilityChecker()
+        .withFieldVisibility(JsonAutoDetect.Visibility.ANY)
+        .withGetterVisibility(JsonAutoDetect.Visibility.NONE)
+        .withSetterVisibility(JsonAutoDetect.Visibility.NONE)
+        .withCreatorVisibility(JsonAutoDetect.Visibility.NONE));
 
     this.classRef = classRef;
     this.keyReader = keyReader;

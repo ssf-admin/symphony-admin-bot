@@ -13,12 +13,13 @@
 
     <properties>
         <swagger.source>${basedir}/src/main/resources/adminbot-api.yaml</swagger.source>
-        <templates.source>${basedir}/src/main/resources/templates</templates.source>
+        <templates.jersey>${basedir}/src/main/resources/jerseyTemplates</templates.jersey>
         <jackson.version>2.7.3</jackson.version>
         <jersey.version>2.25.1</jersey.version>
         <swagger-codegen-plugin-version>2.2.2</swagger-codegen-plugin-version>
         <swagger-annotations-version>1.5.13</swagger-annotations-version>
         <swagger-core-version>1.5.13</swagger-core-version>
+        <templates.java>${basedir}/src/main/resources/javaTemplates</templates.java>
 
         <adminbot.api.package>com.symphony.api.adminbot</adminbot.api.package>
         <adminbot.api.path>com/symphony/api/adminbot</adminbot.api.path>
@@ -176,7 +177,7 @@
                         <configuration>
                             <inputSpec>${swagger.source}</inputSpec>
                             <language>jaxrs</language>
-                            <templateDirectory>${templates.source}</templateDirectory>
+                            <templateDirectory>${templates.jersey}</templateDirectory>
                             <configOptions>
                                 <sourceFolder>src/main/java</sourceFolder>
                                 <apiPackage>${adminbot.api.package}.api</apiPackage>
@@ -201,6 +202,7 @@
                         <configuration>
                             <inputSpec>${swagger.source}</inputSpec>
                             <language>java</language>
+                            <templateDirectory>${templates.java}</templateDirectory>
                             <configOptions>
                                 <sourceFolder>src/main/java</sourceFolder>
                                 <apiPackage>${adminbot.api.package}.api</apiPackage>

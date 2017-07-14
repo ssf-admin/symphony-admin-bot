@@ -45,7 +45,7 @@ public class DeveloperMessageSetup {
           FileUtil.readFile(System.getProperty(BotConfig.MESSAGE_WELCOME_TEMPLATE));
       LOG.info("Loaded welcome message template: " + welcomeMessage);
     } catch (Exception e){
-      LOG.error("Error occurred when loading message templates: ", e);
+      LOG.error("Error occurred when loading message jerseyTemplates: ", e);
     }
   }
 
@@ -95,6 +95,7 @@ public class DeveloperMessageSetup {
 
       V2Message v2Message = new V2Message();
       v2Message.setMessage(message);
+      v2Message.setAttachments(developerState.getCertAttachmentInfo());
 
       messagesClient.sendMessage(developerState.getDeveloperIM(), v2Message, V2MessageSubmission.FormatEnum.MESSAGEML);
     } catch (Exception e) {

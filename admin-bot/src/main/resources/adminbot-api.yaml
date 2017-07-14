@@ -40,6 +40,8 @@ paths:
       responses:
         '200':
           description: OK
+          schema:
+            $ref: '#/definitions/SuccessResponse'
       tags:
         - SignUp
   '/v1/bootstrapDeveloper':
@@ -76,6 +78,12 @@ paths:
         - SignUp
 
 definitions:
+  SuccessResponse:
+    type: object
+    properties:
+      message:
+        type: string
+        default: "OK"
   DeveloperSignUpForm:
     type: object
     properties:
