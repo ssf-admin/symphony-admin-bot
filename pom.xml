@@ -51,6 +51,12 @@
         </dependency>
 
         <dependency>
+            <groupId>com.symphony</groupId>
+            <artifactId>security-core</artifactId>
+            <version>${symphony-version}</version>
+        </dependency>
+
+        <dependency>
             <groupId>org.symphonyoss.symphony</groupId>
             <artifactId>symphony-authenticator-java-jersey2-client</artifactId>
             <version>${symphony-api-version}</version>
@@ -89,6 +95,7 @@
     <properties>
         <build.helper.plugin.version>1.10</build.helper.plugin.version>
         <symphony-api-version>1.46.0</symphony-api-version>
+        <symphony-version>1.48.0-SNAPSHOT</symphony-version>
         <war.plugin.version>2.6</war.plugin.version>
     </properties>
 

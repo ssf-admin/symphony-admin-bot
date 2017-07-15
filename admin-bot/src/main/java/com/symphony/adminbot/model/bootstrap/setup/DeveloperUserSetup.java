@@ -1,10 +1,12 @@
 package com.symphony.adminbot.model.bootstrap.setup;
 
+import com.symphony.adminbot.model.bootstrap.DeveloperState;
 import com.symphony.api.adminbot.model.Developer;
 import com.symphony.api.adminbot.model.DeveloperSignUpForm;
 import com.symphony.api.clients.UsersClient;
-import com.symphony.adminbot.model.bootstrap.DeveloperState;
-import com.symphony.api.multipart.MultiPartUserClient;
+import com.symphony.security.hash.ClientHash;
+import com.symphony.security.hash.IClientHash;
+import com.symphony.security.utils.CryptoGenerator;
 
 import org.apache.commons.lang.WordUtils;
 import org.symphonyoss.symphony.pod.invoker.ApiException;
@@ -15,14 +17,12 @@ import org.symphonyoss.symphony.pod.model.UserAttributes;
 import org.symphonyoss.symphony.pod.model.UserCreate;
 import org.symphonyoss.symphony.pod.model.UserDetail;
 
-import java.math.BigInteger;
-import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Random;
 import java.util.Set;
 import java.util.UUID;
+import java.util.concurrent.ThreadLocalRandom;
 
 /**
  * Created by nick.tarsillo on 7/2/17.
@@ -87,14 +87,19 @@ public class DeveloperUserSetup {
 
       String randomPassword = UUID.randomUUID().toString().replace("-", "");
       int randomBegin = (int)(Math.random() * (randomPassword.length() - 3));
-      int randomEnd = randomBegin + (int)(Math.random() * randomPassword.length());
-      randomPassword.replace(randomPassword.substring(randomBegin, randomEnd),
+      int randomEnd = ThreadLocalRandom.current().nextInt(randomBegin, randomPassword.length());
+      randomPassword = randomPassword.replace(randomPassword.substring(randomBegin, randomEnd),
           randomPassword.substring(randomBegin, randomEnd).toUpperCase());
+
+      IClientHash clientHash = new ClientHash();
+      String salt = CryptoGenerator.generateBase64Salt();
+      String clientHashedPassword = clientHash.getClientHashedPassword(randomPassword, salt);
+
       Password pass = new Password();
-      pass.setHPassword(randomPassword);
-      pass.setHSalt(randomPassword);
-      pass.setKhPassword(randomPassword);
-      pass.setKhSalt(randomPassword);
+      pass.setHPassword(clientHashedPassword);
+      pass.setHSalt(salt);
+      pass.setKhPassword(clientHashedPassword);
+      pass.setKhSalt(salt);
       userCreate.setPassword(pass);
 
       List<String> roles = new ArrayList<>();
