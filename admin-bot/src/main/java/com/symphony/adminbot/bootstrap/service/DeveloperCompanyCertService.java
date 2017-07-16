@@ -7,6 +7,11 @@ import com.symphony.adminbot.util.file.FileUtil;
 import com.symphony.api.adminbot.model.Developer;
 import com.symphony.api.clients.AttachmentsClient;
 import com.symphony.api.clients.SecurityClient;
+import com.symphony.api.pod.client.ApiException;
+import com.symphony.api.pod.model.CompanyCert;
+import com.symphony.api.pod.model.CompanyCertAttributes;
+import com.symphony.api.pod.model.CompanyCertStatus;
+import com.symphony.api.pod.model.CompanyCertType;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.WordUtils;
@@ -24,11 +29,6 @@ import org.bouncycastle.operator.DefaultSignatureAlgorithmIdentifierFinder;
 import org.bouncycastle.operator.bc.BcRSAContentSignerBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.symphonyoss.symphony.pod.invoker.ApiException;
-import org.symphonyoss.symphony.pod.model.CompanyCert;
-import org.symphonyoss.symphony.pod.model.CompanyCertAttributes;
-import org.symphonyoss.symphony.pod.model.CompanyCertStatus;
-import org.symphonyoss.symphony.pod.model.CompanyCertType;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;

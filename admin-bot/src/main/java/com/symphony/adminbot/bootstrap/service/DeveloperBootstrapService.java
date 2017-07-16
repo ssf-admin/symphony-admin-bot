@@ -9,11 +9,11 @@ import com.symphony.api.adminbot.model.Developer;
 import com.symphony.api.adminbot.model.DeveloperBootstrapInfo;
 import com.symphony.api.adminbot.model.DeveloperSignUpForm;
 import com.symphony.api.clients.SymphonyClient;
+import com.symphony.api.pod.client.ApiException;
 
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.symphonyoss.symphony.pod.invoker.ApiException;
 
 import java.util.Set;
 import java.util.concurrent.ExecutionException;

@@ -1,13 +1,12 @@
 package com.symphony.api.clients;
 
+import com.symphony.api.agent.api.AttachmentsApi;
+import com.symphony.api.agent.client.ApiClient;
+import com.symphony.api.agent.client.ApiException;
+import com.symphony.api.agent.client.Configuration;
+import com.symphony.api.agent.model.AttachmentInfo;
 import com.symphony.api.clients.model.SymphonyAuth;
-
-import org.symphonyoss.symphony.agent.api.AttachmentsApi;
-import org.symphonyoss.symphony.agent.invoker.ApiClient;
-import org.symphonyoss.symphony.agent.invoker.ApiException;
-import org.symphonyoss.symphony.agent.invoker.Configuration;
-import org.symphonyoss.symphony.agent.model.AttachmentInfo;
-import org.symphonyoss.symphony.pod.model.Stream;
+import com.symphony.api.pod.model.Stream;
 
 import java.io.File;
 import java.util.ArrayList;

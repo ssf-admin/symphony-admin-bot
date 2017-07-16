@@ -1,8 +1,8 @@
 package com.symphony.api.clients.model;
 
-import org.symphonyoss.symphony.pod.model.AvatarList;
-import org.symphonyoss.symphony.pod.model.UserDetail;
-import org.symphonyoss.symphony.pod.model.UserV2;
+import com.symphony.api.pod.model.AvatarList;
+import com.symphony.api.pod.model.UserDetail;
+import com.symphony.api.pod.model.UserV2;
 
 /**
  * Created by nick.tarsillo on 7/6/17.
@@ -21,12 +21,11 @@ public class SymphonyUser extends UserV2 {
     setLocation(user.getLocation());
     setTitle(user.getTitle());
     setUsername(user.getUsername());
-
-//    setDivision(user.getDivision());
-//    setJobFunction(user.getJobFunction());
-//    setMobilePhoneNumber(user.getMobilePhoneNumber());
-//    setWorkPhoneNumber(user.getWorkPhoneNumber());
-//    setDepartment(user.getDepartment());
+    setDivision(user.getDivision());
+    setJobFunction(user.getJobFunction());
+    setMobilePhoneNumber(user.getMobilePhoneNumber());
+    setWorkPhoneNumber(user.getWorkPhoneNumber());
+    setDepartment(user.getDepartment());
   }
 
   public SymphonyUser(UserDetail user) {

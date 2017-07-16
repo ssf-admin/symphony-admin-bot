@@ -6,15 +6,15 @@ import com.symphony.adminbot.commons.BotConstants;
 import com.symphony.adminbot.config.BotConfig;
 import com.symphony.adminbot.util.file.FileUtil;
 import com.symphony.adminbot.util.template.MessageTemplate;
+import com.symphony.api.agent.model.V2Message;
+import com.symphony.api.agent.model.V2MessageSubmission;
 import com.symphony.api.clients.MessagesClient;
 import com.symphony.api.clients.StreamsClient;
+import com.symphony.api.pod.model.Stream;
+import com.symphony.api.pod.model.UserIdList;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.symphonyoss.symphony.agent.model.V2Message;
-import org.symphonyoss.symphony.agent.model.V2MessageSubmission;
-import org.symphonyoss.symphony.pod.model.Stream;
-import org.symphonyoss.symphony.pod.model.UserIdList;
 
 import javax.ws.rs.InternalServerErrorException;
 
@@ -45,7 +45,7 @@ public class DeveloperMessageService {
           FileUtil.readFile(System.getProperty(BotConfig.MESSAGE_WELCOME_TEMPLATE));
       LOG.info("Loaded welcome message template: " + welcomeMessage);
     } catch (Exception e){
-      LOG.error("Error occurred when loading message jerseyTemplates: ", e);
+      LOG.error("Error occurred when loading message templates: ", e);
     }
   }
 

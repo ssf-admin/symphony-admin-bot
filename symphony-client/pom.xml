@@ -10,6 +10,96 @@
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>symphony-client</artifactId>
+    <dependencies>
+        <dependency>
+            <groupId>javax.ws.rs</groupId>
+            <artifactId>javax.ws.rs-api</artifactId>
+            <version>2.0</version>
+        </dependency>
+        <dependency>
+            <groupId>com.brsanthu</groupId>
+            <artifactId>migbase64</artifactId>
+            <version>2.2</version>
+        </dependency>
+    </dependencies>
 
+    <properties>
+        <swagger.source.agent>${basedir}/src/main/resources/agent-swagger/agent-api-public.yaml</swagger.source.agent>
+        <swagger.source.pod>${basedir}/src/main/resources/pod-swagger/pod-api-public.yaml</swagger.source.pod>
+        <swagger.source.auth>${basedir}/src/main/resources/auth-swagger/auth-api-public.yaml</swagger.source.auth>
+
+        <templates.source>${basedir}/src/main/resources/templates</templates.source>
+        <jackson.version>2.7.3</jackson.version>
+        <jersey.version>2.25.1</jersey.version>
+        <agent.api.package>com.symphony.api.agent</agent.api.package>
+        <pod.api.package>com.symphony.api.pod</pod.api.package>
+        <auth.api.package>com.symphony.api.auth</auth.api.package>
+    </properties>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>io.swagger</groupId>
+                <artifactId>swagger-codegen-maven-plugin</artifactId>
+                <version>${swagger-codegen-plugin-version}</version>
+                <executions>
+                    <execution>
+                        <id>agent</id>
+                        <goals>
+                            <goal>generate</goal>
+                        </goals>
+                        <configuration>
+                            <inputSpec>${swagger.source.agent}</inputSpec>
+                            <language>java</language>
+                            <templateDirectory>${templates.source}</templateDirectory>
+                            <configOptions>
+                                <sourceFolder>src/main/java</sourceFolder>
+                                <apiPackage>${agent.api.package}.api</apiPackage>
+                                <invokerPackage>${agent.api.package}.client</invokerPackage>
+                                <modelPackage>${agent.api.package}.model</modelPackage>
+                                <library>jersey2</library>
+                            </configOptions>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>auth</id>
+                        <goals>
+                            <goal>generate</goal>
+                        </goals>
+                        <configuration>
+                            <inputSpec>${swagger.source.auth}</inputSpec>
+                            <language>java</language>
+                            <templateDirectory>${templates.source}</templateDirectory>
+                            <configOptions>
+                                <sourceFolder>src/main/java</sourceFolder>
+                                <apiPackage>${auth.api.package}.api</apiPackage>
+                                <invokerPackage>${auth.api.package}.client</invokerPackage>
+                                <modelPackage>${auth.api.package}.model</modelPackage>
+                                <library>jersey2</library>
+                            </configOptions>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>pod</id>
+                        <goals>
+                            <goal>generate</goal>
+                        </goals>
+                        <configuration>
+                            <inputSpec>${swagger.source.pod}</inputSpec>
+                            <language>java</language>
+                            <templateDirectory>${templates.source}</templateDirectory>
+                            <configOptions>
+                                <sourceFolder>src/main/java</sourceFolder>
+                                <apiPackage>${pod.api.package}.api</apiPackage>
+                                <invokerPackage>${pod.api.package}.client</invokerPackage>
+                                <modelPackage>${pod.api.package}.model</modelPackage>
+                                <library>jersey2</library>
+                            </configOptions>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
 
 </project>

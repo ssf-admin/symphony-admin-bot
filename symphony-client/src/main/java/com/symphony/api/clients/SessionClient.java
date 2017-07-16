@@ -2,12 +2,10 @@ package com.symphony.api.clients;
 
 import com.symphony.api.clients.model.SymphonyAuth;
 import com.symphony.api.clients.model.SymphonyUser;
-
-import org.symphonyoss.symphony.pod.api.SessionApi;
-import org.symphonyoss.symphony.pod.invoker.ApiClient;
-import org.symphonyoss.symphony.pod.invoker.ApiException;
-import org.symphonyoss.symphony.pod.invoker.Configuration;
-import org.symphonyoss.symphony.pod.model.SessionInfo;
+import com.symphony.api.pod.api.SessionApi;
+import com.symphony.api.pod.client.ApiClient;
+import com.symphony.api.pod.client.ApiException;
+import com.symphony.api.pod.client.Configuration;
 
 /**
  * Created by nick.tarsillo on 7/6/17.

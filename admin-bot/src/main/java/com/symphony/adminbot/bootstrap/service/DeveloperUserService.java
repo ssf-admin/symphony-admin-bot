@@ -4,18 +4,18 @@ import com.symphony.adminbot.bootstrap.model.DeveloperBootstrapState;
 import com.symphony.api.adminbot.model.Developer;
 import com.symphony.api.adminbot.model.DeveloperSignUpForm;
 import com.symphony.api.clients.UsersClient;
+import com.symphony.api.pod.client.ApiException;
+import com.symphony.api.pod.model.Feature;
+import com.symphony.api.pod.model.FeatureList;
+import com.symphony.api.pod.model.Password;
+import com.symphony.api.pod.model.UserAttributes;
+import com.symphony.api.pod.model.UserCreate;
+import com.symphony.api.pod.model.UserDetail;
 import com.symphony.security.hash.ClientHash;
 import com.symphony.security.hash.IClientHash;
 import com.symphony.security.utils.CryptoGenerator;
 
 import org.apache.commons.lang.WordUtils;
-import org.symphonyoss.symphony.pod.invoker.ApiException;
-import org.symphonyoss.symphony.pod.model.Feature;
-import org.symphonyoss.symphony.pod.model.FeatureList;
-import org.symphonyoss.symphony.pod.model.Password;
-import org.symphonyoss.symphony.pod.model.UserAttributes;
-import org.symphonyoss.symphony.pod.model.UserCreate;
-import org.symphonyoss.symphony.pod.model.UserDetail;
 
 import java.util.ArrayList;
 import java.util.HashSet;

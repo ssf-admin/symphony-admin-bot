@@ -1,14 +1,13 @@
 package com.symphony.api.clients;
 
+import com.symphony.api.agent.api.MessagesApi;
+import com.symphony.api.agent.client.ApiClient;
+import com.symphony.api.agent.client.ApiException;
+import com.symphony.api.agent.client.Configuration;
+import com.symphony.api.agent.model.V2Message;
+import com.symphony.api.agent.model.V2MessageSubmission;
 import com.symphony.api.clients.model.SymphonyAuth;
-
-import org.symphonyoss.symphony.agent.api.MessagesApi;
-import org.symphonyoss.symphony.agent.invoker.ApiClient;
-import org.symphonyoss.symphony.agent.invoker.ApiException;
-import org.symphonyoss.symphony.agent.invoker.Configuration;
-import org.symphonyoss.symphony.agent.model.V2Message;
-import org.symphonyoss.symphony.agent.model.V2MessageSubmission;
-import org.symphonyoss.symphony.pod.model.Stream;
+import com.symphony.api.pod.model.Stream;
 
 /**
  * Created by nick.tarsillo on 7/1/17.

@@ -1,6 +1,6 @@
 package com.symphony.api.clients.model;
 
-import org.symphonyoss.symphony.authenticator.model.Token;
+import com.symphony.api.auth.model.Token;
 
 import javax.ws.rs.client.Client;
 

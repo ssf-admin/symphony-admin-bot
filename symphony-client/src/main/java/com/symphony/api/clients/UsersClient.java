@@ -1,28 +1,18 @@
 package com.symphony.api.clients;
 
-import com.symphony.api.clients.model.SymphonyUser;
 import com.symphony.api.clients.model.SymphonyAuth;
-import com.symphony.api.multipart.MultiPartUserClient;
+import com.symphony.api.clients.model.SymphonyUser;
+import com.symphony.api.pod.api.UserApi;
+import com.symphony.api.pod.api.UsersApi;
+import com.symphony.api.pod.client.ApiClient;
+import com.symphony.api.pod.client.ApiException;
+import com.symphony.api.pod.client.Configuration;
+import com.symphony.api.pod.model.FeatureList;
+import com.symphony.api.pod.model.SuccessResponse;
+import com.symphony.api.pod.model.UserCreate;
+import com.symphony.api.pod.model.UserDetail;
+import com.symphony.api.pod.model.UserV2;
 
-import com.fasterxml.jackson.annotation.JsonAutoDetect;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider;
-import org.glassfish.jersey.client.ClientConfig;
-import org.glassfish.jersey.filter.LoggingFilter;
-import org.glassfish.jersey.jackson.JacksonFeature;
-import org.glassfish.jersey.media.multipart.MultiPartFeature;
-import org.symphonyoss.symphony.pod.api.UserApi;
-import org.symphonyoss.symphony.pod.api.UsersApi;
-import org.symphonyoss.symphony.pod.invoker.ApiClient;
-import org.symphonyoss.symphony.pod.invoker.ApiException;
-import org.symphonyoss.symphony.pod.invoker.Configuration;
-import org.symphonyoss.symphony.pod.model.FeatureList;
-import org.symphonyoss.symphony.pod.model.SuccessResponse;
-import org.symphonyoss.symphony.pod.model.UserCreate;
-import org.symphonyoss.symphony.pod.model.UserDetail;
-import org.symphonyoss.symphony.pod.model.UserV2;
-
-import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.core.Response;
 
 /**
@@ -38,22 +28,6 @@ public class UsersClient {
     //Get Service clients to query for userID.
     apiClient = Configuration.getDefaultApiClient();
     apiClient.setBasePath(serviceUrl);
-
-    ClientConfig clientConfig = new ClientConfig();
-    clientConfig.register(MultiPartFeature.class);
-    clientConfig.register(apiClient.getJSON());
-    clientConfig.register(JacksonFeature.class);
-
-    ObjectMapper objectMapper = new ObjectMapper();
-    objectMapper.setVisibility(objectMapper.getSerializationConfig().getDefaultVisibilityChecker()
-        .withFieldVisibility(JsonAutoDetect.Visibility.ANY)
-        .withGetterVisibility(JsonAutoDetect.Visibility.NONE)
-        .withSetterVisibility(JsonAutoDetect.Visibility.NONE)
-        .withCreatorVisibility(JsonAutoDetect.Visibility.NONE));
-
-    clientConfig.register(new JacksonJsonProvider(objectMapper));
-
-    apiClient.setHttpClient(ClientBuilder.newClient(clientConfig));
   }
 
   public UserDetail createUser(UserCreate user) throws ApiException {

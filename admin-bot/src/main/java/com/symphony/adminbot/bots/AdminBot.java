@@ -10,12 +10,12 @@ import com.symphony.api.adminbot.api.factories.V1ApiServiceFactory;
 import com.symphony.api.clients.AuthorizationClient;
 import com.symphony.api.clients.SymphonyClient;
 import com.symphony.api.clients.model.SymphonyAuth;
+import com.symphony.api.pod.client.ApiException;
 
 import org.apache.log4j.BasicConfigurator;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.symphonyoss.symphony.agent.invoker.ApiException;
 
 import java.io.IOException;
 import java.security.Security;
@@ -119,9 +119,6 @@ public class AdminBot extends HttpServlet {
     } catch (ApiException | ForbiddenException e) {
       LOG.error("User entitlement check failed: ", e);
       handleError(res, out,400, BotConstants.NOT_ENTITLED);
-    } catch (org.symphonyoss.symphony.pod.invoker.ApiException e) {
-      LOG.error("User auth failed: ", e);
-      handleError(res, out,403, BotConstants.FORBIDDEN);
     } catch (Exception e) {
       LOG.error("Cert load from file failed: ", e);
       handleError(res, out,500, BotConstants.INTERNAL_ERROR);

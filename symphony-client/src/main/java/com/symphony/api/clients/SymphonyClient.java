@@ -1,12 +1,10 @@
 package com.symphony.api.clients;
 
+import com.symphony.api.auth.client.ApiException;
 import com.symphony.api.clients.model.SymphonyAuth;
-import com.symphony.api.multipart.MultiPartUserClient;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.symphonyoss.symphony.authenticator.invoker.ApiException;
 
 import java.util.Timer;
 import java.util.TimerTask;
@@ -27,6 +25,7 @@ public class SymphonyClient {
   private StreamsClient streamsClient;
   private UsersClient usersClient;
   private SessionClient sessionClient;
+  private ApplicationClient applicationClient;
 
   private SymphonyAuth symAuth;
 
@@ -38,7 +37,6 @@ public class SymphonyClient {
    * @param serviceUrl The Service URL (pod url)
    */
   public void init(SymphonyAuth symAuth, String agentUrl, String serviceUrl) {
-
     this.symAuth = symAuth;
 
     attachmentsClient = new AttachmentsClient(symAuth, agentUrl);
@@ -47,6 +45,7 @@ public class SymphonyClient {
     streamsClient = new StreamsClient(symAuth, serviceUrl);
     usersClient = new UsersClient(symAuth, serviceUrl);
     sessionClient = new SessionClient(symAuth, serviceUrl);
+    applicationClient = new ApplicationClient(symAuth, serviceUrl);
 
     startAuthRefresh();
   }
@@ -68,6 +67,7 @@ public class SymphonyClient {
           streamsClient.setSymphonyAuth(symAuth);
           usersClient.setSymphonyAuth(symAuth);
           sessionClient.setSymphonyAuth(symAuth);
+          applicationClient.setSymphonyAuth(symAuth);
         } catch (ApiException e) {
           LOG.error("Auth refresh failed: " + e.getStackTrace());
         }

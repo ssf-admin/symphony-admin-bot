@@ -2,15 +2,15 @@ package com.symphony.api.clients;
 
 
 import com.symphony.api.clients.model.SymphonyAuth;
+import com.symphony.api.pod.api.SecurityApi;
+import com.symphony.api.pod.client.ApiClient;
+import com.symphony.api.pod.client.ApiException;
+import com.symphony.api.pod.client.Configuration;
+import com.symphony.api.pod.model.CompanyCert;
+import com.symphony.api.pod.model.CompanyCertDetail;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.symphonyoss.symphony.pod.api.SecurityApi;
-import org.symphonyoss.symphony.pod.invoker.ApiClient;
-import org.symphonyoss.symphony.pod.invoker.ApiException;
-import org.symphonyoss.symphony.pod.invoker.Configuration;
-import org.symphonyoss.symphony.pod.model.CompanyCert;
-import org.symphonyoss.symphony.pod.model.SuccessResponse;
 
 /**
  * Created by nick.tarsillo on 7/1/17.
@@ -38,12 +38,12 @@ public class SecurityClient {
    * @return
    * @throws ApiException
    */
-  public SuccessResponse createCert(CompanyCert cert) throws ApiException {
+  public CompanyCertDetail createCert(CompanyCert cert) throws ApiException {
     SecurityApi securityApi = new SecurityApi(apiClient);
 
-    SuccessResponse response;
+    CompanyCertDetail response;
     try {
-      response = securityApi.v1CompanycertCreatePost(symAuth.getSessionToken().getToken(), cert);
+      response = securityApi.v2CompanycertCreatePost(symAuth.getSessionToken().getToken(), cert);
     } catch (ApiException e) {
       LOG.error("Create cert failed: ", e);
       throw new ApiException("Create cert failed: " + e.getStackTrace());

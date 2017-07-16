@@ -4,11 +4,10 @@ package com.symphony.adminbot.bootstrap.model;
 import com.symphony.api.adminbot.model.Developer;
 import com.symphony.api.adminbot.model.DeveloperBootstrapInfo;
 import com.symphony.api.adminbot.model.DeveloperSignUpForm;
-
-import org.symphonyoss.symphony.agent.model.AttachmentInfo;
-import org.symphonyoss.symphony.pod.model.Stream;
-import org.symphonyoss.symphony.pod.model.UserCreate;
-import org.symphonyoss.symphony.pod.model.UserDetail;
+import com.symphony.api.agent.model.AttachmentInfo;
+import com.symphony.api.pod.model.Stream;
+import com.symphony.api.pod.model.UserCreate;
+import com.symphony.api.pod.model.UserDetail;
 
 import java.util.List;
 import java.util.Set;

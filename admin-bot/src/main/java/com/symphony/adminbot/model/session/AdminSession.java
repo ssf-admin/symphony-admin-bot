@@ -6,11 +6,11 @@ import com.symphony.api.clients.SessionClient;
 import com.symphony.api.clients.SymphonyClient;
 import com.symphony.api.clients.UsersClient;
 import com.symphony.api.clients.model.SymphonyUser;
+import com.symphony.api.pod.client.ApiException;
+import com.symphony.api.pod.model.StringList;
+import com.symphony.api.pod.model.UserDetail;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.symphonyoss.symphony.pod.invoker.ApiException;
-import org.symphonyoss.symphony.pod.model.StringList;
-import org.symphonyoss.symphony.pod.model.UserDetail;
 
 import java.io.File;
 import java.io.IOException;

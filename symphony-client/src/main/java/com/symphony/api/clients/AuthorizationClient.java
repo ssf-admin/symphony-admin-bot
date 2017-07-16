@@ -1,13 +1,13 @@
 package com.symphony.api.clients;
 
+import com.symphony.api.auth.api.AuthenticationApi;
+import com.symphony.api.auth.client.ApiClient;
+import com.symphony.api.auth.client.ApiException;
+import com.symphony.api.auth.client.Configuration;
 import com.symphony.api.clients.model.SymphonyAuth;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.symphonyoss.symphony.authenticator.api.AuthenticationApi;
-import org.symphonyoss.symphony.authenticator.invoker.ApiClient;
-import org.symphonyoss.symphony.authenticator.invoker.ApiException;
-import org.symphonyoss.symphony.authenticator.invoker.Configuration;
 
 import java.io.FileInputStream;
 import java.security.KeyStore;

@@ -8,10 +8,10 @@ import com.symphony.adminbot.model.session.AdminSessionManager;
 import com.symphony.api.adminbot.model.Developer;
 import com.symphony.api.adminbot.model.DeveloperBootstrapInfo;
 import com.symphony.api.adminbot.model.DeveloperSignUpForm;
+import com.symphony.api.pod.client.ApiException;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.symphonyoss.symphony.pod.invoker.ApiException;
 
 import javax.ws.rs.BadRequestException;
 import javax.ws.rs.core.Response;
