@@ -1,6 +1,6 @@
-package com.symphony.adminbot.model.bootstrap.setup;
+package com.symphony.adminbot.bootstrap.service;
 
-import com.symphony.adminbot.model.bootstrap.DeveloperState;
+import com.symphony.adminbot.bootstrap.model.DeveloperBootstrapState;
 import com.symphony.api.adminbot.model.Developer;
 import com.symphony.api.adminbot.model.DeveloperSignUpForm;
 import com.symphony.api.clients.UsersClient;
@@ -27,7 +27,7 @@ import java.util.concurrent.ThreadLocalRandom;
 /**
  * Created by nick.tarsillo on 7/2/17.
  */
-public class DeveloperUserSetup {
+public class DeveloperUserService {
   enum FeaturesEnum{
     EXTERNAL("isExternalIMEnabled"),
     SHARE_FILES_EXTERNAL("canShareFilesExternally"),
@@ -57,7 +57,7 @@ public class DeveloperUserSetup {
 
   private UsersClient usersClient;
 
-  public DeveloperUserSetup(UsersClient usersClient){
+  public DeveloperUserService(UsersClient usersClient){
     this.usersClient = usersClient;
   }
 
@@ -66,12 +66,12 @@ public class DeveloperUserSetup {
    * @param signUpForm the sign up form
    * @return the initial partner states
    */
-  public Set<DeveloperState> getPartnerSetupStates(DeveloperSignUpForm signUpForm){
+  public Set<DeveloperBootstrapState> getDeveloperSetupStates(DeveloperSignUpForm signUpForm){
     Set<Developer> developerSet = new HashSet<>();
     developerSet.add(signUpForm.getCreator());
     developerSet.addAll(signUpForm.getTeam());
 
-    Set<DeveloperState> developerStates = new HashSet<>();
+    Set<DeveloperBootstrapState> developerStates = new HashSet<>();
     for(Developer developer : developerSet) {
       UserCreate userCreate = new UserCreate();
       UserAttributes userAttributes = new UserAttributes();
@@ -106,7 +106,7 @@ public class DeveloperUserSetup {
       roles.add("INDIVIDUAL");
       userCreate.setRoles(roles);
 
-      DeveloperState developerState = new DeveloperState();
+      DeveloperBootstrapState developerState = new DeveloperBootstrapState();
       developerState.setDeveloper(developer);
       developerState.setDeveloperSignUpForm(signUpForm);
       developerState.setUserCreate(userCreate);
@@ -126,7 +126,7 @@ public class DeveloperUserSetup {
    * Creates a symphony user for the partner.
    * @param state the partner's current state in the sign up process
    */
-  public void createPartnerUser(DeveloperState state) throws ApiException {
+  public void createPartnerUser(DeveloperBootstrapState state) throws ApiException {
     UserDetail userDetail = usersClient.createUser(state.getUserCreate());
     state.setUserDetail(userDetail);
 

@@ -1,4 +1,4 @@
-package com.symphony.adminbot.util;
+package com.symphony.adminbot.model.tomcat;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;

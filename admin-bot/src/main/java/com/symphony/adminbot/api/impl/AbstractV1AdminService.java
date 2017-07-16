@@ -1,6 +1,6 @@
 package com.symphony.adminbot.api.impl;
 
-import com.symphony.adminbot.model.core.AdminSession;
+import com.symphony.adminbot.model.session.AdminSession;
 import com.symphony.api.adminbot.api.V1ApiService;
 import com.symphony.api.adminbot.model.Developer;
 import com.symphony.api.adminbot.model.DeveloperSignUpForm;

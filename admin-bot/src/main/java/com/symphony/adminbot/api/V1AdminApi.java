@@ -1,10 +1,10 @@
 package com.symphony.adminbot.api;
 
 import com.symphony.adminbot.api.impl.AbstractV1AdminService;
+import com.symphony.adminbot.bootstrap.service.DeveloperBootstrapService;
 import com.symphony.adminbot.commons.BotConstants;
-import com.symphony.adminbot.model.core.AdminSession;
-import com.symphony.adminbot.model.core.AdminSessionManager;
-import com.symphony.adminbot.model.bootstrap.DeveloperBootstrapService;
+import com.symphony.adminbot.model.session.AdminSession;
+import com.symphony.adminbot.model.session.AdminSessionManager;
 import com.symphony.api.adminbot.model.Developer;
 import com.symphony.api.adminbot.model.DeveloperBootstrapInfo;
 import com.symphony.api.adminbot.model.DeveloperSignUpForm;
@@ -30,11 +30,9 @@ public class V1AdminApi extends AbstractV1AdminService {
 
   @Override
   public Response bootstrapDeveloper(AdminSession adminSession, Developer developer) {
-    DeveloperBootstrapService signUpService = adminSession.getSignUpService();
+    DeveloperBootstrapService signUpService = adminSession.getBootstrapService();
     try {
-      signUpService.bootstrapPartner(developer);
-      DeveloperBootstrapInfo partnerBootstrapInfo = signUpService.sendBootstrapPackage(developer);
-
+      DeveloperBootstrapInfo partnerBootstrapInfo = signUpService.bootstrapPartner(developer);
       return Response.ok(partnerBootstrapInfo).build();
     } catch (Exception e) {
       LOG.error("Bootstrap partner welcome failed:", e);
@@ -44,9 +42,8 @@ public class V1AdminApi extends AbstractV1AdminService {
 
   @Override
   public Response sendDeveloperWelcome(AdminSession adminSession, DeveloperSignUpForm signUpForm) {
-    DeveloperBootstrapService signUpService = adminSession.getSignUpService();
+    DeveloperBootstrapService signUpService = adminSession.getBootstrapService();
     try {
-      signUpService.validateSignUpForm(signUpForm);
       signUpService.welcomePartner(signUpForm);
     } catch (ApiException e) {
       LOG.error("Send partner welcome failed:", e);

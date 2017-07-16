@@ -1,12 +1,12 @@
-package com.symphony.adminbot.model.bootstrap.setup;
+package com.symphony.adminbot.bootstrap.service;
 
+import com.symphony.adminbot.bootstrap.model.DeveloperBootstrapState;
+import com.symphony.adminbot.commons.BotConstants;
 import com.symphony.adminbot.config.BotConfig;
-import com.symphony.adminbot.model.bootstrap.DeveloperState;
+import com.symphony.adminbot.util.file.FileUtil;
 import com.symphony.api.adminbot.model.Developer;
 import com.symphony.api.clients.AttachmentsClient;
 import com.symphony.api.clients.SecurityClient;
-import com.symphony.adminbot.commons.BotConstants;
-import com.symphony.adminbot.util.file.FileUtil;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.WordUtils;
@@ -59,15 +59,15 @@ import javax.ws.rs.InternalServerErrorException;
 /**
  * Created by nick.tarsillo on 7/2/17.
  */
-public class DeveloperCompanyCertSetup {
-  private static final Logger LOG = LoggerFactory.getLogger(DeveloperCompanyCertSetup.class);
+public class DeveloperCompanyCertService {
+  private static final Logger LOG = LoggerFactory.getLogger(DeveloperCompanyCertService.class);
 
   private AttachmentsClient attachmentsClient;
   private SecurityClient securityClient;
 
   private int botId = -1;
 
-  public DeveloperCompanyCertSetup(SecurityClient securityClient, AttachmentsClient attachmentsClient){
+  public DeveloperCompanyCertService(SecurityClient securityClient, AttachmentsClient attachmentsClient){
     this.securityClient = securityClient;
     this.attachmentsClient = attachmentsClient;
   }
@@ -117,7 +117,7 @@ public class DeveloperCompanyCertSetup {
    * Uploads certs as a zip attachment to partner IM
    * @param developerState the current state of the partner in the sign up process
    */
-  public void uploadCerts(DeveloperState developerState){
+  public void uploadCerts(DeveloperBootstrapState developerState){
     try {
       String path = System.getProperty(BotConfig.P12_DIR);
       Developer developer = developerState.getDeveloper();
@@ -133,7 +133,8 @@ public class DeveloperCompanyCertSetup {
       Set<File> attachments = new HashSet<>();
       attachments.add(zip);
 
-      developerState.setCertAttachmentInfo(attachmentsClient.uploadAttachments(developerState.getDeveloperIM(), attachments));
+      developerState.setCertAttachmentInfo(
+          attachmentsClient.uploadAttachments(developerState.getDeveloperIM(), attachments));
     } catch (Exception e){
       LOG.error("Error occurred when uploading attachments: ", e);
       throw new InternalServerErrorException(BotConstants.INTERNAL_ERROR);

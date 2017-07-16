@@ -1,6 +1,6 @@
-package com.symphony.adminbot.model.bootstrap.template;
+package com.symphony.adminbot.bootstrap.model.template;
 
-import com.symphony.adminbot.model.bootstrap.DeveloperState;
+import com.symphony.adminbot.bootstrap.model.DeveloperBootstrapState;
 import com.symphony.adminbot.util.template.TemplateData;
 import com.symphony.api.adminbot.model.Developer;
 import com.symphony.api.adminbot.model.DeveloperSignUpForm;
@@ -10,7 +10,7 @@ import org.apache.commons.lang.WordUtils;
 /**
  * Created by nick.tarsillo on 7/4/17.
  */
-public class DeveloperTemplateData extends TemplateData {
+public class BootstrapTemplateData extends TemplateData {
   enum ReplacementEnums {
     URL("{URL}"),
     BOT_NAME("{BOT_NAME}"),
@@ -35,9 +35,9 @@ public class DeveloperTemplateData extends TemplateData {
     }
   }
   
-  public DeveloperTemplateData(DeveloperState developerState, String url){
-    Developer developer = developerState.getDeveloper();
-    DeveloperSignUpForm developerSignUpForm = developerState.getDeveloperSignUpForm();
+  public BootstrapTemplateData(DeveloperBootstrapState developerBootstrapState, String url){
+    Developer developer = developerBootstrapState.getDeveloper();
+    DeveloperSignUpForm developerSignUpForm = developerBootstrapState.getDeveloperSignUpForm();
 
     if(developer != null) {
       addData(ReplacementEnums.FIRST_NAME.getReplacement(), developer.getFirstName());
@@ -54,16 +54,16 @@ public class DeveloperTemplateData extends TemplateData {
     }
     if(developerSignUpForm != null) {
       addData(ReplacementEnums.BOT_ID.getReplacement(),
-          developerState.getBootstrapInfo().getBotUsername());
+          developerBootstrapState.getBootstrapInfo().getBotUsername());
       addData(ReplacementEnums.BOT_EMAIL.getReplacement(), developerSignUpForm.getBotEmail());
     }
-    if(developerState != null) {
-      addData(ReplacementEnums.PASSWORD.getReplacement(), developerState.getPassword());
+    if(developerBootstrapState != null) {
+      addData(ReplacementEnums.PASSWORD.getReplacement(), developerBootstrapState.getPassword());
     }
     addData(ReplacementEnums.URL.getReplacement(), url);
   }
 
-  public DeveloperTemplateData(Developer developer, DeveloperSignUpForm developerSignUpForm, String password, String url){
+  public BootstrapTemplateData(Developer developer, DeveloperSignUpForm developerSignUpForm, String password, String url){
     if(developerSignUpForm != null){
       addData(ReplacementEnums.APP_NAME.getReplacement(), developerSignUpForm.getAppName());
       addData(ReplacementEnums.APP_ID.getReplacement(), getCommonName(developerSignUpForm.getAppName()));

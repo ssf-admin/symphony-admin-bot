@@ -1,13 +1,12 @@
-package com.symphony.adminbot.model.bootstrap.setup;
+package com.symphony.adminbot.bootstrap.service;
 
+import com.symphony.adminbot.bootstrap.model.DeveloperBootstrapState;
+import com.symphony.adminbot.bootstrap.model.template.BootstrapTemplateData;
+import com.symphony.adminbot.clients.GoogleEmailClient;
 import com.symphony.adminbot.commons.BotConstants;
 import com.symphony.adminbot.config.BotConfig;
-import com.symphony.adminbot.model.bootstrap.DeveloperState;
-import com.symphony.adminbot.model.bootstrap.template.DeveloperTemplateData;
 import com.symphony.adminbot.util.file.FileUtil;
 import com.symphony.adminbot.util.template.MessageTemplate;
-
-import com.symphony.adminbot.clients.GoogleEmailClient;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,13 +16,13 @@ import javax.ws.rs.InternalServerErrorException;
 /**
  * Created by nick.tarsillo on 7/3/17.
  */
-public class DeveloperConfirmationSetup {
-  private static final Logger LOG = LoggerFactory.getLogger(DeveloperConfirmationSetup.class);
+public class DeveloperEmailService {
+  private static final Logger LOG = LoggerFactory.getLogger(DeveloperEmailService.class);
   private String subjectTemplate;
   private String messageTemplate;
   private GoogleEmailClient googleEmailClient;
 
-  public DeveloperConfirmationSetup() {
+  public DeveloperEmailService() {
     try {
       googleEmailClient = GoogleEmailClient.getInstance(
           BotConstants.ADMIN_BOT_NAME,
@@ -47,11 +46,13 @@ public class DeveloperConfirmationSetup {
    * Should contain username and temporary password
    * @param developerState the current state of the partner in the sign up process
    */
-  public void sendWelcomeEmail(DeveloperState developerState) {
+  public void sendWelcomeEmail(DeveloperBootstrapState developerState) {
     try {
       String url = System.getProperty(BotConfig.POD_URL);
-      DeveloperTemplateData developerTemplateData = new DeveloperTemplateData(developerState.getDeveloper(),
-          developerState.getDeveloperSignUpForm(), developerState.getPassword(), url);
+      BootstrapTemplateData developerTemplateData = new BootstrapTemplateData(
+          developerState.getDeveloper(),
+          developerState.getDeveloperSignUpForm(),
+          developerState.getPassword(), url);
       MessageTemplate subTemplate = new MessageTemplate(subjectTemplate);
       MessageTemplate emailTemplate = new MessageTemplate(messageTemplate);
 

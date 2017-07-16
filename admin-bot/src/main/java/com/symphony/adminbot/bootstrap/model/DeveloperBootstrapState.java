@@ -1,9 +1,9 @@
-package com.symphony.adminbot.model.bootstrap;
+package com.symphony.adminbot.bootstrap.model;
 
 
 import com.symphony.api.adminbot.model.Developer;
-import com.symphony.api.adminbot.model.DeveloperSignUpForm;
 import com.symphony.api.adminbot.model.DeveloperBootstrapInfo;
+import com.symphony.api.adminbot.model.DeveloperSignUpForm;
 
 import org.symphonyoss.symphony.agent.model.AttachmentInfo;
 import org.symphonyoss.symphony.pod.model.Stream;
@@ -16,9 +16,9 @@ import java.util.Set;
 /**
  * Created by nick.tarsillo on 7/2/17.
  *
- * Represents the current state of developer in the sign up process.
+ * Represents the current state of developer in the bootstrap process.
  */
-public class DeveloperState {
+public class DeveloperBootstrapState {
   private Developer developer;
   private DeveloperSignUpForm developerSignUpForm;
   private Set<Developer> teamMembers;

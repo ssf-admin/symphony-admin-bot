@@ -1,4 +1,4 @@
-package com.symphony.adminbot.model.core;
+package com.symphony.adminbot.model.session;
 
 import com.symphony.adminbot.commons.BotConstants;
 

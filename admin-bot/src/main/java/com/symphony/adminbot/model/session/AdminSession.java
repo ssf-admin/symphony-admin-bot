@@ -1,7 +1,7 @@
-package com.symphony.adminbot.model.core;
+package com.symphony.adminbot.model.session;
 
+import com.symphony.adminbot.bootstrap.service.DeveloperBootstrapService;
 import com.symphony.adminbot.config.BotConfig;
-import com.symphony.adminbot.model.bootstrap.DeveloperBootstrapService;
 import com.symphony.api.clients.SessionClient;
 import com.symphony.api.clients.SymphonyClient;
 import com.symphony.api.clients.UsersClient;
@@ -9,7 +9,6 @@ import com.symphony.api.clients.model.SymphonyUser;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.symphonyoss.symphony.pod.invoker.ApiException;
-import org.symphonyoss.symphony.pod.model.SessionInfo;
 import org.symphonyoss.symphony.pod.model.StringList;
 import org.symphonyoss.symphony.pod.model.UserDetail;
 
@@ -26,7 +25,7 @@ public class AdminSession {
 
   private SymphonyUser symphonyUser;
   private SymphonyClient symClient;
-  private DeveloperBootstrapService signUpService;
+  private DeveloperBootstrapService bootstrapService;
 
   public AdminSession(SymphonyClient symClient) throws ApiException, IOException {
     this.symClient = symClient;
@@ -47,11 +46,11 @@ public class AdminSession {
     }
 
     //Init session services
-    signUpService = new DeveloperBootstrapService(symClient);
+    bootstrapService = new DeveloperBootstrapService(symClient);
   }
 
-  public DeveloperBootstrapService getSignUpService() {
-    return signUpService;
+  public DeveloperBootstrapService getBootstrapService() {
+    return bootstrapService;
   }
 
   public SymphonyUser getSymphonyUser() {

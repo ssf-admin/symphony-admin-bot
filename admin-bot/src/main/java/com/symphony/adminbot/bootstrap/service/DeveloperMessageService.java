@@ -1,13 +1,13 @@
-package com.symphony.adminbot.model.bootstrap.setup;
+package com.symphony.adminbot.bootstrap.service;
 
-import com.symphony.api.clients.MessagesClient;
-import com.symphony.api.clients.StreamsClient;
+import com.symphony.adminbot.bootstrap.model.DeveloperBootstrapState;
+import com.symphony.adminbot.bootstrap.model.template.BootstrapTemplateData;
 import com.symphony.adminbot.commons.BotConstants;
 import com.symphony.adminbot.config.BotConfig;
-import com.symphony.adminbot.util.template.MessageTemplate;
-import com.symphony.adminbot.model.bootstrap.DeveloperState;
-import com.symphony.adminbot.model.bootstrap.template.DeveloperTemplateData;
 import com.symphony.adminbot.util.file.FileUtil;
+import com.symphony.adminbot.util.template.MessageTemplate;
+import com.symphony.api.clients.MessagesClient;
+import com.symphony.api.clients.StreamsClient;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,8 +21,8 @@ import javax.ws.rs.InternalServerErrorException;
 /**
  * Created by nick.tarsillo on 7/3/17.
  */
-public class DeveloperMessageSetup {
-  private static final Logger LOG = LoggerFactory.getLogger(DeveloperMessageSetup.class);
+public class DeveloperMessageService {
+  private static final Logger LOG = LoggerFactory.getLogger(DeveloperMessageService.class);
 
   private MessagesClient messagesClient;
   private StreamsClient streamsClient;
@@ -31,7 +31,7 @@ public class DeveloperMessageSetup {
   private String directionalMessage;
   private String welcomeMessage;
 
-  public DeveloperMessageSetup(MessagesClient messagesClient, StreamsClient streamsClient){
+  public DeveloperMessageService(MessagesClient messagesClient, StreamsClient streamsClient){
     this.messagesClient = messagesClient;
     this.streamsClient = streamsClient;
 
@@ -54,10 +54,10 @@ public class DeveloperMessageSetup {
    * Should specify how to reset password and finish sign up process
    * @param developerState the current state of the partner in the sign up process
    */
-  public void sendDirectionalMessage(DeveloperState developerState) {
+  public void sendDirectionalMessage(DeveloperBootstrapState developerState) {
     try {
-      DeveloperTemplateData developerTemplateData =
-          new DeveloperTemplateData(developerState.getDeveloper(), null, null,
+      BootstrapTemplateData developerTemplateData =
+          new BootstrapTemplateData(developerState.getDeveloper(), null, null,
               directionalUrl);
       MessageTemplate partnerDocumentTemplate = new MessageTemplate(directionalMessage);
       String message = partnerDocumentTemplate.buildFromData(developerTemplateData);
@@ -82,9 +82,9 @@ public class DeveloperMessageSetup {
    * Sends message containing bootstrap package.
    * @param developerState the current state of the user in the sign up process
    */
-  public void sendBootstrapMessage(DeveloperState developerState) {
+  public void sendBootstrapMessage(DeveloperBootstrapState developerState) {
     try {
-      DeveloperTemplateData developerTemplateData = new DeveloperTemplateData(developerState,
+      BootstrapTemplateData developerTemplateData = new BootstrapTemplateData(developerState,
           System.getProperty(BotConfig.DIRECTIONAL_URL));
       MessageTemplate partnerDocumentTemplate = new MessageTemplate(welcomeMessage);
       String message = partnerDocumentTemplate.buildFromData(developerTemplateData);

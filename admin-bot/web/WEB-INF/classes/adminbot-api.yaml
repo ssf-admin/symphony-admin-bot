@@ -46,12 +46,12 @@ paths:
         - SignUp
   '/v1/bootstrapDeveloper':
     post:
-      summary: Bootstraps a developer.
+      summary: Bootstraps a bootstrap.
       description:
           If not already created -
             Creates and registers bot cert, creates bot user.
             Creates and registers app cert, creates app.
-          Sends developer bootstrap package within symphony.
+          Sends bootstrap bootstrap package within symphony.
       parameters:
         - name: sessionToken
           in: header
@@ -61,7 +61,7 @@ paths:
           in: header
           required: true
           type: string
-        - name: developer
+        - name: bootstrap
           in: body
           required: true
           schema:
