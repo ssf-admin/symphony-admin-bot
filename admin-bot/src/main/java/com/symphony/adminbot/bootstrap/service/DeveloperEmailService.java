@@ -59,6 +59,7 @@ public class DeveloperEmailService {
       String newSubject = subTemplate.buildFromData(developerTemplateData);
       String newEmail = emailTemplate.buildFromData(developerTemplateData);
       googleEmailClient.sendEmail(developerState.getDeveloper().getEmail(),  newSubject, newEmail);
+      LOG.info("Sent welcome email to " + developerState.getDeveloper().getEmail() + ".");
     } catch(Exception e){
       LOG.error("Error occurred when sending confirmation email: ", e);
       throw new InternalServerErrorException(BotConstants.INTERNAL_ERROR);

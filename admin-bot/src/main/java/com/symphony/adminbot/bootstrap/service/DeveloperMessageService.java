@@ -72,6 +72,7 @@ public class DeveloperMessageService {
       Stream stream = streamsClient.createIM(userIdList);
       developerState.setDeveloperIM(stream);
       messagesClient.sendMessage(stream, v2Message, V2MessageSubmission.FormatEnum.MESSAGEML);
+      LOG.info("Sent directional message to user " + developerState.getUserDetail().getUserAttributes().getUserName() + ".");
     } catch (Exception e) {
       LOG.error("Error occurred when sending directional message: ", e);
       throw new InternalServerErrorException(BotConstants.INTERNAL_ERROR);
@@ -98,6 +99,7 @@ public class DeveloperMessageService {
       v2Message.setAttachments(developerState.getCertAttachmentInfo());
 
       messagesClient.sendMessage(developerState.getDeveloperIM(), v2Message, V2MessageSubmission.FormatEnum.MESSAGEML);
+      LOG.info("Sent bootstrap message to user " + developerState.getUserDetail().getUserAttributes().getUserName() + ".");
     } catch (Exception e) {
       LOG.error("Error occurred when sending directional message: ", e);
       throw new InternalServerErrorException(BotConstants.INTERNAL_ERROR);

@@ -113,6 +113,7 @@ public class DeveloperCertService {
       bootstrapState.getCompanyCertMap().put(
           companyCertDetail.getCompanyCertInfo().getCommonName(), companyCert);
 
+      LOG.info("Generated and registered new cert " + commonName + ".");
       return companyCertDetail;
     } catch (NoSuchProviderException | IOException | CertificateException |
         NoSuchAlgorithmException | ApiException e) {
@@ -145,6 +146,7 @@ public class DeveloperCertService {
 
       developerState.setCertAttachmentInfo(
           attachmentsClient.uploadAttachments(developerState.getDeveloperIM(), attachments));
+      LOG.info("Uploaded certs to IM for user " + developerState.getUserDetail().getUserAttributes().getUserName() + ".");
     } catch (Exception e){
       LOG.error("Error occurred when uploading attachments: ", e);
       throw new InternalServerErrorException(BotConstants.INTERNAL_ERROR);

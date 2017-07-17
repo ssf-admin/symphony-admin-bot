@@ -34,6 +34,6 @@ public class BotConstants {
   public static final String BOT_NAME_REQUIRED = "Bot name is required.";
   public static final String ICON_START_WITH_HTTPS = "\"Icon url must start with \\\"https://\\\".\"";
   public static final String APP_START_WITH_HTTPS = "\"App url must start with \\\"https://\\\".\"";
-  public static final String BAD_URL = "Please provide a valid app url.";
+  public static final String BAD_APP_URL = "Please provide a valid app url.";
   public static final String DOMAIN_MUST_MATCH = "Domain must match app url domain.";
 }

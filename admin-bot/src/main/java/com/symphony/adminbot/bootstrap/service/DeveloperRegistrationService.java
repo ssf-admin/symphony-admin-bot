@@ -1,7 +1,6 @@
 package com.symphony.adminbot.bootstrap.service;
 
 import com.symphony.adminbot.bootstrap.model.DeveloperBootstrapState;
-import com.symphony.adminbot.config.BotConfig;
 import com.symphony.api.adminbot.model.Developer;
 import com.symphony.api.adminbot.model.DeveloperSignUpForm;
 import com.symphony.api.clients.ApplicationClient;
@@ -11,11 +10,15 @@ import com.symphony.api.pod.model.ApplicationDetail;
 import com.symphony.api.pod.model.ApplicationInfo;
 import com.symphony.api.pod.model.Feature;
 import com.symphony.api.pod.model.FeatureList;
+import com.symphony.api.pod.model.UserAppEntitlement;
+import com.symphony.api.pod.model.UserAppEntitlementList;
 import com.symphony.api.pod.model.UserAttributes;
 import com.symphony.api.pod.model.UserCreate;
 import com.symphony.api.pod.model.UserDetail;
 
 import org.apache.commons.lang.WordUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -26,6 +29,7 @@ import java.util.Set;
  * Created by nick.tarsillo on 7/2/17.
  */
 public class DeveloperRegistrationService {
+  private static final Logger LOG = LoggerFactory.getLogger(DeveloperRegistrationService.class);
   enum FeaturesEnum{
     EXTERNAL("isExternalIMEnabled"),
     SHARE_FILES_EXTERNAL("canShareFilesExternally"),
@@ -62,12 +66,13 @@ public class DeveloperRegistrationService {
   }
 
   /**
-   * Creates a symphony user for the partner.
-   * @param state the partner's current state in the sign up process
+   * Creates a symphony user for the developer.
+   * @param state the developers's current state in the bootstrap process
    */
   public void registerDeveloperUser(DeveloperBootstrapState state) throws ApiException {
     UserDetail userDetail = usersClient.createUser(state.getUserCreate());
     state.setUserDetail(userDetail);
+    LOG.info("Registered new user " + userDetail.getUserAttributes().getUserName() + " with pod.");
 
     FeatureList features = new FeatureList();
 
@@ -77,13 +82,14 @@ public class DeveloperRegistrationService {
     features.add(FeaturesEnum.SEND_FILES.enabled());
 
     usersClient.updateEntitlements(userDetail.getUserSystemInfo().getId(), features);
+    LOG.info("Updated " + userDetail.getUserAttributes().getUserName() + " entitlements on pod.");
   }
 
   /**
-   * Creates a symphony service bot
+   * Registers a symphony service bot
    * @param signUpForm the sign up form to base the bot on
    */
-  public void registerBot(String botUsername, DeveloperSignUpForm signUpForm) throws ApiException {
+  public UserDetail registerBot(String botUsername, DeveloperSignUpForm signUpForm) throws ApiException {
     UserCreate userCreate = new UserCreate();
     UserAttributes userAttributes = new UserAttributes();
     userAttributes.setAccountType(UserAttributes.AccountTypeEnum.SYSTEM);
@@ -97,7 +103,8 @@ public class DeveloperRegistrationService {
     roles.add("INDIVIDUAL");
     userCreate.setRoles(roles);
 
-    UserDetail userV2 = usersClient.createUser(userCreate);
+    UserDetail userDetail = usersClient.createUser(userCreate);
+    LOG.info("Registered new bot service user " + userDetail.getUserAttributes().getUserName() + " with pod.");
 
     FeatureList features = new FeatureList();
 
@@ -106,10 +113,17 @@ public class DeveloperRegistrationService {
     features.add(FeaturesEnum.SHARE_FILES_EXTERNAL.enabled());
     features.add(FeaturesEnum.SEND_FILES.enabled());
 
-    usersClient.updateEntitlements(userV2.getUserSystemInfo().getId(), features);
+    usersClient.updateEntitlements(userDetail.getUserSystemInfo().getId(), features);
+    LOG.info("Updated service user " + userDetail.getUserAttributes().getUserName() + " entitlements on pod.");
+    return userDetail;
   }
 
-  public void registerApp(String appId, DeveloperBootstrapState bootstrapState)
+  /**
+   * Registers a app with pod.
+   * @param appId the app id
+   * @param bootstrapState the developers's current state in the bootstrap process
+   */
+  public ApplicationDetail registerApp(String appId, DeveloperBootstrapState bootstrapState)
       throws ApiException {
     DeveloperSignUpForm signUpForm = bootstrapState.getDeveloperSignUpForm();
 
@@ -129,7 +143,29 @@ public class DeveloperRegistrationService {
 
     applicationDetail.setApplicationInfo(applicationInfo);
 
-    applicationClient.createApplication(applicationDetail);
+    applicationDetail = applicationClient.createApplication(applicationDetail);
+    LOG.info("Registered new app " + applicationDetail.getApplicationInfo().getAppId() + " with pod.");
+    return applicationDetail;
+  }
+
+  /**
+   * Installs an app for a developer on pod.
+   * @param bootstrapState the developers's current state in the bootstrap process
+   */
+  public void installApp(DeveloperBootstrapState bootstrapState) throws ApiException {
+    Long userId = bootstrapState.getUserDetail().getUserSystemInfo().getId();
+    UserAppEntitlementList userAppEntitlements = new UserAppEntitlementList();
+
+    UserAppEntitlement userAppEntitlement = new UserAppEntitlement();
+    userAppEntitlement.appId(bootstrapState.getApplicationDetail().getId());
+    userAppEntitlement.appName(bootstrapState.getDeveloperSignUpForm().getAppName());
+    userAppEntitlement.setListed(false);
+    userAppEntitlement.setInstall(true);
+
+    userAppEntitlements.add(userAppEntitlement);
+    usersClient.updateUserApps(userId, userAppEntitlements);
+    LOG.info("Installed app " + bootstrapState.getDeveloperSignUpForm().getAppName() + " for user "
+        + bootstrapState.getUserDetail().getUserAttributes().getUserName() + ".");
   }
 
   /**

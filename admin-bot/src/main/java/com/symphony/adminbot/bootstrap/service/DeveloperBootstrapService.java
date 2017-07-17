@@ -10,15 +10,18 @@ import com.symphony.api.adminbot.model.DeveloperBootstrapInfo;
 import com.symphony.api.adminbot.model.DeveloperSignUpForm;
 import com.symphony.api.clients.SymphonyClient;
 import com.symphony.api.pod.client.ApiException;
+import com.symphony.api.pod.model.ApplicationDetail;
 import com.symphony.api.pod.model.CompanyCertDetail;
 import com.symphony.api.pod.model.Password;
 import com.symphony.api.pod.model.UserAttributes;
 import com.symphony.api.pod.model.UserCreate;
+import com.symphony.api.pod.model.UserDetail;
 import com.symphony.security.hash.ClientHash;
 import com.symphony.security.hash.IClientHash;
 import com.symphony.security.utils.CryptoGenerator;
 
 import com.sun.jndi.toolkit.url.Uri;
+import javafx.application.Application;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.WordUtils;
 import org.slf4j.Logger;
@@ -90,7 +93,13 @@ public class DeveloperBootstrapService {
       botUsername = botCertDetail.getCompanyCertInfo().getCommonName();
       //Register bot
       developerBootstrapInfo.setBotUsername(botUsername);
-      developerRegistrationService.registerBot(botUsername, signUpForm);
+      UserDetail botDetail = developerRegistrationService.registerBot(botUsername, signUpForm);
+      //Save bot detail for all team members
+      for(Developer teamMember: developerState.getTeamMembers()){
+        DeveloperBootstrapState teamMemberState = partnerStateCache.get(teamMember);
+        teamMemberState.setBotDetail(botDetail);
+      }
+      developerState.setBotDetail(botDetail);
 
       if (StringUtils.isNotBlank(signUpForm.getAppName())) {
         //Register app cert
@@ -100,7 +109,13 @@ public class DeveloperBootstrapService {
         //Register app
         String appId = appCertDetail.getCompanyCertInfo().getCommonName();
         developerBootstrapInfo.setAppId(appId);
-        developerRegistrationService.registerApp(appId, developerState);
+        ApplicationDetail applicationDetail = developerRegistrationService.registerApp(appId, developerState);
+        //Save app detail for all team members
+        for(Developer teamMember: developerState.getTeamMembers()){
+          DeveloperBootstrapState teamMemberState = partnerStateCache.get(teamMember);
+          teamMemberState.setApplicationDetail(applicationDetail);
+        }
+        developerState.setApplicationDetail(applicationDetail);
       }
 
       developerBootstrapInfo.setAppName(signUpForm.getAppName());
@@ -113,6 +128,7 @@ public class DeveloperBootstrapService {
       developerState.setBootstrapInfo(developerBootstrapInfo);
     }
 
+    developerRegistrationService.installApp(developerState);
     developerCertService.uploadCerts(developerState);
     developerMessageService.sendBootstrapMessage(developerState);
 
@@ -183,7 +199,7 @@ public class DeveloperBootstrapService {
     try {
       validateDomain(signUpForm.getAppUrl(), signUpForm.getAppDomain());
     } catch (MalformedURLException e) {
-      throw new BadRequestException(BotConstants.BAD_URL);
+      throw new BadRequestException(BotConstants.BAD_APP_URL);
     }
   }
 

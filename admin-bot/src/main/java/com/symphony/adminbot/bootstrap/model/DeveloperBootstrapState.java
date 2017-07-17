@@ -5,6 +5,7 @@ import com.symphony.api.adminbot.model.Developer;
 import com.symphony.api.adminbot.model.DeveloperBootstrapInfo;
 import com.symphony.api.adminbot.model.DeveloperSignUpForm;
 import com.symphony.api.agent.model.AttachmentInfo;
+import com.symphony.api.pod.model.ApplicationDetail;
 import com.symphony.api.pod.model.CompanyCert;
 import com.symphony.api.pod.model.Stream;
 import com.symphony.api.pod.model.UserCreate;
@@ -27,6 +28,8 @@ public class DeveloperBootstrapState {
   private UserDetail userDetail;
   private String password;
   private Stream developerIM;
+  private UserDetail botDetail;
+  private ApplicationDetail applicationDetail;
   private Map<String, CompanyCert> companyCertMap;
   private List<AttachmentInfo> certAttachmentInfo;
   private DeveloperBootstrapInfo bootstrapInfo;
@@ -111,5 +114,21 @@ public class DeveloperBootstrapState {
   public void setCompanyCertMap(
       Map<String, CompanyCert> companyCertMap) {
     this.companyCertMap = companyCertMap;
+  }
+
+  public ApplicationDetail getApplicationDetail() {
+    return applicationDetail;
+  }
+
+  public void setApplicationDetail(ApplicationDetail applicationDetail) {
+    this.applicationDetail = applicationDetail;
+  }
+
+  public UserDetail getBotDetail() {
+    return botDetail;
+  }
+
+  public void setBotDetail(UserDetail botDetail) {
+    this.botDetail = botDetail;
   }
 }

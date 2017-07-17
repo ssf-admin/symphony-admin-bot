@@ -2,13 +2,16 @@ package com.symphony.api.clients;
 
 import com.symphony.api.clients.model.SymphonyAuth;
 import com.symphony.api.clients.model.SymphonyUser;
+import com.symphony.api.pod.api.AppEntitlementApi;
 import com.symphony.api.pod.api.UserApi;
 import com.symphony.api.pod.api.UsersApi;
 import com.symphony.api.pod.client.ApiClient;
 import com.symphony.api.pod.client.ApiException;
 import com.symphony.api.pod.client.Configuration;
 import com.symphony.api.pod.model.FeatureList;
+import com.symphony.api.pod.model.PodAppEntitlementList;
 import com.symphony.api.pod.model.SuccessResponse;
+import com.symphony.api.pod.model.UserAppEntitlementList;
 import com.symphony.api.pod.model.UserCreate;
 import com.symphony.api.pod.model.UserDetail;
 import com.symphony.api.pod.model.UserV2;
@@ -101,6 +104,21 @@ public class UsersClient {
     }
 
     return userV2 != null;
+  }
+
+  public UserAppEntitlementList updateUserApps(Long userId, UserAppEntitlementList entitlements)
+      throws ApiException {
+    AppEntitlementApi appEntitlementApi = new AppEntitlementApi(apiClient);
+
+    UserAppEntitlementList appEntitlementList;
+    try {
+      appEntitlementList = appEntitlementApi.v1AdminUserUidAppEntitlementListPost(
+          symAuth.getSessionToken().getToken(), userId, entitlements);
+    } catch (ApiException e) {
+      throw new ApiException("Could not update entitlements: " + e);
+    }
+
+    return appEntitlementList;
   }
 
   public void setSymphonyAuth(SymphonyAuth symAuth){
