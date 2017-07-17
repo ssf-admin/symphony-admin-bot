@@ -31,7 +31,7 @@ public class DeveloperBootstrapService {
 
   private DeveloperUserService developerUserService;
   private DeveloperMessageService developerMessageService;
-  private DeveloperCompanyCertService developerCompanyCertService;
+  private DeveloperCertService developerCertService;
   private DeveloperEmailService developerEmailService;
 
   public DeveloperBootstrapService(SymphonyClient symClient){
@@ -46,7 +46,7 @@ public class DeveloperBootstrapService {
     developerUserService = new DeveloperUserService(symClient.getUsersClient());
     developerMessageService = new DeveloperMessageService(symClient.getMessagesClient(),
         symClient.getStreamsClient());
-    developerCompanyCertService = new DeveloperCompanyCertService(symClient.getSecurityClient(),
+    developerCertService = new DeveloperCertService(symClient.getSecurityClient(),
         symClient.getAttachmentsClient());
   }
 
@@ -66,12 +66,12 @@ public class DeveloperBootstrapService {
     if(developerState.getBootstrapInfo() == null) {
       String password = developerState.getPassword();
 
-      String botUsername = developerCompanyCertService.getDefaultBotUsername();
-      botUsername = developerCompanyCertService.generateAndRegisterCert(botUsername, password);
+      String botUsername = developerCertService.getDefaultBotUsername();
+      botUsername = developerCertService.generateAndRegisterCert(botUsername, password);
 
       String appUsername = null;
       if(StringUtils.isNotBlank(signUpForm.getAppName())) {
-        appUsername = developerCompanyCertService.generateAndRegisterCert(signUpForm.getAppName(), password);
+        appUsername = developerCertService.generateAndRegisterCert(signUpForm.getAppName(), password);
       }
 
       developerUserService.createBot(signUpForm);
@@ -88,7 +88,7 @@ public class DeveloperBootstrapService {
       developerState.setBootstrapInfo(developerBootstrapInfo);
     }
 
-    developerCompanyCertService.uploadCerts(developerState);
+    developerCertService.uploadCerts(developerState);
     developerMessageService.sendBootstrapMessage(developerState);
 
     return developerState.getBootstrapInfo();
