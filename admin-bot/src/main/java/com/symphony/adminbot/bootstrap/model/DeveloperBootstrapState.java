@@ -5,11 +5,13 @@ import com.symphony.api.adminbot.model.Developer;
 import com.symphony.api.adminbot.model.DeveloperBootstrapInfo;
 import com.symphony.api.adminbot.model.DeveloperSignUpForm;
 import com.symphony.api.agent.model.AttachmentInfo;
+import com.symphony.api.pod.model.CompanyCert;
 import com.symphony.api.pod.model.Stream;
 import com.symphony.api.pod.model.UserCreate;
 import com.symphony.api.pod.model.UserDetail;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -25,6 +27,7 @@ public class DeveloperBootstrapState {
   private UserDetail userDetail;
   private String password;
   private Stream developerIM;
+  private Map<String, CompanyCert> companyCertMap;
   private List<AttachmentInfo> certAttachmentInfo;
   private DeveloperBootstrapInfo bootstrapInfo;
 
@@ -99,5 +102,14 @@ public class DeveloperBootstrapState {
 
   public void setBootstrapInfo(DeveloperBootstrapInfo bootstrapInfo) {
     this.bootstrapInfo = bootstrapInfo;
+  }
+
+  public Map<String, CompanyCert> getCompanyCertMap() {
+    return companyCertMap;
+  }
+
+  public void setCompanyCertMap(
+      Map<String, CompanyCert> companyCertMap) {
+    this.companyCertMap = companyCertMap;
   }
 }

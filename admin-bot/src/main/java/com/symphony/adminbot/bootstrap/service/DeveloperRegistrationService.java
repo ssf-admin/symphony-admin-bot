@@ -1,19 +1,19 @@
 package com.symphony.adminbot.bootstrap.service;
 
 import com.symphony.adminbot.bootstrap.model.DeveloperBootstrapState;
+import com.symphony.adminbot.config.BotConfig;
 import com.symphony.api.adminbot.model.Developer;
 import com.symphony.api.adminbot.model.DeveloperSignUpForm;
+import com.symphony.api.clients.ApplicationClient;
 import com.symphony.api.clients.UsersClient;
 import com.symphony.api.pod.client.ApiException;
+import com.symphony.api.pod.model.ApplicationDetail;
+import com.symphony.api.pod.model.ApplicationInfo;
 import com.symphony.api.pod.model.Feature;
 import com.symphony.api.pod.model.FeatureList;
-import com.symphony.api.pod.model.Password;
 import com.symphony.api.pod.model.UserAttributes;
 import com.symphony.api.pod.model.UserCreate;
 import com.symphony.api.pod.model.UserDetail;
-import com.symphony.security.hash.ClientHash;
-import com.symphony.security.hash.IClientHash;
-import com.symphony.security.utils.CryptoGenerator;
 
 import org.apache.commons.lang.WordUtils;
 
@@ -21,13 +21,11 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.UUID;
-import java.util.concurrent.ThreadLocalRandom;
 
 /**
  * Created by nick.tarsillo on 7/2/17.
  */
-public class DeveloperUserService {
+public class DeveloperRegistrationService {
   enum FeaturesEnum{
     EXTERNAL("isExternalIMEnabled"),
     SHARE_FILES_EXTERNAL("canShareFilesExternally"),
@@ -56,77 +54,18 @@ public class DeveloperUserService {
   }
 
   private UsersClient usersClient;
+  private ApplicationClient applicationClient;
 
-  public DeveloperUserService(UsersClient usersClient){
+  public DeveloperRegistrationService(UsersClient usersClient, ApplicationClient applicationClient){
     this.usersClient = usersClient;
-  }
-
-  /**
-   * Creates initial states for partner within sign up form. (Team members and creator)
-   * @param signUpForm the sign up form
-   * @return the initial partner states
-   */
-  public Set<DeveloperBootstrapState> getDeveloperSetupStates(DeveloperSignUpForm signUpForm){
-    Set<Developer> developerSet = new HashSet<>();
-    developerSet.add(signUpForm.getCreator());
-    developerSet.addAll(signUpForm.getTeam());
-
-    Set<DeveloperBootstrapState> developerStates = new HashSet<>();
-    for(Developer developer : developerSet) {
-      UserCreate userCreate = new UserCreate();
-      UserAttributes userAttributes = new UserAttributes();
-      userAttributes.setAccountType(UserAttributes.AccountTypeEnum.NORMAL);
-      userAttributes.setEmailAddress(developer.getEmail());
-      userAttributes.setFirstName(developer.getFirstName());
-      userAttributes.setLastName(developer.getLastName());
-      userAttributes.setUserName(developer.getFirstName().toLowerCase()
-          + WordUtils.capitalize(developer.getLastName()));
-      userAttributes.displayName(developer.getFirstName() + " " + developer.getLastName());
-      userAttributes.setDepartment(signUpForm.getAppCompanyName());
-      userCreate.setUserAttributes(userAttributes);
-
-      String randomPassword = UUID.randomUUID().toString().replace("-", "");
-      int randomBegin = (int)(Math.random() * (randomPassword.length() - 3));
-      int randomEnd = ThreadLocalRandom.current().nextInt(randomBegin, randomPassword.length());
-      randomPassword = randomPassword.replace(randomPassword.substring(randomBegin, randomEnd),
-          randomPassword.substring(randomBegin, randomEnd).toUpperCase());
-
-      IClientHash clientHash = new ClientHash();
-      String salt = CryptoGenerator.generateBase64Salt();
-      String clientHashedPassword = clientHash.getClientHashedPassword(randomPassword, salt);
-
-      Password pass = new Password();
-      pass.setHPassword(clientHashedPassword);
-      pass.setHSalt(salt);
-      pass.setKhPassword(clientHashedPassword);
-      pass.setKhSalt(salt);
-      userCreate.setPassword(pass);
-
-      List<String> roles = new ArrayList<>();
-      roles.add("INDIVIDUAL");
-      userCreate.setRoles(roles);
-
-      DeveloperBootstrapState developerState = new DeveloperBootstrapState();
-      developerState.setDeveloper(developer);
-      developerState.setDeveloperSignUpForm(signUpForm);
-      developerState.setUserCreate(userCreate);
-      developerState.setPassword(randomPassword);
-
-      Set<Developer> teamMembers = new HashSet<>(developerSet);
-      teamMembers.remove(developer);
-      developerState.setTeamMembers(teamMembers);
-
-      developerStates.add(developerState);
-    }
-
-    return developerStates;
+    this.applicationClient = applicationClient;
   }
 
   /**
    * Creates a symphony user for the partner.
    * @param state the partner's current state in the sign up process
    */
-  public void createPartnerUser(DeveloperBootstrapState state) throws ApiException {
+  public void registerDeveloperUser(DeveloperBootstrapState state) throws ApiException {
     UserDetail userDetail = usersClient.createUser(state.getUserCreate());
     state.setUserDetail(userDetail);
 
@@ -144,13 +83,11 @@ public class DeveloperUserService {
    * Creates a symphony service bot
    * @param signUpForm the sign up form to base the bot on
    */
-  public void createBot(DeveloperSignUpForm signUpForm) throws ApiException {
-    String userName = signUpForm.getBotEmail().split("@")[0];
-
+  public void registerBot(String botUsername, DeveloperSignUpForm signUpForm) throws ApiException {
     UserCreate userCreate = new UserCreate();
     UserAttributes userAttributes = new UserAttributes();
     userAttributes.setAccountType(UserAttributes.AccountTypeEnum.SYSTEM);
-    userAttributes.setUserName(userName);
+    userAttributes.setUserName(botUsername);
     userAttributes.displayName(signUpForm.getBotName());
     userAttributes.setEmailAddress(signUpForm.getBotEmail());
     userAttributes.setDepartment(signUpForm.getAppCompanyName());
@@ -172,12 +109,35 @@ public class DeveloperUserService {
     usersClient.updateEntitlements(userV2.getUserSystemInfo().getId(), features);
   }
 
+  public void registerApp(String appId, DeveloperBootstrapState bootstrapState)
+      throws ApiException {
+    DeveloperSignUpForm signUpForm = bootstrapState.getDeveloperSignUpForm();
+
+    ApplicationDetail applicationDetail = new ApplicationDetail();
+
+    ApplicationInfo applicationInfo = new ApplicationInfo();
+    applicationInfo.setPublisher(signUpForm.getCreator().getFirstName().toLowerCase()
+        + WordUtils.capitalize(signUpForm.getCreator().getLastName()));
+    applicationInfo.setAppId(appId);
+    applicationInfo.setAppUrl(signUpForm.getAppUrl());
+    applicationInfo.setDescription(signUpForm.getAppDescription());
+    applicationInfo.setDomain(signUpForm.getAppDomain());
+    applicationInfo.setIconUrl(signUpForm.getAppIconUrl());
+    applicationInfo.setName(signUpForm.getAppName());
+
+    applicationDetail.setCert(bootstrapState.getCompanyCertMap().get(appId).getPem());
+
+    applicationDetail.setApplicationInfo(applicationInfo);
+
+    applicationClient.createApplication(applicationDetail);
+  }
+
   /**
    * Checks if partners already exist as symphony users.
    * @param signUpForm the sign up form containing the partners
    * @return if all partners do not exist as symphony users
    */
-  public boolean allPartnersDoNotExist(DeveloperSignUpForm signUpForm) throws ApiException {
+  public boolean allDevelopersDoNotExist(DeveloperSignUpForm signUpForm) throws ApiException {
     Set<String> allEmails = new HashSet<>();
     String creatorEmail = signUpForm.getCreator().getEmail();
     for(Developer developer : signUpForm.getTeam()) {

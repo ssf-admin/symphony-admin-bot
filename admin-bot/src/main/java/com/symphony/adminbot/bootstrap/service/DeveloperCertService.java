@@ -10,6 +10,7 @@ import com.symphony.api.clients.SecurityClient;
 import com.symphony.api.pod.client.ApiException;
 import com.symphony.api.pod.model.CompanyCert;
 import com.symphony.api.pod.model.CompanyCertAttributes;
+import com.symphony.api.pod.model.CompanyCertDetail;
 import com.symphony.api.pod.model.CompanyCertStatus;
 import com.symphony.api.pod.model.CompanyCertType;
 
@@ -59,35 +60,39 @@ import javax.ws.rs.InternalServerErrorException;
 /**
  * Created by nick.tarsillo on 7/2/17.
  */
-public class DeveloperCompanyCertService {
-  private static final Logger LOG = LoggerFactory.getLogger(DeveloperCompanyCertService.class);
+public class DeveloperCertService {
+  private static final Logger LOG = LoggerFactory.getLogger(DeveloperCertService.class);
 
   private AttachmentsClient attachmentsClient;
   private SecurityClient securityClient;
 
   private int botId = -1;
 
-  public DeveloperCompanyCertService(SecurityClient securityClient, AttachmentsClient attachmentsClient){
+  public DeveloperCertService(SecurityClient securityClient, AttachmentsClient attachmentsClient){
     this.securityClient = securityClient;
     this.attachmentsClient = attachmentsClient;
   }
 
   /**
    * Generates cert and registers it on the pod.
+   * Adds company cert info to bootstrap state.
    * @param name name for the cert
-   * @param password password for the cert
+   * @param password password for cert
    * @return the common name of the cert
    */
-  public String generateAndRegisterCert(String name, String password) {
+  public CompanyCertDetail generateAndRegisterCert(String name, String password,
+      DeveloperBootstrapState bootstrapState) {
     try {
       String commonName = getCommonName(name);
       KeyPair keys = createKeyPair("RSA", 2048);
 
+      //Generate cert
       X509Certificate certificate = generateCertificate(
           commonName, keys, BotConstants.VALID_DURATION);
       writeCert(commonName, certificate, keys,
           System.getProperty(BotConfig.P12_DIR), password.toCharArray());
 
+      //Register new cert
       CompanyCert companyCert = new CompanyCert();
       companyCert.setPem(convertCertificateToPEM(certificate));
 
@@ -103,9 +108,12 @@ public class DeveloperCompanyCertService {
       companyCertAttributes.setType(certType);
       companyCert.attributes(companyCertAttributes);
 
-      securityClient.createCert(companyCert);
+      //Save cert info for later
+      CompanyCertDetail companyCertDetail = securityClient.createCert(companyCert);
+      bootstrapState.getCompanyCertMap().put(
+          companyCertDetail.getCompanyCertInfo().getCommonName(), companyCert);
 
-      return commonName;
+      return companyCertDetail;
     } catch (NoSuchProviderException | IOException | CertificateException |
         NoSuchAlgorithmException | ApiException e) {
       LOG.error("Error occurred when creating welcome package: ", e);
@@ -123,11 +131,13 @@ public class DeveloperCompanyCertService {
       Developer developer = developerState.getDeveloper();
       String outputPath = path + developer.getFirstName() + developer.getLastName() + "Certs.zip";
       Set<String> certPaths = new HashSet<>();
-      certPaths.add(path + getCommonName(developerState.getBootstrapInfo().getBotUsername()) + ".p12");
 
-      if(StringUtils.isNotBlank(developerState.getDeveloperSignUpForm().getAppName())) {
-        certPaths.add(path + getCommonName(developerState.getDeveloperSignUpForm().getAppName()) + ".p12");
+      certPaths.add(path + developerState.getBootstrapInfo().getBotUsername() + ".p12");
+
+      if(StringUtils.isNotBlank(developerState.getBootstrapInfo().getAppId())) {
+        certPaths.add(path + developerState.getBootstrapInfo().getAppId() + ".p12");
       }
+
       File zip = FileUtil.zipFiles(outputPath, certPaths);
 
       Set<File> attachments = new HashSet<>();

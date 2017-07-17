@@ -8,6 +8,7 @@ import com.symphony.api.pod.client.ApiException;
 import com.symphony.api.pod.client.Configuration;
 import com.symphony.api.pod.model.CompanyCert;
 import com.symphony.api.pod.model.CompanyCertDetail;
+import com.symphony.api.pod.model.CompanyCertType;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

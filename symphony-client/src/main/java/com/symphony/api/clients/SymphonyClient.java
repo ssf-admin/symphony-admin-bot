@@ -102,4 +102,8 @@ public class SymphonyClient {
   public SessionClient getSessionClient() {
     return sessionClient;
   }
+
+  public ApplicationClient getApplicationClient() {
+    return applicationClient;
+  }
 }

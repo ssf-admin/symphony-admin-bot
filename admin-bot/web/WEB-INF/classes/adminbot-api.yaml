@@ -97,6 +97,8 @@ definitions:
         type: string
       appUrl:
         type: string
+      appIconUrl:
+        type: string
       appCompanyName:
         type: string
       appDomain:

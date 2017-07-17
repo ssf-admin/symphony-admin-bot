@@ -44,7 +44,7 @@ public class V1AdminApi extends AbstractV1AdminService {
   public Response sendDeveloperWelcome(AdminSession adminSession, DeveloperSignUpForm signUpForm) {
     DeveloperBootstrapService signUpService = adminSession.getBootstrapService();
     try {
-      signUpService.welcomePartner(signUpForm);
+      signUpService.welcomeDeveloper(signUpForm);
     } catch (ApiException e) {
       LOG.error("Send partner welcome failed:", e);
       return handleError(Response.Status.INTERNAL_SERVER_ERROR, BotConstants.INTERNAL_ERROR);
