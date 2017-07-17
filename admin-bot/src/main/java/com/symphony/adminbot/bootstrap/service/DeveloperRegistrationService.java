@@ -1,6 +1,7 @@
 package com.symphony.adminbot.bootstrap.service;
 
 import com.symphony.adminbot.bootstrap.model.DeveloperBootstrapState;
+import com.symphony.adminbot.config.BotConfig;
 import com.symphony.api.adminbot.model.Developer;
 import com.symphony.api.adminbot.model.DeveloperSignUpForm;
 import com.symphony.api.clients.ApplicationClient;
@@ -16,6 +17,7 @@ import com.symphony.api.pod.model.UserAttributes;
 import com.symphony.api.pod.model.UserCreate;
 import com.symphony.api.pod.model.UserDetail;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.WordUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -136,8 +138,13 @@ public class DeveloperRegistrationService {
     applicationInfo.setAppUrl(signUpForm.getAppUrl());
     applicationInfo.setDescription(signUpForm.getAppDescription());
     applicationInfo.setDomain(signUpForm.getAppDomain());
-    applicationInfo.setIconUrl(signUpForm.getAppIconUrl());
     applicationInfo.setName(signUpForm.getAppName());
+
+    if(StringUtils.isNotBlank(signUpForm.getAppIconUrl())) {
+      applicationInfo.setIconUrl(signUpForm.getAppIconUrl());
+    } else {
+      applicationInfo.setIconUrl(System.getProperty(BotConfig.BOOTSTRAP_ICON_URL));
+    }
 
     applicationDetail.setCert(bootstrapState.getCompanyCertMap().get(appId).getPem());
 

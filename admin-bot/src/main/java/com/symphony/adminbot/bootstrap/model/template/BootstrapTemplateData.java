@@ -12,7 +12,6 @@ import org.apache.commons.lang.WordUtils;
  */
 public class BootstrapTemplateData extends TemplateData {
   enum ReplacementEnums {
-    URL("{URL}"),
     BOT_NAME("{BOT_NAME}"),
     BOT_ID("{BOT_ID}"),
     BOT_EMAIL("{BOT_EMAIL}"),
@@ -35,7 +34,7 @@ public class BootstrapTemplateData extends TemplateData {
     }
   }
   
-  public BootstrapTemplateData(DeveloperBootstrapState developerBootstrapState, String url){
+  public BootstrapTemplateData(DeveloperBootstrapState developerBootstrapState){
     Developer developer = developerBootstrapState.getDeveloper();
     DeveloperSignUpForm developerSignUpForm = developerBootstrapState.getDeveloperSignUpForm();
 
@@ -60,10 +59,9 @@ public class BootstrapTemplateData extends TemplateData {
     if(developerBootstrapState != null) {
       addData(ReplacementEnums.PASSWORD.getReplacement(), developerBootstrapState.getPassword());
     }
-    addData(ReplacementEnums.URL.getReplacement(), url);
   }
 
-  public BootstrapTemplateData(Developer developer, DeveloperSignUpForm developerSignUpForm, String password, String url){
+  public BootstrapTemplateData(Developer developer, DeveloperSignUpForm developerSignUpForm, String password){
     if(developerSignUpForm != null){
       addData(ReplacementEnums.APP_NAME.getReplacement(), developerSignUpForm.getAppName());
       addData(ReplacementEnums.APP_ID.getReplacement(), getCommonName(developerSignUpForm.getAppName()));
@@ -77,7 +75,6 @@ public class BootstrapTemplateData extends TemplateData {
       addData(ReplacementEnums.EMAIL.getReplacement(), developer.getEmail());
     }
     addData(ReplacementEnums.PASSWORD.getReplacement(), password);
-    addData(ReplacementEnums.URL.getReplacement(), url);
   }
 
   private String getCommonName(String name) {

@@ -159,7 +159,7 @@ public class DeveloperCertService {
    */
   public String getDefaultBotUsername() {
     try {
-      String path = System.getProperty(BotConfig.BOT_SIGNUP_ID);
+      String path = System.getProperty(BotConfig.BOOTSTRAP_BOT_ID);
       if (botId == -1) {
         String text = FileUtil.readFile(path).replace("\n", "");
         botId = Integer.parseInt(text);

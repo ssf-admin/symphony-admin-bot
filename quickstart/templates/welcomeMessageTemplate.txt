@@ -1,0 +1,18 @@
+<messageML>
+Welcome to the Symphony Developer Pod! This pod will be your home where you will be able to build your apps, bots and integrations between Symphony and your product. <br/>
+This pod is running the latest Symphony version, and is inherently less stable than a production Symphony pod.<br/> 
+This pod is only intended for development use.<br/>
+Your account information is provided below:<br/>
+Bot username: {BOT_ID}<br/>
+App ID: {APP_ID}<br/>
+Your app certificate and bot certificate have been attached to this message.<br/>
+
+If you are building an extension app, we recommend that you put the app ID in some form of configuration to enable you to easily change the it down the line.<br/>
+You are now ready to start building! Click here to see the latest Symphony developer documentation on how to create an app: <br/>
+<a href="https://extension-api.symphony.com/docs/introduction-1"></a> <br/>
+And click here to explore Symphony's REST APIs: <br/>
+<a href="https://rest-api.symphony.com/docs/developer-guide"></a> <br/>
+Please don’t hesitate to reach out to our support team at developers.symphony.com with any questions or concerns.<br/>
+Thank you,<br/>
+Admin Bot
+</messageML>

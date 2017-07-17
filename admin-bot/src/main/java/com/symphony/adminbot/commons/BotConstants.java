@@ -28,12 +28,11 @@ public class BotConstants {
   public static final String APP_DESCRIPTION_REQUIRED = "App description is required.";
   public static final String APP_DOMAIN_REQUIRED = "App domain is required.";
   public static final String APP_COMPANY_REQUIRED = "App company name is required.";
-  public static final String APP_ICON_REQUIRED = "App icon url is required.";
   public static final String APP_URL_REQUIRED = "App url is required.";
   public static final String BOT_EMAIL_REQUIRED = "Bot email is required.";
   public static final String BOT_NAME_REQUIRED = "Bot name is required.";
-  public static final String ICON_START_WITH_HTTPS = "\"Icon url must start with \\\"https://\\\".\"";
-  public static final String APP_START_WITH_HTTPS = "\"App url must start with \\\"https://\\\".\"";
+  public static final String ICON_START_WITH_HTTPS = "Icon url must start with \"https://\".";
+  public static final String APP_START_WITH_HTTPS = "App url must start with \"https://\".";
   public static final String BAD_APP_URL = "Please provide a valid app url.";
   public static final String DOMAIN_MUST_MATCH = "Domain must match app url domain.";
 }

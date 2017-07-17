@@ -1,0 +1,10 @@
+Dear {FIRST_NAME},
+
+   Use these credentials to login into the Symphony Developer Pod,
+     Email:          {EMAIL}
+     Password:   {PASSWORD}
+   
+   Press this link to go to the pod, https://nexus1-dev.symphony.com
+
+Thanks,
+   Admin Bot

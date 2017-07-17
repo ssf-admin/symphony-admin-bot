@@ -177,10 +177,8 @@ public class DeveloperBootstrapService {
     if (StringUtils.isBlank(signUpForm.getAppCompanyName())) {
       throw new BadRequestException(BotConstants.APP_COMPANY_REQUIRED);
     }
-    if (StringUtils.isBlank(signUpForm.getAppIconUrl())) {
-      throw new BadRequestException(BotConstants.APP_ICON_REQUIRED);
-    }
-    if(!signUpForm.getAppIconUrl().startsWith("https://")){
+    if(StringUtils.isNotBlank(signUpForm.getAppIconUrl()) &&
+        !signUpForm.getAppIconUrl().startsWith("https://")){
       throw new BadRequestException(BotConstants.ICON_START_WITH_HTTPS);
     }
     if (StringUtils.isBlank(signUpForm.getAppUrl())) {

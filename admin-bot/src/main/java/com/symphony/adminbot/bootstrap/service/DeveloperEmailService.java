@@ -31,10 +31,10 @@ public class DeveloperEmailService {
           System.getProperty(BotConfig.GOOGLE_CRED_FILE));
       LOG.info("Gmail client is looking good.");
 
-      subjectTemplate = FileUtil.readFile(System.getProperty(BotConfig.EMAIL_SUBJECT_TEMPLATE));
+      subjectTemplate = FileUtil.readFile(System.getProperty(BotConfig.BOOTSTRAP_EMAIL_SUBJECT_TEMPLATE));
       LOG.info("Loaded subject template: " + subjectTemplate);
 
-      messageTemplate = FileUtil.readFile(System.getProperty(BotConfig.EMAIL_MESSAGE_TEMPLATE));
+      messageTemplate = FileUtil.readFile(System.getProperty(BotConfig.BOOTSTRAP_EMAIL_MESSAGE_TEMPLATE));
       LOG.info("Loaded message template: " + messageTemplate);
     }catch(Exception e){
       LOG.error("Developer email confirmation setup failed: ", e);
@@ -48,11 +48,10 @@ public class DeveloperEmailService {
    */
   public void sendWelcomeEmail(DeveloperBootstrapState developerState) {
     try {
-      String url = System.getProperty(BotConfig.POD_URL);
       BootstrapTemplateData developerTemplateData = new BootstrapTemplateData(
           developerState.getDeveloper(),
           developerState.getDeveloperSignUpForm(),
-          developerState.getPassword(), url);
+          developerState.getPassword());
       MessageTemplate subTemplate = new MessageTemplate(subjectTemplate);
       MessageTemplate emailTemplate = new MessageTemplate(messageTemplate);
 

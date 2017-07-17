@@ -1,0 +1,2 @@
+<messageML>Hello {FIRST_NAME},<br/>
+Welcome to the Symphony Developer Pod. Please go to <a href="https://nexus1-dev.symphony.com"></a> to login and finish creating your account. </messageML>

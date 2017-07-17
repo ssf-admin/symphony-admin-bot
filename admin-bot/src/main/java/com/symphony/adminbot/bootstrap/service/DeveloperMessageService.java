@@ -27,7 +27,6 @@ public class DeveloperMessageService {
   private MessagesClient messagesClient;
   private StreamsClient streamsClient;
 
-  private String directionalUrl;
   private String directionalMessage;
   private String welcomeMessage;
 
@@ -35,14 +34,12 @@ public class DeveloperMessageService {
     this.messagesClient = messagesClient;
     this.streamsClient = streamsClient;
 
-    this.directionalUrl = System.getProperty(BotConfig.DIRECTIONAL_URL);
-
     try {
       this.directionalMessage =
-          FileUtil.readFile(System.getProperty(BotConfig.MESSAGE_DIRECTIONAL_TEMPLATE));
+          FileUtil.readFile(System.getProperty(BotConfig.BOOTSTRAP_MESSAGE_DIRECTIONAL_TEMPLATE));
       LOG.info("Loaded directional message template: " + directionalMessage);
       this.welcomeMessage =
-          FileUtil.readFile(System.getProperty(BotConfig.MESSAGE_WELCOME_TEMPLATE));
+          FileUtil.readFile(System.getProperty(BotConfig.BOOTSTRAP_MESSAGE_WELCOME_TEMPLATE));
       LOG.info("Loaded welcome message template: " + welcomeMessage);
     } catch (Exception e){
       LOG.error("Error occurred when loading message templates: ", e);
@@ -57,8 +54,7 @@ public class DeveloperMessageService {
   public void sendDirectionalMessage(DeveloperBootstrapState developerState) {
     try {
       BootstrapTemplateData developerTemplateData =
-          new BootstrapTemplateData(developerState.getDeveloper(), null, null,
-              directionalUrl);
+          new BootstrapTemplateData(developerState.getDeveloper(), null, null);
       MessageTemplate partnerDocumentTemplate = new MessageTemplate(directionalMessage);
       String message = partnerDocumentTemplate.buildFromData(developerTemplateData);
 
@@ -85,8 +81,7 @@ public class DeveloperMessageService {
    */
   public void sendBootstrapMessage(DeveloperBootstrapState developerState) {
     try {
-      BootstrapTemplateData developerTemplateData = new BootstrapTemplateData(developerState,
-          System.getProperty(BotConfig.DIRECTIONAL_URL));
+      BootstrapTemplateData developerTemplateData = new BootstrapTemplateData(developerState);
       MessageTemplate partnerDocumentTemplate = new MessageTemplate(welcomeMessage);
       String message = partnerDocumentTemplate.buildFromData(developerTemplateData);
 

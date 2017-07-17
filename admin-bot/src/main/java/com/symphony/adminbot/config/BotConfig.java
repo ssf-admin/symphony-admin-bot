@@ -33,13 +33,12 @@ public class BotConfig {
   public final static String JSON_DIR_ENV = "JSON_DIR";
   public final static String P12_DIR_ENV = "P12_DIR";
   public static final String ROLES_FILE_ENV = "ROLES_FILE";
-  public static final String EMAIL_SUBJECT_TEMPLATE_ENV = "EMAIL_SUBJECT_TEMPLATE";
-  public static final String EMAIL_MESSAGE_TEMPLATE_ENV = "EMAIL_MESSAGE_TEMPLATE";
-  public static final String MESSAGE_DIRECTIONAL_TEMPLATE_ENV = "MESSAGE_DIRECTIONAL_TEMPLATE";
-  public static final String MESSAGE_WELCOME_TEMPLATE_ENV = "MESSAGE_WELCOME_TEMPLATE";
-  public static final String POD_URL_ENV = "POD_URL";
-  public static final String BOT_SIGNUP_ID_ENV = "BOT_SIGNUP_ID";
-  public static final String DIRECTIONAL_URL_ENV = "DIRECTIONAL_URL";
+  public static final String BOOTSTRAP_EMAIL_SUBJECT_TEMPLATE_ENV = "BOOTSTRAP_EMAIL_SUBJECT_TEMPLATE";
+  public static final String BOOTSTRAP_EMAIL_MESSAGE_TEMPLATE_ENV = "BOOTSTRAP_EMAIL_MESSAGE_TEMPLATE";
+  public static final String BOOTSTRAP_MESSAGE_DIRECTIONAL_TEMPLATE_ENV = "BOOTSTRAP_MESSAGE_DIRECTIONAL_TEMPLATE";
+  public static final String BOOTSTRAP_MESSAGE_WELCOME_TEMPLATE_ENV = "BOOTSTRAP_MESSAGE_WELCOME_TEMPLATE";
+  public static final String BOOTSTRAP_ICON_URL_ENV = "BOOTSTRAP_ICON_URL";
+  public static final String BOOTSTRAP_BOT_ID_ENV = "BOOTSTRAP_BOT_ID";
   public static final String AUTH_PORT_ENV = "AUTH_PORT";
   public static final String SWAGGER_PORT_ENV = "SWAGGER_PORT";
 
@@ -64,8 +63,7 @@ public class BotConfig {
   public final static String KEYAUTH_URL = "keyauth.url";
   public final static String SYMPHONY_POD = "symphony.agent.pod.url";
   public final static String SYMPHONY_AGENT = "symphony.agent.agent.url";
-  public static final String POD_URL = "adminbot.pod.url";
-  public static final String DIRECTIONAL_URL = "adminbot.directional.url";
+  public static final String BOOTSTRAP_ICON_URL = "adminbot.bootstrap.icon.url";
 
   /**
    * DIRECTORIES
@@ -81,16 +79,16 @@ public class BotConfig {
   public final static String TRUSTSTORE_FILE = "truststore.file";
   public final static String GOOGLE_CRED_FILE = "google.cred.file";
   public static final String ROLES_FILE = "adminbot.roles.file";
-  public static final String EMAIL_SUBJECT_TEMPLATE = "adminbot.email.subject.template";
-  public static final String EMAIL_MESSAGE_TEMPLATE = "adminbot.email.message.template";
-  public static final String MESSAGE_DIRECTIONAL_TEMPLATE = "adminbot.message.directional.template";
-  public static final String MESSAGE_WELCOME_TEMPLATE = "adminbot.message.welcome.template";
+  public static final String BOOTSTRAP_EMAIL_SUBJECT_TEMPLATE = "adminbot.bootstrap.email.subject.template";
+  public static final String BOOTSTRAP_EMAIL_MESSAGE_TEMPLATE = "adminbot.bootstrap.email.message.template";
+  public static final String BOOTSTRAP_MESSAGE_DIRECTIONAL_TEMPLATE = "adminbot.bootstrap.message.directional.template";
+  public static final String BOOTSTRAP_MESSAGE_WELCOME_TEMPLATE = "adminbot.bootstrap.message.welcome.template";
 
   /**
    * IDs
    */
   public final static String GOOGLE_SERVICE_ID = "google.service.id";
-  public static final String BOT_SIGNUP_ID = "adminbot.bot.signup.id";
+  public static final String BOOTSTRAP_BOT_ID = "adminbot.bootstrap.bot.id";
 
   /**
    * EMAILS
@@ -120,15 +118,18 @@ public class BotConfig {
     PROPERTY_SET.add(new EnvironmentConfigProperty(JSON_DIR_ENV, JSON_DIR));
     PROPERTY_SET.add(new EnvironmentConfigProperty(P12_DIR_ENV, P12_DIR));
     PROPERTY_SET.add(new EnvironmentConfigProperty(ROLES_FILE_ENV, ROLES_FILE));
-    PROPERTY_SET.add(new EnvironmentConfigProperty(EMAIL_SUBJECT_TEMPLATE_ENV, EMAIL_SUBJECT_TEMPLATE));
-    PROPERTY_SET.add(new EnvironmentConfigProperty(EMAIL_MESSAGE_TEMPLATE_ENV, EMAIL_MESSAGE_TEMPLATE));
-    PROPERTY_SET.add(new EnvironmentConfigProperty(MESSAGE_DIRECTIONAL_TEMPLATE_ENV, MESSAGE_DIRECTIONAL_TEMPLATE));
-    PROPERTY_SET.add(new EnvironmentConfigProperty(MESSAGE_WELCOME_TEMPLATE_ENV, MESSAGE_WELCOME_TEMPLATE));
-    PROPERTY_SET.add(new EnvironmentConfigProperty(POD_URL_ENV, POD_URL));
-    PROPERTY_SET.add(new EnvironmentConfigProperty(BOT_SIGNUP_ID_ENV, BOT_SIGNUP_ID));
-    PROPERTY_SET.add(new EnvironmentConfigProperty(DIRECTIONAL_URL_ENV, DIRECTIONAL_URL));
     PROPERTY_SET.add(new EnvironmentConfigProperty(AUTH_PORT_ENV, AUTH_PORT));
     PROPERTY_SET.add(new EnvironmentConfigProperty(SWAGGER_PORT_ENV, SWAGGER_PORT));
+    PROPERTY_SET.add(new EnvironmentConfigProperty(BOOTSTRAP_BOT_ID_ENV, BOOTSTRAP_BOT_ID));
+    PROPERTY_SET.add(new EnvironmentConfigProperty(BOOTSTRAP_ICON_URL_ENV, BOOTSTRAP_ICON_URL));
+    PROPERTY_SET.add(new EnvironmentConfigProperty(BOOTSTRAP_EMAIL_SUBJECT_TEMPLATE_ENV,
+        BOOTSTRAP_EMAIL_SUBJECT_TEMPLATE));
+    PROPERTY_SET.add(new EnvironmentConfigProperty(BOOTSTRAP_EMAIL_MESSAGE_TEMPLATE_ENV,
+        BOOTSTRAP_EMAIL_MESSAGE_TEMPLATE));
+    PROPERTY_SET.add(new EnvironmentConfigProperty(BOOTSTRAP_MESSAGE_DIRECTIONAL_TEMPLATE_ENV,
+        BOOTSTRAP_MESSAGE_DIRECTIONAL_TEMPLATE));
+    PROPERTY_SET.add(new EnvironmentConfigProperty(BOOTSTRAP_MESSAGE_WELCOME_TEMPLATE_ENV,
+        BOOTSTRAP_MESSAGE_WELCOME_TEMPLATE));
   }
 
   /**
@@ -143,7 +144,7 @@ public class BotConfig {
       if (configDir == null) {
         configDir = System.getProperty(CONFIG_DIR);
         if (configDir == null) {
-          configDir = "com/symphony/adminbot/config";
+          configDir = "com/symphony/adminbot/quickstart";
         }
       }
 
