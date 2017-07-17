@@ -21,23 +21,98 @@
             <artifactId>migbase64</artifactId>
             <version>2.2</version>
         </dependency>
+        <dependency>
+            <groupId>org.zcore.maven</groupId>
+            <artifactId>merge-maven-plugin</artifactId>
+            <version>0.0.3</version>
+        </dependency>
     </dependencies>
 
     <properties>
-        <swagger.source.agent>${basedir}/src/main/resources/agent-swagger/agent-api-public.yaml</swagger.source.agent>
-        <swagger.source.pod>${basedir}/src/main/resources/pod-swagger/pod-api-public.yaml</swagger.source.pod>
-        <swagger.source.auth>${basedir}/src/main/resources/auth-swagger/auth-api-public.yaml</swagger.source.auth>
+        <agent.paths.public>${basedir}/src/main/resources/agent-swagger/agent-api-paths-public.yaml</agent.paths.public>
+        <agent.paths.deprecated>${basedir}/src/main/resources/agent-swagger/agent-api-paths-deprecated.yaml</agent.paths.deprecated>
+        <agent.definitions.public>${basedir}/src/main/resources/agent-swagger/agent-api-definitions-public.yaml</agent.definitions.public>
+        <agent.definitions.deprecated>${basedir}/src/main/resources/agent-swagger/agent-api-definitions-deprecated.yaml</agent.definitions.deprecated>
+
+        <pod.paths.public>${basedir}/src/main/resources/pod-swagger/pod-api-paths-public.yaml</pod.paths.public>
+        <pod.paths.deprecated>${basedir}/src/main/resources/pod-swagger/pod-api-paths-deprecated.yaml</pod.paths.deprecated>
+        <pod.definitions.public>${basedir}/src/main/resources/pod-swagger/pod-api-definitions-public.yaml</pod.definitions.public>
+        <pod.definitions.deprecated>${basedir}/src/main/resources/pod-swagger/pod-api-definitions-deprecated.yaml</pod.definitions.deprecated>
+
+        <auth.paths.public>${basedir}/src/main/resources/auth-swagger/authenticator-api-paths-public.yaml</auth.paths.public>
+        <auth.paths.deprecated>${basedir}/src/main/resources/auth-swagger/authenticator-api-paths-deprecated.yaml</auth.paths.deprecated>
+        <auth.definitions.public>${basedir}/src/main/resources/auth-swagger/authenticator-api-definitions-public.yaml</auth.definitions.public>
+        <auth.definitions.deprecated>${basedir}/src/main/resources/auth-swagger/authenticator-api-definitions-deprecated.yaml</auth.definitions.deprecated>
 
         <templates.source>${basedir}/src/main/resources/templates</templates.source>
-        <jackson.version>2.7.3</jackson.version>
-        <jersey.version>2.25.1</jersey.version>
+
         <agent.api.package>com.symphony.api.agent</agent.api.package>
         <pod.api.package>com.symphony.api.pod</pod.api.package>
         <auth.api.package>com.symphony.api.auth</auth.api.package>
+
+        <merge.output>${basedir}/target</merge.output>
+
+        <jackson.version>2.7.3</jackson.version>
+        <jersey.version>2.25.1</jersey.version>
+        <merge.plugin.version>0.0.3</merge.plugin.version>
     </properties>
 
     <build>
         <plugins>
+
+
+            <plugin>
+                <groupId>org.zcore.maven</groupId>
+                <artifactId>merge-maven-plugin</artifactId>
+                <version>${merge.plugin.version}</version>
+                <executions>
+                    <execution>
+                        <id>merge-files</id>
+                        <phase>validate</phase>
+                        <goals>
+                            <goal>merge</goal>
+                        </goals>
+                    </execution>
+                </executions>
+
+                <configuration>
+                    <mergers>
+                        <merger>
+                            <target>${merge.output}/agent-api.yaml</target>
+                            <sources>
+                                <source>${agent.paths.public}</source>
+                                <source>${agent.paths.deprecated}</source>
+                                <source>${agent.definitions.public}</source>
+                                <source>${agent.definitions.deprecated}</source>
+                            </sources>
+                        </merger>
+
+                        <merger>
+                            <target>${merge.output}/auth-api.yaml</target>
+                            <sources>
+                                <source>${auth.paths.public}</source>
+                                <source>${auth.paths.deprecated}</source>
+                                <source>${auth.definitions.public}</source>
+                                <source>${auth.definitions.deprecated}</source>
+                            </sources>
+                        </merger>
+
+                        <merger>
+                            <target>${merge.output}/pod-api.yaml</target>
+                            <sources>
+                                <source>${pod.paths.public}</source>
+                                <source>${pod.paths.deprecated}</source>
+                                <source>${pod.definitions.public}</source>
+                                <source>${pod.definitions.deprecated}</source>
+                            </sources>
+                        </merger>
+                    </mergers>
+                </configuration>
+            </plugin>
+
+
+
+
             <plugin>
                 <groupId>io.swagger</groupId>
                 <artifactId>swagger-codegen-maven-plugin</artifactId>
@@ -49,7 +124,7 @@
                             <goal>generate</goal>
                         </goals>
                         <configuration>
-                            <inputSpec>${swagger.source.agent}</inputSpec>
+                            <inputSpec>${merge.output}/agent-api.yaml</inputSpec>
                             <language>java</language>
                             <templateDirectory>${templates.source}</templateDirectory>
                             <configOptions>
@@ -61,13 +136,14 @@
                             </configOptions>
                         </configuration>
                     </execution>
+
                     <execution>
                         <id>auth</id>
                         <goals>
                             <goal>generate</goal>
                         </goals>
                         <configuration>
-                            <inputSpec>${swagger.source.auth}</inputSpec>
+                            <inputSpec>${merge.output}/auth-api.yaml</inputSpec>
                             <language>java</language>
                             <templateDirectory>${templates.source}</templateDirectory>
                             <configOptions>
@@ -79,13 +155,14 @@
                             </configOptions>
                         </configuration>
                     </execution>
+
                     <execution>
                         <id>pod</id>
                         <goals>
                             <goal>generate</goal>
                         </goals>
                         <configuration>
-                            <inputSpec>${swagger.source.pod}</inputSpec>
+                            <inputSpec>${merge.output}/pod-api.yaml</inputSpec>
                             <language>java</language>
                             <templateDirectory>${templates.source}</templateDirectory>
                             <configOptions>

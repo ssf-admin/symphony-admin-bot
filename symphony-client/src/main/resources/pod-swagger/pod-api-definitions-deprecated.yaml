@@ -1,0 +1,25 @@
+  SessionInfo:
+    description: Information about the current user's session
+    type: object
+    properties:
+      userId:
+        type: integer
+        format: int64
+  RoomCreate:
+    description: Room Creation Object. Once the chatroom is created, modify attributes and deactive/reactivate via the specific API calls.
+    type: object
+    properties:
+      roomAttributes:
+        $ref: '#/definitions/RoomAttributes'
+      immutableRoomAttributes:
+        $ref: '#/definitions/ImmutableRoomAttributes'
+  User:
+    description: User record.
+    type: object
+    properties:
+      id:
+        type: integer
+        format: int64
+      emailAddress:
+        type: string
+        format: email

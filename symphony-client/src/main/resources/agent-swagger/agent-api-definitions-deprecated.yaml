@@ -1,0 +1,231 @@
+#
+# Deprecated definitions
+#
+  MessageSubmission:
+    type: object
+    properties:
+      format:
+        type: string
+        enum:
+          - TEXT
+          - MESSAGEML
+      message:
+        type: string
+  V2MessageSubmission:
+    type: object
+    properties:
+      format:
+        type: string
+        enum:
+          - TEXT
+          - MESSAGEML
+      message:
+        type: string
+      attachments:
+        type: array
+        items:
+          $ref: '#/definitions/AttachmentInfo'
+  MessageImportList:
+    description: |
+      An ordered list of historic messages to be imported.
+      A list of import responsees will be returned in the same order.
+    type: array
+    items:
+      $ref: '#/definitions/ImportedMessage'
+  ImportedMessage:
+    description: |
+      A historic message to be imported into the system.
+      The importing user must have the Content Management role.
+      Also, the importing user must be a member of the conversation it is importing into.
+      The user that the message is intended to have come from must also be present in the conversation.
+      The intended message timestamp must be a valid time from the past. It cannot be a future timestamp.
+      By design, imported messages do not stream to datafeed or firehose endpoints.
+    type: object
+    properties:
+      message:
+        type: string
+        format: MessageML
+        description: Message text in MessageML
+      format:
+        type: string
+        enum:
+          - TEXT
+          - MESSAGEML
+      intendedMessageTimestamp:
+        description: |
+          The timestamp representing the time when the message was sent in the original system
+          in milliseconds since Jan 1st 1970.
+        type: integer
+        format: int64
+      intendedMessageFromUserId:
+        description: |
+          The long integer userid of the Symphony user who you intend to show sent the message.
+        type: integer
+        format: int64
+      originatingSystemId:
+        description: |
+          The ID of the system through which the message was originally sent.
+        type: string
+      streamId:
+        type: string
+    required:
+    - message
+    - intendedMessageTimestamp
+    - intendedMessageFromUserId
+    - originatingSystemId
+    - streamId
+  V2MessageImportList:
+      description: |
+        An ordered list of historic messages to be imported.
+        A list of import responsees will be returned in the same order.
+      type: array
+      items:
+        $ref: '#/definitions/V2ImportedMessage'
+  V2ImportedMessage:
+    description: |
+      A historic message to be imported into the system.
+      The importing user must have the Content Management role.
+      Also, the importing user must be a member of the conversation it is importing into.
+      The user that the message is intended to have come from must also be present in the conversation.
+      The intended message timestamp must be a valid time from the past. It cannot be a future timestamp.
+      By design, imported messages do not stream to datafeed or firehose endpoints.
+    type: object
+    properties:
+      message:
+        type: string
+        format: MessageML
+        description: Message text in MessageML
+      format:
+        type: string
+        enum:
+          - TEXT
+          - MESSAGEML
+      intendedMessageTimestamp:
+        description: |
+          The timestamp representing the time when the message was sent in the original system
+          in milliseconds since Jan 1st 1970.
+        type: integer
+        format: int64
+      intendedMessageFromUserId:
+        description: |
+          The long integer userid of the Symphony user who you intend to show sent the message.
+        type: integer
+        format: int64
+      originatingSystemId:
+        description: |
+          The ID of the system through which the message was originally sent.
+        type: string
+      originalMessageId:
+        description: |
+          The ID of the message in the original system.
+        type: string
+      streamId:
+        type: string
+    required:
+    - message
+    - intendedMessageTimestamp
+    - intendedMessageFromUserId
+    - originatingSystemId
+    - streamId
+  ImportResponseList:
+    type: array
+    items:
+      $ref: '#/definitions/ImportResponse'
+  ImportResponse:
+    type: object
+    properties:
+      messageId:
+        description: |
+          If the message was successfully imported then the message ID in the system
+          of the newly created message.
+        type: string
+      diagnostic:
+        description: |
+          A diagnostic message containing an error message in the event that the
+          message import failed. May also be present in the case of a successful
+          call if there is useful narrative to return.
+        type: string
+  V2ImportResponseList:
+    type: array
+    items:
+      $ref: '#/definitions/V2ImportResponse'
+  V2ImportResponse:
+    type: object
+    properties:
+      messageId:
+        description: |
+          If the message was successfully imported then the message ID in the system
+          of the newly created message.
+        type: string
+      originatingSystemId:
+        description: |
+          The ID of the system through which the message was originally sent.
+        type: string
+      originalMessageId:
+        description: |
+          The ID of the message in the original system.
+        type: string
+      diagnostic:
+        description: |
+          A diagnostic message containing an error message in the event that the
+          message import failed. May also be present in the case of a successful
+          call if there is useful narrative to return.
+        type: string
+  BaseMessage:
+    type: object
+    discriminator: messageType
+    properties:
+      id:
+        type: string
+        description: The messageId is assigned by the ingestor service when a message is sent.
+      timestamp:
+        type: string
+      messageType:
+        type: string
+      streamId:
+        type: string
+    required:
+    - messageType
+    - timestamp
+    - streamId
+  V1HealthCheckResponse:
+    deprecated: true
+    type: object
+    properties:
+      podConnectivity:
+        type: boolean
+        description: Indicates whether the Agent server can connect to the Pod
+      podConnectivityError:
+        type: string
+        description: Error details in case of no Pod connectivity
+      keyManagerConnectivity:
+        type: boolean
+        description: Indicates whether the Agent server can connect to the Key Manager
+      keyManagerConnectivityError:
+        type: string
+        description: Error details in case of no Key Manager connectivity
+      version:
+        type: string
+        description: The version number of the Agent server
+  Message:
+    type: object
+    description: A representation of a message sent by a user of Symphony.
+    allOf:
+    - $ref: '#/definitions/BaseMessage'
+    - type: object
+      properties:
+        message:
+          type: string
+          format: MessageML
+          description: Message text in MessageML
+        fromUserId:
+          type: integer
+          format: int64
+          description: the Symphony userId of the user who sent the message. This will be populated by the server (and actually ignored if included when sending a message).
+      required:
+      - message
+      - fromUserId
+  MessageList:
+    type: array
+    items:
+      $ref: '#/definitions/Message'
