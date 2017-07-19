@@ -48,10 +48,7 @@ public class DeveloperEmailService {
    */
   public void sendWelcomeEmail(DeveloperBootstrapState developerState) {
     try {
-      BootstrapTemplateData developerTemplateData = new BootstrapTemplateData(
-          developerState.getDeveloper(),
-          developerState.getDeveloperSignUpForm(),
-          developerState.getPassword());
+      BootstrapTemplateData developerTemplateData = new BootstrapTemplateData(developerState);
       MessageTemplate subTemplate = new MessageTemplate(subjectTemplate);
       MessageTemplate emailTemplate = new MessageTemplate(messageTemplate);
 

@@ -1,7 +1,11 @@
 package com.symphony.adminbot.bootstrap.service;
 
 import com.symphony.adminbot.bootstrap.model.DeveloperBootstrapState;
+import com.symphony.adminbot.bootstrap.model.template.BootstrapTemplateData;
+import com.symphony.adminbot.commons.BotConstants;
 import com.symphony.adminbot.config.BotConfig;
+import com.symphony.adminbot.util.file.FileUtil;
+import com.symphony.adminbot.util.template.MessageTemplate;
 import com.symphony.api.adminbot.model.Developer;
 import com.symphony.api.adminbot.model.DeveloperSignUpForm;
 import com.symphony.api.clients.ApplicationClient;
@@ -11,6 +15,8 @@ import com.symphony.api.pod.model.ApplicationDetail;
 import com.symphony.api.pod.model.ApplicationInfo;
 import com.symphony.api.pod.model.Feature;
 import com.symphony.api.pod.model.FeatureList;
+import com.symphony.api.pod.model.PodAppEntitlement;
+import com.symphony.api.pod.model.PodAppEntitlementList;
 import com.symphony.api.pod.model.UserAppEntitlement;
 import com.symphony.api.pod.model.UserAppEntitlementList;
 import com.symphony.api.pod.model.UserAttributes;
@@ -22,6 +28,7 @@ import org.apache.commons.lang.WordUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -61,6 +68,8 @@ public class DeveloperRegistrationService {
 
   private UsersClient usersClient;
   private ApplicationClient applicationClient;
+
+  private int botId = -1;
 
   public DeveloperRegistrationService(UsersClient usersClient, ApplicationClient applicationClient){
     this.usersClient = usersClient;
@@ -143,7 +152,9 @@ public class DeveloperRegistrationService {
     if(StringUtils.isNotBlank(signUpForm.getAppIconUrl())) {
       applicationInfo.setIconUrl(signUpForm.getAppIconUrl());
     } else {
-      applicationInfo.setIconUrl(System.getProperty(BotConfig.BOOTSTRAP_ICON_URL));
+      BootstrapTemplateData templateData = new BootstrapTemplateData(bootstrapState);
+      MessageTemplate iconTemplate = new MessageTemplate(System.getProperty(BotConfig.BOOTSTRAP_ICON_URL_TEMPLATE));
+      applicationInfo.setIconUrl(iconTemplate.buildFromData(templateData));
     }
 
     applicationDetail.setCert(bootstrapState.getCompanyCertMap().get(appId).getPem());
@@ -164,7 +175,7 @@ public class DeveloperRegistrationService {
     UserAppEntitlementList userAppEntitlements = new UserAppEntitlementList();
 
     UserAppEntitlement userAppEntitlement = new UserAppEntitlement();
-    userAppEntitlement.appId(bootstrapState.getApplicationDetail().getId());
+    userAppEntitlement.appId(bootstrapState.getBootstrapInfo().getAppId());
     userAppEntitlement.appName(bootstrapState.getDeveloperSignUpForm().getAppName());
     userAppEntitlement.setListed(false);
     userAppEntitlement.setInstall(true);
@@ -176,11 +187,33 @@ public class DeveloperRegistrationService {
   }
 
   /**
+   * Gets a default bot username
+   * @return a default bot username
+   */
+  public String getDefaultBotUsername() {
+    try {
+      String path = System.getProperty(BotConfig.BOOTSTRAP_BOT_ID);
+      if (botId == -1) {
+        String text = FileUtil.readFile(path).replace("\n", "");
+        botId = Integer.parseInt(text);
+        botId += 1;
+      } else {
+        botId += 1;
+        FileUtil.writeFile("" + botId, path);
+      }
+    } catch (IOException e) {
+      LOG.error("Failed to retrieve bot sign up id: ", e);
+    }
+
+    return BotConstants.BOT_USERNAME + botId;
+  }
+
+  /**
    * Checks if partners already exist as symphony users.
    * @param signUpForm the sign up form containing the partners
    * @return if all partners do not exist as symphony users
    */
-  public boolean allDevelopersDoNotExist(DeveloperSignUpForm signUpForm) throws ApiException {
+  public boolean oneDeveloperExists(DeveloperSignUpForm signUpForm) throws ApiException {
     Set<String> allEmails = new HashSet<>();
     String creatorEmail = signUpForm.getCreator().getEmail();
     for(Developer developer : signUpForm.getTeam()) {
@@ -190,10 +223,10 @@ public class DeveloperRegistrationService {
 
     for (String email : allEmails) {
       if (usersClient.userExistsByEmail(email)) {
-        return false;
+        return true;
       }
     }
-    return true;
+    return false;
   }
 
   /**
@@ -201,7 +234,14 @@ public class DeveloperRegistrationService {
    * @param developerSignUpForm the sign up form to base the bot and app info on
    * @return if the bot and app does not exist
    */
-  public boolean botAndAppDoNotExist(DeveloperSignUpForm developerSignUpForm) throws ApiException {
+  public boolean botOrAppExist(String appId, DeveloperSignUpForm developerSignUpForm) throws ApiException {
+    PodAppEntitlementList podAppEntitlements = usersClient.listPodApps();
+    for(PodAppEntitlement appEntitlement : podAppEntitlements) {
+      if(appEntitlement.getAppId().equals(appId)
+          && appEntitlement.getAppName().equals(developerSignUpForm.getAppName())){
+        return true;
+      }
+    }
     return usersClient.userExistsByEmail(developerSignUpForm.getBotEmail());
   }
 

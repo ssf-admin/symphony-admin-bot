@@ -15,7 +15,6 @@ import com.symphony.api.pod.model.CompanyCertStatus;
 import com.symphony.api.pod.model.CompanyCertType;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.lang.WordUtils;
 import org.bouncycastle.asn1.x509.AlgorithmIdentifier;
 import org.bouncycastle.cert.X509CertificateHolder;
 import org.bouncycastle.cert.X509v3CertificateBuilder;
@@ -54,7 +53,6 @@ import java.util.HashSet;
 import java.util.Set;
 
 import javax.security.auth.x500.X500Principal;
-import javax.ws.rs.BadRequestException;
 import javax.ws.rs.InternalServerErrorException;
 
 /**
@@ -66,8 +64,6 @@ public class DeveloperCertService {
   private AttachmentsClient attachmentsClient;
   private SecurityClient securityClient;
 
-  private int botId = -1;
-
   public DeveloperCertService(SecurityClient securityClient, AttachmentsClient attachmentsClient){
     this.securityClient = securityClient;
     this.attachmentsClient = attachmentsClient;
@@ -76,14 +72,13 @@ public class DeveloperCertService {
   /**
    * Generates cert and registers it on the pod.
    * Adds company cert info to bootstrap state.
-   * @param name name for the cert
+   * @param commonName common name for the cert
    * @param password password for cert
    * @return the common name of the cert
    */
-  public CompanyCertDetail generateAndRegisterCert(String name, String password,
+  public CompanyCertDetail generateAndRegisterCert(String commonName, String password,
       DeveloperBootstrapState bootstrapState) {
     try {
-      String commonName = getCommonName(name);
       KeyPair keys = createKeyPair("RSA", 2048);
 
       //Generate cert
@@ -151,47 +146,6 @@ public class DeveloperCertService {
       LOG.error("Error occurred when uploading attachments: ", e);
       throw new InternalServerErrorException(BotConstants.INTERNAL_ERROR);
     }
-  }
-
-  /**
-   * Gets a default bot username
-   * @return a default bot username
-   */
-  public String getDefaultBotUsername() {
-    try {
-      String path = System.getProperty(BotConfig.BOOTSTRAP_BOT_ID);
-      if (botId == -1) {
-        String text = FileUtil.readFile(path).replace("\n", "");
-        botId = Integer.parseInt(text);
-        botId += 1;
-      } else {
-        botId += 1;
-        FileUtil.writeFile("" + botId, path);
-      }
-    } catch (IOException e) {
-      LOG.error("Failed to retrieve bot sign up id: ", e);
-    }
-
-    return BotConstants.BOT_USERNAME + botId;
-  }
-
-  /**
-   * Converts name to common name (camelCase)
-   * @param name the name to convert
-   * @return converted name
-   */
-  private String getCommonName(String name){
-    String commonName;
-    if (StringUtils.isNotBlank(name)) {
-      commonName = WordUtils.capitalize(name);
-      commonName = commonName.replaceFirst("" + name.charAt(0),
-          "" + Character.toLowerCase(name.charAt(0)));
-      commonName = commonName.replaceAll(" ", "");
-    } else {
-      throw new BadRequestException("Name cannot be blank!");
-    }
-
-    return commonName;
   }
 
   /**

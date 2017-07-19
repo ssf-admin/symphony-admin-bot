@@ -22,7 +22,7 @@ public class BotConstants {
   public static final String ADMIN_BOT_NAME = "Admin Bot";
 
   //Bootstrap Error Messages
-  public static final String BOT_EXISTS = "Bot email already exists.";
+  public static final String BOT_APP_EXISTS = "Bot or app already exists.";
   public static final String DEVELOPER_REQUIRED = "All developer fields are required.";
   public static final String APP_NAME_REQUIRED = "App name is required.";
   public static final String APP_DESCRIPTION_REQUIRED = "App description is required.";

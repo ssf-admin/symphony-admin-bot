@@ -37,7 +37,7 @@ public class BotConfig {
   public static final String BOOTSTRAP_EMAIL_MESSAGE_TEMPLATE_ENV = "BOOTSTRAP_EMAIL_MESSAGE_TEMPLATE";
   public static final String BOOTSTRAP_MESSAGE_DIRECTIONAL_TEMPLATE_ENV = "BOOTSTRAP_MESSAGE_DIRECTIONAL_TEMPLATE";
   public static final String BOOTSTRAP_MESSAGE_WELCOME_TEMPLATE_ENV = "BOOTSTRAP_MESSAGE_WELCOME_TEMPLATE";
-  public static final String BOOTSTRAP_ICON_URL_ENV = "BOOTSTRAP_ICON_URL";
+  public static final String BOOTSTRAP_ICON_URL_TEMPLATE_ENV = "BOOTSTRAP_ICON_URL_TEMPLATE";
   public static final String BOOTSTRAP_BOT_ID_ENV = "BOOTSTRAP_BOT_ID";
   public static final String AUTH_PORT_ENV = "AUTH_PORT";
   public static final String SWAGGER_PORT_ENV = "SWAGGER_PORT";
@@ -63,7 +63,6 @@ public class BotConfig {
   public final static String KEYAUTH_URL = "keyauth.url";
   public final static String SYMPHONY_POD = "symphony.agent.pod.url";
   public final static String SYMPHONY_AGENT = "symphony.agent.agent.url";
-  public static final String BOOTSTRAP_ICON_URL = "adminbot.bootstrap.icon.url";
 
   /**
    * DIRECTORIES
@@ -83,6 +82,7 @@ public class BotConfig {
   public static final String BOOTSTRAP_EMAIL_MESSAGE_TEMPLATE = "adminbot.bootstrap.email.message.template";
   public static final String BOOTSTRAP_MESSAGE_DIRECTIONAL_TEMPLATE = "adminbot.bootstrap.message.directional.template";
   public static final String BOOTSTRAP_MESSAGE_WELCOME_TEMPLATE = "adminbot.bootstrap.message.welcome.template";
+  public static final String BOOTSTRAP_ICON_URL_TEMPLATE = "adminbot.bootstrap.icon.url.template";
 
   /**
    * IDs
@@ -121,7 +121,8 @@ public class BotConfig {
     PROPERTY_SET.add(new EnvironmentConfigProperty(AUTH_PORT_ENV, AUTH_PORT));
     PROPERTY_SET.add(new EnvironmentConfigProperty(SWAGGER_PORT_ENV, SWAGGER_PORT));
     PROPERTY_SET.add(new EnvironmentConfigProperty(BOOTSTRAP_BOT_ID_ENV, BOOTSTRAP_BOT_ID));
-    PROPERTY_SET.add(new EnvironmentConfigProperty(BOOTSTRAP_ICON_URL_ENV, BOOTSTRAP_ICON_URL));
+    PROPERTY_SET.add(new EnvironmentConfigProperty(BOOTSTRAP_ICON_URL_TEMPLATE_ENV,
+        BOOTSTRAP_ICON_URL_TEMPLATE));
     PROPERTY_SET.add(new EnvironmentConfigProperty(BOOTSTRAP_EMAIL_SUBJECT_TEMPLATE_ENV,
         BOOTSTRAP_EMAIL_SUBJECT_TEMPLATE));
     PROPERTY_SET.add(new EnvironmentConfigProperty(BOOTSTRAP_EMAIL_MESSAGE_TEMPLATE_ENV,

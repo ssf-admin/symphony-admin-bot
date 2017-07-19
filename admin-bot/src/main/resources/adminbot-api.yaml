@@ -95,29 +95,40 @@ definitions:
           $ref: '#/definitions/Developer'
       appName:
         type: string
+        required: true
       appUrl:
         type: string
-      appIconUrl:
-        type: string
+        required: true
       appCompanyName:
         type: string
+        required: true
       appDomain:
         type: string
+        required: true
       appDescription:
         type: string
+        required: true
       botName:
         type: string
+        required: true
       botEmail:
         type: string
+        required: true
+      appIconUrl:
+        type: string
+        required: false
   Developer:
     type: object
     properties:
       firstName:
         type: string
+        required: true
       lastName:
         type: string
+        required: true
       email:
         type: string
+        required: true
   DeveloperBootstrapInfo:
     type: object
     properties:

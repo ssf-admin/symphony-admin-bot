@@ -100,7 +100,7 @@ public class ExpiringFileLoaderCache<K, V> {
    * @return the value
    */
   public V get(K key) throws ExecutionException {
-    return cache.get(key);
+    return cache.getIfPresent(key);
   }
 
   /**

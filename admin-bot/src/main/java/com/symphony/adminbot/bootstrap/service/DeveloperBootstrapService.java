@@ -21,7 +21,6 @@ import com.symphony.security.hash.IClientHash;
 import com.symphony.security.utils.CryptoGenerator;
 
 import com.sun.jndi.toolkit.url.Uri;
-import javafx.application.Application;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.WordUtils;
 import org.slf4j.Logger;
@@ -81,15 +80,17 @@ public class DeveloperBootstrapService {
    */
   public DeveloperBootstrapInfo bootstrapPartner(Developer developer) throws ApiException, ExecutionException {
     DeveloperBootstrapState developerState = partnerStateCache.get(developer);
+    if(developerState == null) {
+      throw new BadRequestException("Developer bootstrap state info not found.");
+    }
     DeveloperSignUpForm signUpForm = developerState.getDeveloperSignUpForm();
-
     if(developerState.getBootstrapInfo() == null) {
       DeveloperBootstrapInfo developerBootstrapInfo = new DeveloperBootstrapInfo();
 
       //Register bot cert
-      String botUsername = developerCertService.getDefaultBotUsername();
+      String botUsername = developerRegistrationService.getDefaultBotUsername();
       CompanyCertDetail botCertDetail =
-          developerCertService.generateAndRegisterCert(botUsername, "", developerState);
+          developerCertService.generateAndRegisterCert(getCommonName(botUsername), "", developerState);
       botUsername = botCertDetail.getCompanyCertInfo().getCommonName();
       //Register bot
       developerBootstrapInfo.setBotUsername(botUsername);
@@ -104,7 +105,7 @@ public class DeveloperBootstrapService {
       if (StringUtils.isNotBlank(signUpForm.getAppName())) {
         //Register app cert
         CompanyCertDetail appCertDetail = developerCertService.generateAndRegisterCert(
-            signUpForm.getAppName(), "", developerState);
+            getCommonName(signUpForm.getAppName()), "", developerState);
 
         //Register app
         String appId = appCertDetail.getCompanyCertInfo().getCommonName();
@@ -153,20 +154,26 @@ public class DeveloperBootstrapService {
     }
   }
 
+  /**
+   * Validates sign up form.
+   * @param signUpForm the sign up form to validate
+   */
   private void validateSignUpForm(DeveloperSignUpForm signUpForm) throws ApiException {
-    if(!developerRegistrationService.allDevelopersDoNotExist(signUpForm)){
+    if(developerRegistrationService.oneDeveloperExists(signUpForm)){
       throw new BadRequestException(BotConstants.USER_EXISTS);
     }
-    if(developerRegistrationService.botAndAppDoNotExist(signUpForm)){
-      throw new BadRequestException(BotConstants.BOT_EXISTS);
+
+    if (StringUtils.isBlank(signUpForm.getAppName())) {
+      throw new BadRequestException(BotConstants.APP_NAME_REQUIRED);
+    }
+    String appId = getCommonName(signUpForm.getAppName());
+    if(developerRegistrationService.botOrAppExist(appId, signUpForm)){
+      throw new BadRequestException(BotConstants.BOT_APP_EXISTS);
     }
     if (StringUtils.isBlank(signUpForm.getCreator().getFirstName()) ||
         StringUtils.isBlank(signUpForm.getCreator().getLastName()) ||
         StringUtils.isBlank(signUpForm.getCreator().getEmail())) {
       throw new BadRequestException(BotConstants.DEVELOPER_REQUIRED);
-    }
-    if (StringUtils.isBlank(signUpForm.getAppName())) {
-      throw new BadRequestException(BotConstants.APP_NAME_REQUIRED);
     }
     if (StringUtils.isBlank(signUpForm.getAppDescription())) {
       throw new BadRequestException(BotConstants.APP_DESCRIPTION_REQUIRED);
@@ -282,6 +289,25 @@ public class DeveloperBootstrapService {
       }
     }
     throw new BadRequestException(BotConstants.DOMAIN_MUST_MATCH);
+  }
+
+  /**
+   * Converts name to common name (camelCase)
+   * @param name the name to convert
+   * @return converted name
+   */
+  private String getCommonName(String name){
+    String commonName;
+    if (StringUtils.isNotBlank(name)) {
+      commonName = WordUtils.capitalize(name);
+      commonName = commonName.replaceFirst("" + name.charAt(0),
+          "" + Character.toLowerCase(name.charAt(0)));
+      commonName = commonName.replaceAll(" ", "");
+    } else {
+      throw new BadRequestException("Name cannot be blank!");
+    }
+
+    return commonName;
   }
 
 }

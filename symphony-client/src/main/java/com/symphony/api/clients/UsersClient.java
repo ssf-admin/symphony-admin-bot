@@ -36,7 +36,6 @@ public class UsersClient {
   public UserDetail createUser(UserCreate user) throws ApiException {
     UserApi userApi = new UserApi(apiClient);
 
-
     UserDetail userDetail;
     try {
       userDetail = userApi.v1AdminUserCreatePost(symAuth.getSessionToken().getToken(), user);
@@ -114,6 +113,19 @@ public class UsersClient {
     try {
       appEntitlementList = appEntitlementApi.v1AdminUserUidAppEntitlementListPost(
           symAuth.getSessionToken().getToken(), userId, entitlements);
+    } catch (ApiException e) {
+      throw new ApiException("Could not update entitlements: " + e);
+    }
+
+    return appEntitlementList;
+  }
+
+  public PodAppEntitlementList listPodApps() throws ApiException {
+    AppEntitlementApi appEntitlementApi = new AppEntitlementApi(apiClient);
+
+    PodAppEntitlementList appEntitlementList;
+    try {
+      appEntitlementList = appEntitlementApi.v1AdminAppEntitlementListGet(symAuth.getSessionToken().getToken());
     } catch (ApiException e) {
       throw new ApiException("Could not update entitlements: " + e);
     }

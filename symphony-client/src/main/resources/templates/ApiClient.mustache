@@ -22,6 +22,7 @@ import org.glassfish.jersey.media.multipart.FormDataContentDisposition;
 import org.glassfish.jersey.media.multipart.MultiPart;
 import org.glassfish.jersey.media.multipart.MultiPartFeature;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider;
@@ -67,6 +68,7 @@ public class ApiClient {
   private boolean debugging = false;
   private int connectionTimeout = 0;
 
+  private ObjectMapper mapper;
   private Client httpClient;
   private JSON json;
   private String tempFolderPath = null;
@@ -536,6 +538,12 @@ public class ApiClient {
         form.param(param.getKey(), parameterToString(param.getValue()));
       }
       entity = Entity.entity(form, MediaType.APPLICATION_FORM_URLENCODED_TYPE);
+    } else if(contentType.equals(MediaType.APPLICATION_JSON)) {
+      try {
+         entity = Entity.entity(mapper.writeValueAsString(obj), contentType);
+      } catch (JsonProcessingException e) {
+         throw new ApiException("Serialization of object failed.");
+      }
     } else {
       // We let jersey handle the serialization
       entity = Entity.entity(obj, contentType);
@@ -742,7 +750,7 @@ public class ApiClient {
     clientConfig.register(json);
     clientConfig.register(JacksonFeature.class);
 
-    ObjectMapper mapper = new ObjectMapper();
+    mapper = new ObjectMapper();
     mapper.setVisibility(mapper.getSerializationConfig().getDefaultVisibilityChecker()
         .withFieldVisibility(JsonAutoDetect.Visibility.ANY)
         .withGetterVisibility(JsonAutoDetect.Visibility.NONE)

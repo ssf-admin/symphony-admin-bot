@@ -53,8 +53,7 @@ public class DeveloperMessageService {
    */
   public void sendDirectionalMessage(DeveloperBootstrapState developerState) {
     try {
-      BootstrapTemplateData developerTemplateData =
-          new BootstrapTemplateData(developerState.getDeveloper(), null, null);
+      BootstrapTemplateData developerTemplateData = new BootstrapTemplateData(developerState.getDeveloper());
       MessageTemplate partnerDocumentTemplate = new MessageTemplate(directionalMessage);
       String message = partnerDocumentTemplate.buildFromData(developerTemplateData);
 
