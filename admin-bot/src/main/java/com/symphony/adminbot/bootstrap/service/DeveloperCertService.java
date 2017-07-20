@@ -15,6 +15,7 @@ import com.symphony.api.pod.model.CompanyCertStatus;
 import com.symphony.api.pod.model.CompanyCertType;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.WordUtils;
 import org.bouncycastle.asn1.x509.AlgorithmIdentifier;
 import org.bouncycastle.cert.X509CertificateHolder;
 import org.bouncycastle.cert.X509v3CertificateBuilder;
@@ -53,6 +54,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import javax.security.auth.x500.X500Principal;
+import javax.ws.rs.BadRequestException;
 import javax.ws.rs.InternalServerErrorException;
 
 /**
@@ -72,7 +74,7 @@ public class DeveloperCertService {
   /**
    * Generates cert and registers it on the pod.
    * Adds company cert info to bootstrap state.
-   * @param commonName common name for the cert
+   * @param commonName name for the cert
    * @param password password for cert
    * @return the common name of the cert
    */
@@ -105,8 +107,7 @@ public class DeveloperCertService {
 
       //Save cert info for later
       CompanyCertDetail companyCertDetail = securityClient.createCert(companyCert);
-      bootstrapState.getCompanyCertMap().put(
-          companyCertDetail.getCompanyCertInfo().getCommonName(), companyCert);
+      bootstrapState.getCompanyCertMap().put(commonName, companyCert);
 
       LOG.info("Generated and registered new cert " + commonName + ".");
       return companyCertDetail;

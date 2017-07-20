@@ -10,7 +10,7 @@ Symphony Admin Bot
 
 **Quickstart**
 1. Copy the quickstart folder within project to a desired folder.
-2. Replace paths appropriatley in bot.properties (see path labels).
+2. Replace paths appropriately in bot.properties (see path labels).
 3. Add the admin user cert/pem and pod CA cert to the quickstart "certs" folder. 
    - > This folder will automagically build truststore/keystore based on certs. Folder accepts file ".p12", ".cer" and ".pem" types.
    - > If you add any ".p12" keys, make sure to add respective password to password.txt file in quickstart "data" folder.

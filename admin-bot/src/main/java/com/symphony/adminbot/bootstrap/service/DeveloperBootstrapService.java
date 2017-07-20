@@ -86,15 +86,15 @@ public class DeveloperBootstrapService {
     DeveloperSignUpForm signUpForm = developerState.getDeveloperSignUpForm();
     if(developerState.getBootstrapInfo() == null) {
       DeveloperBootstrapInfo developerBootstrapInfo = new DeveloperBootstrapInfo();
+      developerState.setBootstrapInfo(developerBootstrapInfo);
 
       //Register bot cert
       String botUsername = developerRegistrationService.getDefaultBotUsername();
-      CompanyCertDetail botCertDetail =
-          developerCertService.generateAndRegisterCert(getCommonName(botUsername), "", developerState);
-      botUsername = botCertDetail.getCompanyCertInfo().getCommonName();
-      //Register bot
+      developerCertService.generateAndRegisterCert(botUsername, "", developerState);
       developerBootstrapInfo.setBotUsername(botUsername);
-      UserDetail botDetail = developerRegistrationService.registerBot(botUsername, signUpForm);
+      developerBootstrapInfo.setBotEmail(signUpForm.getBotEmail());
+      //Register bot
+      UserDetail botDetail = developerRegistrationService.registerBot(developerState);
       //Save bot detail for all team members
       for(Developer teamMember: developerState.getTeamMembers()){
         DeveloperBootstrapState teamMemberState = partnerStateCache.get(teamMember);
@@ -102,15 +102,14 @@ public class DeveloperBootstrapService {
       }
       developerState.setBotDetail(botDetail);
 
-      if (StringUtils.isNotBlank(signUpForm.getAppName())) {
+      if (StringUtils.isNotBlank(signUpForm.getAppId())) {
         //Register app cert
-        CompanyCertDetail appCertDetail = developerCertService.generateAndRegisterCert(
-            getCommonName(signUpForm.getAppName()), "", developerState);
+        developerCertService.generateAndRegisterCert(signUpForm.getAppId(), "", developerState);
+        developerBootstrapInfo.setAppId(signUpForm.getAppId());
+        developerBootstrapInfo.setAppName(signUpForm.getAppName());
 
         //Register app
-        String appId = appCertDetail.getCompanyCertInfo().getCommonName();
-        developerBootstrapInfo.setAppId(appId);
-        ApplicationDetail applicationDetail = developerRegistrationService.registerApp(appId, developerState);
+        ApplicationDetail applicationDetail = developerRegistrationService.registerApp(developerState);
         //Save app detail for all team members
         for(Developer teamMember: developerState.getTeamMembers()){
           DeveloperBootstrapState teamMemberState = partnerStateCache.get(teamMember);
@@ -119,14 +118,11 @@ public class DeveloperBootstrapService {
         developerState.setApplicationDetail(applicationDetail);
       }
 
-      developerBootstrapInfo.setAppName(signUpForm.getAppName());
-      developerBootstrapInfo.setBotEmail(signUpForm.getBotEmail());
       //Set bootstrap info for team members (So they know app and bot were already created)
       for(Developer teamMember: developerState.getTeamMembers()){
         DeveloperBootstrapState teamMemberState = partnerStateCache.get(teamMember);
         teamMemberState.setBootstrapInfo(developerBootstrapInfo);
       }
-      developerState.setBootstrapInfo(developerBootstrapInfo);
     }
 
     developerRegistrationService.installApp(developerState);
@@ -163,11 +159,13 @@ public class DeveloperBootstrapService {
       throw new BadRequestException(BotConstants.USER_EXISTS);
     }
 
+    if(StringUtils.isBlank(signUpForm.getAppId())){
+      throw new BadRequestException(BotConstants.APP_ID_REQUIRED);
+    }
     if (StringUtils.isBlank(signUpForm.getAppName())) {
       throw new BadRequestException(BotConstants.APP_NAME_REQUIRED);
     }
-    String appId = getCommonName(signUpForm.getAppName());
-    if(developerRegistrationService.botOrAppExist(appId, signUpForm)){
+    if(developerRegistrationService.botOrAppExist(signUpForm)){
       throw new BadRequestException(BotConstants.BOT_APP_EXISTS);
     }
     if (StringUtils.isBlank(signUpForm.getCreator().getFirstName()) ||
@@ -213,7 +211,8 @@ public class DeveloperBootstrapService {
    * @param signUpForm the sign up form
    * @return the initial partner states
    */
-  private Set<DeveloperBootstrapState> getInitialBootstrapStates(DeveloperSignUpForm signUpForm){
+  private Set<DeveloperBootstrapState> getInitialBootstrapStates(DeveloperSignUpForm signUpForm)
+      throws ApiException {
     Set<Developer> developerSet = new HashSet<>();
     developerSet.add(signUpForm.getCreator());
     developerSet.addAll(signUpForm.getTeam());
@@ -226,8 +225,7 @@ public class DeveloperBootstrapService {
       userAttributes.setEmailAddress(developer.getEmail());
       userAttributes.setFirstName(developer.getFirstName());
       userAttributes.setLastName(developer.getLastName());
-      userAttributes.setUserName(developer.getFirstName().toLowerCase()
-          + WordUtils.capitalize(developer.getLastName()));
+      userAttributes.setUserName(developerRegistrationService.getDeveloperUsername(developer));
       userAttributes.displayName(developer.getFirstName() + " " + developer.getLastName());
       userAttributes.setDepartment(signUpForm.getAppCompanyName());
       userCreate.setUserAttributes(userAttributes);
@@ -289,25 +287,6 @@ public class DeveloperBootstrapService {
       }
     }
     throw new BadRequestException(BotConstants.DOMAIN_MUST_MATCH);
-  }
-
-  /**
-   * Converts name to common name (camelCase)
-   * @param name the name to convert
-   * @return converted name
-   */
-  private String getCommonName(String name){
-    String commonName;
-    if (StringUtils.isNotBlank(name)) {
-      commonName = WordUtils.capitalize(name);
-      commonName = commonName.replaceFirst("" + name.charAt(0),
-          "" + Character.toLowerCase(name.charAt(0)));
-      commonName = commonName.replaceAll(" ", "");
-    } else {
-      throw new BadRequestException("Name cannot be blank!");
-    }
-
-    return commonName;
   }
 
 }

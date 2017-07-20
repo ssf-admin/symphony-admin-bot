@@ -26,10 +26,10 @@ public class DeveloperBootstrapState {
   private Set<Developer> teamMembers;
   private UserCreate userCreate;
   private UserDetail userDetail;
-  private String password;
-  private Stream developerIM;
   private UserDetail botDetail;
   private ApplicationDetail applicationDetail;
+  private String password;
+  private Stream developerIM;
   private Map<String, CompanyCert> companyCertMap;
   private List<AttachmentInfo> certAttachmentInfo;
   private DeveloperBootstrapInfo bootstrapInfo;

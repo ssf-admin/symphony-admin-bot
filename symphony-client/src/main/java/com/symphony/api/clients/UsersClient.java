@@ -82,7 +82,7 @@ public class UsersClient {
       symphonyUser = new SymphonyUser(userApi.v2UserGet(
           symAuth.getSessionToken().getToken(), null, email, null, false));
     } catch (ApiException e) {
-      throw new ApiException("User search failed: " + e);
+      throw new ApiException("User get failed: " + e);
     }
 
     return symphonyUser;
@@ -94,6 +94,23 @@ public class UsersClient {
     UserV2 userV2;
     try {
       userV2 = userApi.v2UserGet(symAuth.getSessionToken().getToken(), null, email, null, false);
+    } catch (ApiException e) {
+      if (e.getCode() == Response.Status.NO_CONTENT.getStatusCode()) {
+        return false;
+      } else {
+        throw new ApiException("User get failed: " + e);
+      }
+    }
+
+    return userV2 != null;
+  }
+
+  public boolean userExistsByUsername(String username) throws ApiException {
+    UsersApi userApi = new UsersApi(apiClient);
+
+    UserV2 userV2;
+    try {
+      userV2 = userApi.v2UserGet(symAuth.getSessionToken().getToken(), null, null, username, false);
     } catch (ApiException e) {
       if (e.getCode() == Response.Status.NO_CONTENT.getStatusCode()) {
         return false;

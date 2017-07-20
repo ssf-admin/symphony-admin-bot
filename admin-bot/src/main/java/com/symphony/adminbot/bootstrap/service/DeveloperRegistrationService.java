@@ -78,11 +78,11 @@ public class DeveloperRegistrationService {
 
   /**
    * Creates a symphony user for the developer.
-   * @param state the developers's current state in the bootstrap process
+   * @param bootstrapState the developers's current state in the bootstrap process
    */
-  public void registerDeveloperUser(DeveloperBootstrapState state) throws ApiException {
-    UserDetail userDetail = usersClient.createUser(state.getUserCreate());
-    state.setUserDetail(userDetail);
+  public void registerDeveloperUser(DeveloperBootstrapState bootstrapState) throws ApiException {
+    UserDetail userDetail = usersClient.createUser(bootstrapState.getUserCreate());
+    bootstrapState.setUserDetail(userDetail);
     LOG.info("Registered new user " + userDetail.getUserAttributes().getUserName() + " with pod.");
 
     FeatureList features = new FeatureList();
@@ -98,16 +98,16 @@ public class DeveloperRegistrationService {
 
   /**
    * Registers a symphony service bot
-   * @param signUpForm the sign up form to base the bot on
+   * @param bootstrapState the developers's current state in the bootstrap process
    */
-  public UserDetail registerBot(String botUsername, DeveloperSignUpForm signUpForm) throws ApiException {
+  public UserDetail registerBot(DeveloperBootstrapState bootstrapState) throws ApiException {
     UserCreate userCreate = new UserCreate();
     UserAttributes userAttributes = new UserAttributes();
     userAttributes.setAccountType(UserAttributes.AccountTypeEnum.SYSTEM);
-    userAttributes.setUserName(botUsername);
-    userAttributes.displayName(signUpForm.getBotName());
-    userAttributes.setEmailAddress(signUpForm.getBotEmail());
-    userAttributes.setDepartment(signUpForm.getAppCompanyName());
+    userAttributes.setUserName(bootstrapState.getBootstrapInfo().getBotUsername());
+    userAttributes.displayName(bootstrapState.getDeveloperSignUpForm().getBotName());
+    userAttributes.setEmailAddress(bootstrapState.getDeveloperSignUpForm().getBotEmail());
+    userAttributes.setDepartment(bootstrapState.getDeveloperSignUpForm().getAppCompanyName());
     userCreate.setUserAttributes(userAttributes);
 
     List<String> roles = new ArrayList<>();
@@ -131,10 +131,9 @@ public class DeveloperRegistrationService {
 
   /**
    * Registers a app with pod.
-   * @param appId the app id
    * @param bootstrapState the developers's current state in the bootstrap process
    */
-  public ApplicationDetail registerApp(String appId, DeveloperBootstrapState bootstrapState)
+  public ApplicationDetail registerApp(DeveloperBootstrapState bootstrapState)
       throws ApiException {
     DeveloperSignUpForm signUpForm = bootstrapState.getDeveloperSignUpForm();
 
@@ -143,7 +142,7 @@ public class DeveloperRegistrationService {
     ApplicationInfo applicationInfo = new ApplicationInfo();
     applicationInfo.setPublisher(signUpForm.getCreator().getFirstName().toLowerCase()
         + WordUtils.capitalize(signUpForm.getCreator().getLastName()));
-    applicationInfo.setAppId(appId);
+    applicationInfo.setAppId(bootstrapState.getDeveloperSignUpForm().getAppId());
     applicationInfo.setAppUrl(signUpForm.getAppUrl());
     applicationInfo.setDescription(signUpForm.getAppDescription());
     applicationInfo.setDomain(signUpForm.getAppDomain());
@@ -152,12 +151,20 @@ public class DeveloperRegistrationService {
     if(StringUtils.isNotBlank(signUpForm.getAppIconUrl())) {
       applicationInfo.setIconUrl(signUpForm.getAppIconUrl());
     } else {
+      String iconUrl = "";
+      try {
+        iconUrl = FileUtil.readFile(System.getProperty(BotConfig.BOOTSTRAP_ICON_URL_TEMPLATE));
+      } catch(IOException e) {
+        LOG.error("Read from icon url template file failed: ", e);
+      }
       BootstrapTemplateData templateData = new BootstrapTemplateData(bootstrapState);
-      MessageTemplate iconTemplate = new MessageTemplate(System.getProperty(BotConfig.BOOTSTRAP_ICON_URL_TEMPLATE));
+      MessageTemplate iconTemplate = new MessageTemplate(iconUrl);
       applicationInfo.setIconUrl(iconTemplate.buildFromData(templateData));
     }
 
-    applicationDetail.setCert(bootstrapState.getCompanyCertMap().get(appId).getPem());
+    applicationDetail.setCert(bootstrapState.getCompanyCertMap()
+        .get(bootstrapState.getDeveloperSignUpForm().getAppId())
+        .getPem());
 
     applicationDetail.setApplicationInfo(applicationInfo);
 
@@ -196,16 +203,26 @@ public class DeveloperRegistrationService {
       if (botId == -1) {
         String text = FileUtil.readFile(path).replace("\n", "");
         botId = Integer.parseInt(text);
-        botId += 1;
-      } else {
-        botId += 1;
-        FileUtil.writeFile("" + botId, path);
       }
+      botId += 1;
+      FileUtil.writeFile("" + botId, path);
     } catch (IOException e) {
       LOG.error("Failed to retrieve bot sign up id: ", e);
     }
 
     return BotConstants.BOT_USERNAME + botId;
+  }
+
+  public String getDeveloperUsername(Developer developer) throws ApiException {
+    int usernameIndex = 0;
+    String baseUsername = developer.getFirstName().toLowerCase()
+        + WordUtils.capitalize(developer.getLastName());
+    while (usersClient.userExistsByUsername(baseUsername)) {
+      baseUsername.replace("" + usernameIndex, "" + usernameIndex + 1);
+      usernameIndex++;
+    }
+
+    return baseUsername;
   }
 
   /**
@@ -234,11 +251,10 @@ public class DeveloperRegistrationService {
    * @param developerSignUpForm the sign up form to base the bot and app info on
    * @return if the bot and app does not exist
    */
-  public boolean botOrAppExist(String appId, DeveloperSignUpForm developerSignUpForm) throws ApiException {
+  public boolean botOrAppExist(DeveloperSignUpForm developerSignUpForm) throws ApiException {
     PodAppEntitlementList podAppEntitlements = usersClient.listPodApps();
     for(PodAppEntitlement appEntitlement : podAppEntitlements) {
-      if(appEntitlement.getAppId().equals(appId)
-          && appEntitlement.getAppName().equals(developerSignUpForm.getAppName())){
+      if(appEntitlement.getAppId().equals(developerSignUpForm.getAppId())){
         return true;
       }
     }
