@@ -141,8 +141,14 @@ public class DeveloperBootstrapService {
     for(DeveloperBootstrapState developerState : bootstrapStates){
       partnerStateCache.put(developerState.getDeveloper(), developerState);
 
-      developerRegistrationService.registerDeveloperUser(developerState);
-      developerEmailService.sendWelcomeEmail(developerState);
+      String randomPassword = UUID.randomUUID().toString().replace("-", "");
+      int randomBegin = (int)(Math.random() * (randomPassword.length() - 3));
+      int randomEnd = ThreadLocalRandom.current().nextInt(randomBegin, randomPassword.length());
+      randomPassword = randomPassword.replace(randomPassword.substring(randomBegin, randomEnd),
+          randomPassword.substring(randomBegin, randomEnd).toUpperCase());
+
+      developerRegistrationService.registerDeveloperUser(developerState, randomPassword);
+      developerEmailService.sendWelcomeEmail(developerState, randomPassword);
       developerMessageService.sendDirectionalMessage(developerState);
 
       LOG.info("Welcomed developer " + developerState.getUserDetail().getUserAttributes().getUserName() + ".");

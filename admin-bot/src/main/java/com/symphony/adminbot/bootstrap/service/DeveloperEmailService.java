@@ -46,9 +46,10 @@ public class DeveloperEmailService {
    * Should contain username and temporary password
    * @param developerState the current state of the partner in the sign up process
    */
-  public void sendWelcomeEmail(DeveloperBootstrapState developerState) {
+  public void sendWelcomeEmail(DeveloperBootstrapState developerState, String developerPassword) {
     try {
       BootstrapTemplateData developerTemplateData = new BootstrapTemplateData(developerState);
+      developerTemplateData.addPassword(developerPassword);
       MessageTemplate subTemplate = new MessageTemplate(subjectTemplate);
       MessageTemplate emailTemplate = new MessageTemplate(messageTemplate);
 

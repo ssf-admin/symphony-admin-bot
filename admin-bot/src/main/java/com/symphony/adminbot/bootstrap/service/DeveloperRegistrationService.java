@@ -86,7 +86,7 @@ public class DeveloperRegistrationService {
    * Creates a symphony user for the developer.
    * @param bootstrapState the developers's current state in the bootstrap process
    */
-  public void registerDeveloperUser(DeveloperBootstrapState bootstrapState) throws ApiException {
+  public void registerDeveloperUser(DeveloperBootstrapState bootstrapState, String developerPassword) throws ApiException {
     UserCreate userCreate = new UserCreate();
     UserAttributes userAttributes = new UserAttributes();
     userAttributes.setAccountType(UserAttributes.AccountTypeEnum.NORMAL);
@@ -99,15 +99,9 @@ public class DeveloperRegistrationService {
     userAttributes.setDepartment(bootstrapState.getDeveloperSignUpForm().getAppCompanyName());
     userCreate.setUserAttributes(userAttributes);
 
-    String randomPassword = UUID.randomUUID().toString().replace("-", "");
-    int randomBegin = (int)(Math.random() * (randomPassword.length() - 3));
-    int randomEnd = ThreadLocalRandom.current().nextInt(randomBegin, randomPassword.length());
-    randomPassword = randomPassword.replace(randomPassword.substring(randomBegin, randomEnd),
-        randomPassword.substring(randomBegin, randomEnd).toUpperCase());
-
     IClientHash clientHash = new ClientHash();
     String salt = CryptoGenerator.generateBase64Salt();
-    String clientHashedPassword = clientHash.getClientHashedPassword(randomPassword, salt);
+    String clientHashedPassword = clientHash.getClientHashedPassword(developerPassword, salt);
 
     Password pass = new Password();
     pass.setHPassword(clientHashedPassword);
