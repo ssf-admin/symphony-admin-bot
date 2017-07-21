@@ -11,7 +11,6 @@ import com.symphony.api.adminbot.model.DeveloperSignUpForm;
 import com.symphony.api.clients.SymphonyClient;
 import com.symphony.api.pod.client.ApiException;
 import com.symphony.api.pod.model.ApplicationDetail;
-import com.symphony.api.pod.model.CompanyCertDetail;
 import com.symphony.api.pod.model.Password;
 import com.symphony.api.pod.model.UserAttributes;
 import com.symphony.api.pod.model.UserCreate;
@@ -22,7 +21,6 @@ import com.symphony.security.utils.CryptoGenerator;
 
 import com.sun.jndi.toolkit.url.Uri;
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.lang.WordUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -54,7 +52,7 @@ public class DeveloperBootstrapService {
 
   public DeveloperBootstrapService(SymphonyClient symClient){
     partnerStateCache = new ExpiringFileLoaderCache<>(
-        System.getProperty(BotConfig.JSON_DIR),
+        System.getProperty(BotConfig.DEVELOPER_JSON_DIR),
         (developer) -> developer.getEmail(),
         BotConstants.EXPIRE_TIME_DAYS,
         TimeUnit.DAYS,
@@ -129,6 +127,8 @@ public class DeveloperBootstrapService {
     developerCertService.uploadCerts(developerState);
     developerMessageService.sendBootstrapMessage(developerState);
 
+    LOG.info("Bootstraped user " + developerState.getUserDetail().getUserAttributes().getUserName() + ".");
+
     return developerState.getBootstrapInfo();
   }
 
@@ -147,6 +147,8 @@ public class DeveloperBootstrapService {
       developerRegistrationService.registerDeveloperUser(developerState);
       developerEmailService.sendWelcomeEmail(developerState);
       developerMessageService.sendDirectionalMessage(developerState);
+
+      LOG.info("Welcomed developer " + developerState.getUserCreate().getUserAttributes().getUserName() + ".");
     }
   }
 
@@ -158,7 +160,6 @@ public class DeveloperBootstrapService {
     if(developerRegistrationService.oneDeveloperExists(signUpForm)){
       throw new BadRequestException(BotConstants.USER_EXISTS);
     }
-
     if(StringUtils.isBlank(signUpForm.getAppId())){
       throw new BadRequestException(BotConstants.APP_ID_REQUIRED);
     }
@@ -198,7 +199,6 @@ public class DeveloperBootstrapService {
     if (StringUtils.isBlank(signUpForm.getBotName())) {
       throw new BadRequestException(BotConstants.BOT_NAME_REQUIRED);
     }
-
     try {
       validateDomain(signUpForm.getAppUrl(), signUpForm.getAppDomain());
     } catch (MalformedURLException e) {

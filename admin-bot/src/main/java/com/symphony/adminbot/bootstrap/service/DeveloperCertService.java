@@ -15,7 +15,6 @@ import com.symphony.api.pod.model.CompanyCertStatus;
 import com.symphony.api.pod.model.CompanyCertType;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.lang.WordUtils;
 import org.bouncycastle.asn1.x509.AlgorithmIdentifier;
 import org.bouncycastle.cert.X509CertificateHolder;
 import org.bouncycastle.cert.X509v3CertificateBuilder;
@@ -54,7 +53,6 @@ import java.util.HashSet;
 import java.util.Set;
 
 import javax.security.auth.x500.X500Principal;
-import javax.ws.rs.BadRequestException;
 import javax.ws.rs.InternalServerErrorException;
 
 /**
@@ -87,7 +85,7 @@ public class DeveloperCertService {
       X509Certificate certificate = generateCertificate(
           commonName, keys, BotConstants.VALID_DURATION);
       writeCert(commonName, certificate, keys,
-          System.getProperty(BotConfig.P12_DIR), password.toCharArray());
+          System.getProperty(BotConfig.DEVELOPER_P12_DIR), password.toCharArray());
 
       //Register new cert
       CompanyCert companyCert = new CompanyCert();
@@ -124,7 +122,7 @@ public class DeveloperCertService {
    */
   public void uploadCerts(DeveloperBootstrapState developerState){
     try {
-      String path = System.getProperty(BotConfig.P12_DIR);
+      String path = System.getProperty(BotConfig.DEVELOPER_P12_DIR);
       Developer developer = developerState.getDeveloper();
       String outputPath = path + developer.getFirstName() + developer.getLastName() + "Certs.zip";
       Set<String> certPaths = new HashSet<>();

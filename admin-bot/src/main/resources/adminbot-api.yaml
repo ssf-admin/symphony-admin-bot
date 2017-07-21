@@ -24,10 +24,6 @@ paths:
           in: header
           required: true
           type: string
-        - name: keyManagerToken
-          in: header
-          required: true
-          type: string
         - name: signUpForm
           in: body
           required: true
@@ -54,10 +50,6 @@ paths:
           Sends bootstrap bootstrap package within symphony.
       parameters:
         - name: sessionToken
-          in: header
-          required: true
-          type: string
-        - name: keyManagerToken
           in: header
           required: true
           type: string

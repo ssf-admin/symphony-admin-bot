@@ -3,8 +3,9 @@ package com.symphony.adminbot.api;
 import com.symphony.adminbot.api.impl.AbstractV1AdminService;
 import com.symphony.adminbot.bootstrap.service.DeveloperBootstrapService;
 import com.symphony.adminbot.commons.BotConstants;
-import com.symphony.adminbot.model.session.AdminSession;
-import com.symphony.adminbot.model.session.AdminSessionManager;
+import com.symphony.adminbot.model.session.AdminBotSession;
+import com.symphony.adminbot.model.session.AdminBotUserSession;
+import com.symphony.adminbot.model.session.AdminBotUserSessionManager;
 import com.symphony.api.adminbot.model.Developer;
 import com.symphony.api.adminbot.model.DeveloperBootstrapInfo;
 import com.symphony.api.adminbot.model.DeveloperSignUpForm;
@@ -22,15 +23,18 @@ import javax.ws.rs.core.Response;
  */
 public class V1AdminApi extends AbstractV1AdminService {
   private static final Logger LOG = LoggerFactory.getLogger(V1AdminApi.class);
-  private AdminSessionManager adminSessionManager;
 
-  public V1AdminApi(AdminSessionManager adminSessionManager){
+  private AdminBotUserSessionManager adminSessionManager;
+  private AdminBotSession adminBotSession;
+
+  public V1AdminApi(AdminBotUserSessionManager adminSessionManager, AdminBotSession adminBotSession){
     this.adminSessionManager = adminSessionManager;
+    this.adminBotSession = adminBotSession;
   }
 
   @Override
-  public Response bootstrapDeveloper(AdminSession adminSession, Developer developer) {
-    DeveloperBootstrapService signUpService = adminSession.getBootstrapService();
+  public Response bootstrapDeveloper(Developer developer) {
+    DeveloperBootstrapService signUpService = adminBotSession.getBootstrapService();
     try {
       DeveloperBootstrapInfo partnerBootstrapInfo = signUpService.bootstrapPartner(developer);
       return Response.ok(partnerBootstrapInfo).build();
@@ -41,8 +45,8 @@ public class V1AdminApi extends AbstractV1AdminService {
   }
 
   @Override
-  public Response sendDeveloperWelcome(AdminSession adminSession, DeveloperSignUpForm signUpForm) {
-    DeveloperBootstrapService signUpService = adminSession.getBootstrapService();
+  public Response sendDeveloperWelcome(DeveloperSignUpForm signUpForm) {
+    DeveloperBootstrapService signUpService = adminBotSession.getBootstrapService();
     try {
       signUpService.welcomeDeveloper(signUpForm);
     } catch (ApiException e) {
@@ -54,8 +58,9 @@ public class V1AdminApi extends AbstractV1AdminService {
   }
 
   @Override
-  public AdminSession getAdminSession(String sessionToken, String keyManagerToken) {
-    AdminSession adminSession = adminSessionManager.getAdminSession(sessionToken, keyManagerToken);
+  public AdminBotUserSession getAdminUserSession(String sessionToken) {
+    AdminBotUserSession
+        adminSession = adminSessionManager.getAdminSession(sessionToken);
     if(adminSession == null) {
       throw new BadRequestException("Admin session not found.");
     }

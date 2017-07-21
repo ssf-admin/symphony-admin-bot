@@ -112,11 +112,7 @@ public class UsersClient {
     try {
       userV2 = userApi.v2UserGet(symAuth.getSessionToken().getToken(), null, null, username, false);
     } catch (ApiException e) {
-      if (e.getCode() == Response.Status.NO_CONTENT.getStatusCode()) {
-        return false;
-      } else {
-        throw new ApiException("User search failed: " + e);
-      }
+      return false;
     }
 
     return userV2 != null;

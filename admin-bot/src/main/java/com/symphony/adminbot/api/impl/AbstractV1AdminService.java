@@ -1,6 +1,6 @@
 package com.symphony.adminbot.api.impl;
 
-import com.symphony.adminbot.model.session.AdminSession;
+import com.symphony.adminbot.model.session.AdminBotUserSession;
 import com.symphony.api.adminbot.api.V1ApiService;
 import com.symphony.api.adminbot.model.Developer;
 import com.symphony.api.adminbot.model.DeveloperSignUpForm;
@@ -11,22 +11,22 @@ import javax.ws.rs.core.Response;
  * Created by nick.tarsillo on 7/5/17.
  */
 public abstract  class AbstractV1AdminService implements V1ApiService {
-  public abstract Response bootstrapDeveloper(AdminSession adminSession, Developer developer);
+  public abstract Response bootstrapDeveloper(Developer developer);
 
-  public abstract Response sendDeveloperWelcome(AdminSession adminSession, DeveloperSignUpForm signUpForm);
+  public abstract Response sendDeveloperWelcome(DeveloperSignUpForm signUpForm);
 
-  public abstract AdminSession getAdminSession(String sessionToken, String keyManagerToken);
+  public abstract AdminBotUserSession getAdminUserSession(String sessionToken);
 
   @Override
-  public Response v1BootstrapDeveloperPost(String sessionToken, String keyManagerToken, Developer
+  public Response v1BootstrapDeveloperPost(String sessionToken, Developer
       developer) {
-    AdminSession adminSession = getAdminSession(sessionToken, keyManagerToken);
-    return bootstrapDeveloper(adminSession, developer);
+    getAdminUserSession(sessionToken);
+    return bootstrapDeveloper(developer);
   }
 
   @Override
-  public Response v1SendDeveloperWelcomePost(String sessionToken, String keyManagerToken, DeveloperSignUpForm signUpForm){
-    AdminSession adminSession = getAdminSession(sessionToken, keyManagerToken);
-    return sendDeveloperWelcome(adminSession, signUpForm);
+  public Response v1SendDeveloperWelcomePost(String sessionToken, DeveloperSignUpForm signUpForm){
+    getAdminUserSession(sessionToken);
+    return sendDeveloperWelcome(signUpForm);
   }
 }
