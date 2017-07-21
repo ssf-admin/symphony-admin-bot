@@ -76,11 +76,8 @@ public class DeveloperBootstrapService {
    * @param developer the bootstrap to base the bootstrap on
    * @return bootstrap info
    */
-  public DeveloperBootstrapInfo bootstrapPartner(Developer developer) throws ApiException, ExecutionException {
-    DeveloperBootstrapState developerState = partnerStateCache.get(developer);
-    if(developerState == null) {
-      throw new BadRequestException("Developer bootstrap state info not found.");
-    }
+  public DeveloperBootstrapInfo bootstrapPartner(Developer developer) throws ApiException {
+    DeveloperBootstrapState developerState = getDeveloperState(developer);
     DeveloperSignUpForm signUpForm = developerState.getDeveloperSignUpForm();
     if(developerState.getBootstrapInfo() == null) {
       DeveloperBootstrapInfo developerBootstrapInfo = new DeveloperBootstrapInfo();
@@ -95,7 +92,7 @@ public class DeveloperBootstrapService {
       UserDetail botDetail = developerRegistrationService.registerBot(developerState);
       //Save bot detail for all team members
       for(Developer teamMember: developerState.getTeamMembers()){
-        DeveloperBootstrapState teamMemberState = partnerStateCache.get(teamMember);
+        DeveloperBootstrapState teamMemberState = getDeveloperState(teamMember);
         teamMemberState.setBotDetail(botDetail);
       }
       developerState.setBotDetail(botDetail);
@@ -110,7 +107,7 @@ public class DeveloperBootstrapService {
         ApplicationDetail applicationDetail = developerRegistrationService.registerApp(developerState);
         //Save app detail for all team members
         for(Developer teamMember: developerState.getTeamMembers()){
-          DeveloperBootstrapState teamMemberState = partnerStateCache.get(teamMember);
+          DeveloperBootstrapState teamMemberState = getDeveloperState(teamMember);
           teamMemberState.setApplicationDetail(applicationDetail);
         }
         developerState.setApplicationDetail(applicationDetail);
@@ -118,7 +115,7 @@ public class DeveloperBootstrapService {
 
       //Set bootstrap info for team members (So they know app and bot were already created)
       for(Developer teamMember: developerState.getTeamMembers()){
-        DeveloperBootstrapState teamMemberState = partnerStateCache.get(teamMember);
+        DeveloperBootstrapState teamMemberState = getDeveloperState(teamMember);
         teamMemberState.setBootstrapInfo(developerBootstrapInfo);
       }
     }
@@ -148,7 +145,7 @@ public class DeveloperBootstrapService {
       developerEmailService.sendWelcomeEmail(developerState);
       developerMessageService.sendDirectionalMessage(developerState);
 
-      LOG.info("Welcomed developer " + developerState.getUserCreate().getUserAttributes().getUserName() + ".");
+      LOG.info("Welcomed developer " + developerState.getUserDetail().getUserAttributes().getUserName() + ".");
     }
   }
 
@@ -219,43 +216,9 @@ public class DeveloperBootstrapService {
 
     Set<DeveloperBootstrapState> developerStates = new HashSet<>();
     for(Developer developer : developerSet) {
-      UserCreate userCreate = new UserCreate();
-      UserAttributes userAttributes = new UserAttributes();
-      userAttributes.setAccountType(UserAttributes.AccountTypeEnum.NORMAL);
-      userAttributes.setEmailAddress(developer.getEmail());
-      userAttributes.setFirstName(developer.getFirstName());
-      userAttributes.setLastName(developer.getLastName());
-      userAttributes.setUserName(developerRegistrationService.getDeveloperUsername(developer));
-      userAttributes.displayName(developer.getFirstName() + " " + developer.getLastName());
-      userAttributes.setDepartment(signUpForm.getAppCompanyName());
-      userCreate.setUserAttributes(userAttributes);
-
-      String randomPassword = UUID.randomUUID().toString().replace("-", "");
-      int randomBegin = (int)(Math.random() * (randomPassword.length() - 3));
-      int randomEnd = ThreadLocalRandom.current().nextInt(randomBegin, randomPassword.length());
-      randomPassword = randomPassword.replace(randomPassword.substring(randomBegin, randomEnd),
-          randomPassword.substring(randomBegin, randomEnd).toUpperCase());
-
-      IClientHash clientHash = new ClientHash();
-      String salt = CryptoGenerator.generateBase64Salt();
-      String clientHashedPassword = clientHash.getClientHashedPassword(randomPassword, salt);
-
-      Password pass = new Password();
-      pass.setHPassword(clientHashedPassword);
-      pass.setHSalt(salt);
-      pass.setKhPassword(clientHashedPassword);
-      pass.setKhSalt(salt);
-      userCreate.setPassword(pass);
-
-      List<String> roles = new ArrayList<>();
-      roles.add("INDIVIDUAL");
-      userCreate.setRoles(roles);
-
       DeveloperBootstrapState developerState = new DeveloperBootstrapState();
       developerState.setDeveloper(developer);
       developerState.setDeveloperSignUpForm(signUpForm);
-      developerState.setUserCreate(userCreate);
-      developerState.setPassword(randomPassword);
 
       Set<Developer> teamMembers = new HashSet<>(developerSet);
       teamMembers.remove(developer);
@@ -287,6 +250,18 @@ public class DeveloperBootstrapService {
       }
     }
     throw new BadRequestException(BotConstants.DOMAIN_MUST_MATCH);
+  }
+
+  private DeveloperBootstrapState getDeveloperState(Developer developer) {
+    DeveloperBootstrapState developerState;
+    try {
+      developerState = partnerStateCache.get(developer);
+    } catch (Exception e) {
+      LOG.warn("Get developer state failed: ", e);
+      throw new BadRequestException(BotConstants.DEVELOPER_NOT_FOUND);
+    }
+
+    return developerState;
   }
 
 }

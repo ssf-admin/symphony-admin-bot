@@ -12,7 +12,7 @@ import org.slf4j.LoggerFactory;
 
 import java.math.BigInteger;
 import java.security.SecureRandom;
-import java.util.concurrent.ExecutionException;
+import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -44,7 +44,7 @@ public class AdminBotUserSessionManager {
     AdminBotUser adminBotUser = null;
     try {
       adminBotUser = adminUserCache.get(adminName);
-    } catch (ExecutionException e) {
+    } catch (Exception e) {
       LOG.warn("Could not get user " + adminName + ":", e);
     }
     if(adminBotUser == null) {
@@ -58,25 +58,29 @@ public class AdminBotUserSessionManager {
   }
 
   public AdminBotUserSession getAdminSession(String sessionToken) {
-    return adminSessionCache.getIfPresent(new SessionCacheKey(sessionToken));
+    SessionCacheKey sessionCacheKey = new SessionCacheKey(sessionToken);
+    return adminSessionCache.getIfPresent(sessionCacheKey);
   }
 
   class SessionCacheKey {
     private String sessionToken;
 
     SessionCacheKey () {
-      this.sessionToken = new BigInteger(130, random).toString(32);;
+      this.sessionToken = new BigInteger(256, random).toString(32);;
     }
     SessionCacheKey (String sessionToken) {
       this.sessionToken = sessionToken;
     }
 
     @Override
-    public boolean equals(Object obj){
-      if(obj instanceof SessionCacheKey) {
-        return ((SessionCacheKey) obj).getSessionToken().equals(sessionToken);
-      }
-      return false;
+    public boolean equals(Object other) {
+      return (other instanceof SessionCacheKey
+          && Objects.equals(sessionToken, ((SessionCacheKey) other).sessionToken));
+    }
+
+    @Override
+    public int hashCode() {
+      return Objects.hash(sessionToken);
     }
 
     public String getSessionToken() {

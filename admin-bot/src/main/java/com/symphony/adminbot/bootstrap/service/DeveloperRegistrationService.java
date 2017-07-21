@@ -15,6 +15,7 @@ import com.symphony.api.pod.model.ApplicationDetail;
 import com.symphony.api.pod.model.ApplicationInfo;
 import com.symphony.api.pod.model.Feature;
 import com.symphony.api.pod.model.FeatureList;
+import com.symphony.api.pod.model.Password;
 import com.symphony.api.pod.model.PodAppEntitlement;
 import com.symphony.api.pod.model.PodAppEntitlementList;
 import com.symphony.api.pod.model.UserAppEntitlement;
@@ -22,6 +23,9 @@ import com.symphony.api.pod.model.UserAppEntitlementList;
 import com.symphony.api.pod.model.UserAttributes;
 import com.symphony.api.pod.model.UserCreate;
 import com.symphony.api.pod.model.UserDetail;
+import com.symphony.security.hash.ClientHash;
+import com.symphony.security.hash.IClientHash;
+import com.symphony.security.utils.CryptoGenerator;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.WordUtils;
@@ -33,6 +37,8 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.UUID;
+import java.util.concurrent.ThreadLocalRandom;
 
 /**
  * Created by nick.tarsillo on 7/2/17.
@@ -81,7 +87,40 @@ public class DeveloperRegistrationService {
    * @param bootstrapState the developers's current state in the bootstrap process
    */
   public void registerDeveloperUser(DeveloperBootstrapState bootstrapState) throws ApiException {
-    UserDetail userDetail = usersClient.createUser(bootstrapState.getUserCreate());
+    UserCreate userCreate = new UserCreate();
+    UserAttributes userAttributes = new UserAttributes();
+    userAttributes.setAccountType(UserAttributes.AccountTypeEnum.NORMAL);
+    userAttributes.setEmailAddress(bootstrapState.getDeveloper().getEmail());
+    userAttributes.setFirstName(bootstrapState.getDeveloper().getFirstName());
+    userAttributes.setLastName(bootstrapState.getDeveloper().getLastName());
+    userAttributes.setUserName(getDeveloperUsername(bootstrapState.getDeveloper()));
+    userAttributes.displayName(bootstrapState.getDeveloper().getFirstName() +
+        " " + bootstrapState.getDeveloper().getLastName());
+    userAttributes.setDepartment(bootstrapState.getDeveloperSignUpForm().getAppCompanyName());
+    userCreate.setUserAttributes(userAttributes);
+
+    String randomPassword = UUID.randomUUID().toString().replace("-", "");
+    int randomBegin = (int)(Math.random() * (randomPassword.length() - 3));
+    int randomEnd = ThreadLocalRandom.current().nextInt(randomBegin, randomPassword.length());
+    randomPassword = randomPassword.replace(randomPassword.substring(randomBegin, randomEnd),
+        randomPassword.substring(randomBegin, randomEnd).toUpperCase());
+
+    IClientHash clientHash = new ClientHash();
+    String salt = CryptoGenerator.generateBase64Salt();
+    String clientHashedPassword = clientHash.getClientHashedPassword(randomPassword, salt);
+
+    Password pass = new Password();
+    pass.setHPassword(clientHashedPassword);
+    pass.setHSalt(salt);
+    pass.setKhPassword(clientHashedPassword);
+    pass.setKhSalt(salt);
+    userCreate.setPassword(pass);
+
+    List<String> roles = new ArrayList<>();
+    roles.add("INDIVIDUAL");
+    userCreate.setRoles(roles);
+
+    UserDetail userDetail = usersClient.createUser(userCreate);
     bootstrapState.setUserDetail(userDetail);
     LOG.info("Registered new user " + userDetail.getUserAttributes().getUserName() + " with pod.");
 

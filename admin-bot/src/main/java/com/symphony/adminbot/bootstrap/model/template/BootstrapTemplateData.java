@@ -56,10 +56,13 @@ public class BootstrapTemplateData extends TemplateData {
       addData(ReplacementEnums.BOT_EMAIL.getReplacement(), developerSignUpForm.getBotEmail());
     }
     if(developerBootstrapState != null) {
-      addData(ReplacementEnums.PASSWORD.getReplacement(), developerBootstrapState.getPassword());
       addData(ReplacementEnums.USERNAME.getReplacement(),
           developerBootstrapState.getUserDetail().getUserAttributes().getUserName());
     }
+  }
+
+  public void addPassword(String password) {
+    addData(ReplacementEnums.PASSWORD.getReplacement(), password);
   }
 
   public BootstrapTemplateData(Developer developer){

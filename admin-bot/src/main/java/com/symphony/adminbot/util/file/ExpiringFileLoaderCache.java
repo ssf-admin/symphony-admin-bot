@@ -99,7 +99,7 @@ public class ExpiringFileLoaderCache<K, V> {
    * @param key the key to reference value
    * @return the value
    */
-  public V get(K key) throws ExecutionException {
+  public V get(K key) throws ExecutionException, CacheLoader.InvalidCacheLoadException {
     return cache.get(key);
   }
 

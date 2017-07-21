@@ -24,23 +24,13 @@ public class DeveloperBootstrapState {
   private Developer developer;
   private DeveloperSignUpForm developerSignUpForm;
   private Set<Developer> teamMembers;
-  private UserCreate userCreate;
   private UserDetail userDetail;
   private UserDetail botDetail;
   private ApplicationDetail applicationDetail;
-  private String password;
   private Stream developerIM;
   private Map<String, CompanyCert> companyCertMap;
   private List<AttachmentInfo> certAttachmentInfo;
   private DeveloperBootstrapInfo bootstrapInfo;
-
-  public UserCreate getUserCreate() {
-    return userCreate;
-  }
-
-  public void setUserCreate(UserCreate userCreate) {
-    this.userCreate = userCreate;
-  }
 
   public Developer getDeveloper() {
     return developer;
@@ -56,14 +46,6 @@ public class DeveloperBootstrapState {
 
   public void setTeamMembers(Set<Developer> teamMembers) {
     this.teamMembers = teamMembers;
-  }
-
-  public String getPassword() {
-    return password;
-  }
-
-  public void setPassword(String password) {
-    this.password = password;
   }
 
   public DeveloperSignUpForm getDeveloperSignUpForm() {
