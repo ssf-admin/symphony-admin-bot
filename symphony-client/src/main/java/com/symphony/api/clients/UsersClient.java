@@ -40,7 +40,7 @@ public class UsersClient {
     try {
       userDetail = userApi.v1AdminUserCreatePost(symAuth.getSessionToken().getToken(), user);
     } catch (ApiException e) {
-      throw new ApiException("Could not create user: " + e);
+      throw new ApiException("Could not create user: " + e.getMessage());
     }
 
     return userDetail;
@@ -110,9 +110,13 @@ public class UsersClient {
 
     UserV2 userV2;
     try {
-      userV2 = userApi.v2UserGet(symAuth.getSessionToken().getToken(), null, null, username, false);
+      userV2 = userApi.v2UserGet(symAuth.getSessionToken().getToken(), null, null, username, true);
     } catch (ApiException e) {
-      return false;
+      if (e.getCode() == Response.Status.NO_CONTENT.getStatusCode()) {
+        return false;
+      } else {
+        throw new ApiException("User get failed: " + e);
+      }
     }
 
     return userV2 != null;

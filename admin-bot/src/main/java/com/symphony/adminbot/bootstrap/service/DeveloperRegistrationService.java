@@ -37,8 +37,9 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.UUID;
-import java.util.concurrent.ThreadLocalRandom;
+
+import javax.ws.rs.InternalServerErrorException;
+import javax.ws.rs.core.Response;
 
 /**
  * Created by nick.tarsillo on 7/2/17.
@@ -93,7 +94,8 @@ public class DeveloperRegistrationService {
     userAttributes.setEmailAddress(bootstrapState.getDeveloper().getEmail());
     userAttributes.setFirstName(bootstrapState.getDeveloper().getFirstName());
     userAttributes.setLastName(bootstrapState.getDeveloper().getLastName());
-    userAttributes.setUserName(getDeveloperUsername(bootstrapState.getDeveloper()));
+    userAttributes.setUserName((bootstrapState.getDeveloper().getFirstName().toLowerCase() +
+      WordUtils.capitalize(bootstrapState.getDeveloper().getLastName())).replace(" ", ""));
     userAttributes.displayName(bootstrapState.getDeveloper().getFirstName() +
         " " + bootstrapState.getDeveloper().getLastName());
     userAttributes.setDepartment(bootstrapState.getDeveloperSignUpForm().getAppCompanyName());
@@ -114,7 +116,29 @@ public class DeveloperRegistrationService {
     roles.add("INDIVIDUAL");
     userCreate.setRoles(roles);
 
-    UserDetail userDetail = usersClient.createUser(userCreate);
+    UserDetail userDetail = null;
+    int usernameIndex = 1;
+    String baseUsername = userCreate.getUserAttributes().getUserName();
+    boolean usernameExists = true;
+    while (usernameExists) {
+      try {
+        userDetail = usersClient.createUser(userCreate);
+        usernameExists = false;
+      } catch (ApiException e) {
+        if (e.getMessage().equals(BotConstants.USERS_EXIST)) {
+          baseUsername += usernameIndex;
+          while (usersClient.userExistsByUsername(baseUsername)) {
+            baseUsername = baseUsername.replace("" + usernameIndex, "" + (usernameIndex + 1));
+            usernameIndex++;
+          }
+          userCreate.getUserAttributes().setUserName(baseUsername);
+        } else {
+          LOG.error("Create developer failed: ", e);
+          throw new InternalServerErrorException("Create developer failed: " + e);
+        }
+      }
+    }
+
     bootstrapState.setUserDetail(userDetail);
     LOG.info("Registered new user " + userDetail.getUserAttributes().getUserName() + " with pod.");
 
@@ -244,18 +268,6 @@ public class DeveloperRegistrationService {
     }
 
     return BotConstants.BOT_USERNAME + botId;
-  }
-
-  public String getDeveloperUsername(Developer developer) throws ApiException {
-    int usernameIndex = 0;
-    String baseUsername = developer.getFirstName().toLowerCase()
-        + WordUtils.capitalize(developer.getLastName());
-    while (usersClient.userExistsByUsername(baseUsername)) {
-      baseUsername.replace("" + usernameIndex, "" + usernameIndex + 1);
-      usernameIndex++;
-    }
-
-    return baseUsername;
   }
 
   /**

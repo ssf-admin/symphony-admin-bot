@@ -52,6 +52,7 @@ public class AdminBot extends HttpServlet {
   }
 
   void setupBot() {
+    LOG.info("Setting up tomcat...");
     try {
       tomcatCertManager = new TomcatCertManager(
           System.getProperty(BotConfig.TOMCAT_KEYSTORE_FILE),
@@ -61,9 +62,12 @@ public class AdminBot extends HttpServlet {
           System.getProperty(BotConfig.CERTS_DIR),
           System.getProperty(BotConfig.KEYS_PASSWORD_FILE));
       tomcatCertManager.buildStoresFromCerts();
-      tomcatCertManager.refreshStores(Integer.parseInt(System.getProperty(BotConfig.AUTH_PORT)));
+      //tomcatCertManager.refreshStores(Integer.parseInt(System.getProperty(BotConfig.AUTH_PORT)));
       tomcatCertManager.generateKeyMap();
       tomcatCertManager.setSSLStores();
+    } catch (Exception e) {
+      LOG.error("Could not set up cert manager for tomcat: ", e);
+    }
 
       //Init client
       SymphonyClient symClient = new SymphonyClient();
@@ -72,25 +76,34 @@ public class AdminBot extends HttpServlet {
           System.getProperty(BotConfig.SESSIONAUTH_URL),
           System.getProperty(BotConfig.KEYAUTH_URL));
 
-      authClient.setKeystores(
-          System.getProperty(BotConfig.TOMCAT_TRUSTSTORE_FILE),
-          System.getProperty(BotConfig.TOMCAT_TRUSTSTORE_PASSWORD),
-          System.getProperty(BotConfig.CERTS_DIR) + System.getProperty(BotConfig.BOT_KEYSTORE_FILE_NAME),
-          System.getProperty(BotConfig.BOT_KEYSTORE_PASSWORD));
+    LOG.info("Setting up auth http client...");
+      try {
+        authClient.setKeystores(
+            System.getProperty(BotConfig.TOMCAT_TRUSTSTORE_FILE),
+            System.getProperty(BotConfig.TOMCAT_TRUSTSTORE_PASSWORD),
+            System.getProperty(BotConfig.CERTS_DIR) + System.getProperty(
+                BotConfig.BOT_KEYSTORE_FILE_NAME),
+            System.getProperty(BotConfig.BOT_KEYSTORE_PASSWORD));
+      } catch (Exception e) {
+        LOG.error("Could not create HTTP Client for authentication: ", e);
+      }
+    LOG.info("Attempting bot auth...");
+      try {
+        SymphonyAuth symAuth = authClient.authenticate();
 
-      SymphonyAuth symAuth = authClient.authenticate();
-
-      symClient.init(
-          symAuth,
-          System.getProperty(BotConfig.SYMPHONY_AGENT),
-          System.getProperty(BotConfig.SYMPHONY_POD));
+        symClient.init(
+            symAuth,
+            System.getProperty(BotConfig.SYMPHONY_AGENT),
+            System.getProperty(BotConfig.SYMPHONY_POD));
+      } catch (Exception e) {
+        LOG.error("Authentication failed for bot: ", e);
+      }
 
       adminSessionManager = new AdminBotUserSessionManager();
       AdminBotSession adminBotSession = new AdminBotSession(symClient);
       V1ApiServiceFactory.setService(new V1AdminApi(adminSessionManager, adminBotSession));
-    } catch (Exception e) {
-      LOG.error("Could not set up cert manager for tomcat: ", e);
-    }
+
+    LOG.info("AdminBot startup complete.");
   }
 
   /**

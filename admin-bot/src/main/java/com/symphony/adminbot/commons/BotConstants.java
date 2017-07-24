@@ -5,10 +5,12 @@ package com.symphony.adminbot.commons;
  */
 public class BotConstants {
   //For error messages
-  public static final String USER_EXISTS = "One or more partners already exists on pod.";
   public static final String NOT_ENTITLED = "User is not entitled to use these endpoints.";
   public static final String INTERNAL_ERROR = "Internal server error.";
   public static final String NO_CERT = "Please provide a cert with request.";
+
+  //Symphony API Errors
+  public static final String USERS_EXIST = "Could not create user: {\"code\":0,\"message\":\"User already exists.\"}";
 
   //For cert generation
   public static final String BOT_USERNAME = "BotUser";
@@ -37,4 +39,6 @@ public class BotConstants {
   public static final String BAD_APP_URL = "Please provide a valid app url.";
   public static final String DOMAIN_MUST_MATCH = "Domain must match app url domain.";
   public static final String DEVELOPER_NOT_FOUND = "Developer not found.";
+  public static final String DUPLICATE_DEVELOPER = "Developers cannot have same emails.";
+  public static final String DEVELOPER_EXISTS = "One or more developers already exists on pod.";
 }

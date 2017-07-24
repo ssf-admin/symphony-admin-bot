@@ -11,13 +11,7 @@ import com.symphony.api.adminbot.model.DeveloperSignUpForm;
 import com.symphony.api.clients.SymphonyClient;
 import com.symphony.api.pod.client.ApiException;
 import com.symphony.api.pod.model.ApplicationDetail;
-import com.symphony.api.pod.model.Password;
-import com.symphony.api.pod.model.UserAttributes;
-import com.symphony.api.pod.model.UserCreate;
 import com.symphony.api.pod.model.UserDetail;
-import com.symphony.security.hash.ClientHash;
-import com.symphony.security.hash.IClientHash;
-import com.symphony.security.utils.CryptoGenerator;
 
 import com.sun.jndi.toolkit.url.Uri;
 import org.apache.commons.lang.StringUtils;
@@ -25,13 +19,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.net.MalformedURLException;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 import java.util.UUID;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.TimeUnit;
 
@@ -44,6 +35,7 @@ public class DeveloperBootstrapService {
   private static final Logger LOG = LoggerFactory.getLogger(AdminBot.class);
 
   private ExpiringFileLoaderCache<Developer, DeveloperBootstrapState> partnerStateCache;
+  private Set<String> reservedContent = new HashSet<>();
 
   private DeveloperRegistrationService developerRegistrationService;
   private DeveloperMessageService developerMessageService;
@@ -151,6 +143,9 @@ public class DeveloperBootstrapService {
       developerEmailService.sendWelcomeEmail(developerState, randomPassword);
       developerMessageService.sendDirectionalMessage(developerState);
 
+      reservedContent.add(developerState.getDeveloperSignUpForm().getAppId());
+      reservedContent.add(developerState.getDeveloperSignUpForm().getBotEmail().replace(" ", ""));
+
       LOG.info("Welcomed developer " + developerState.getUserDetail().getUserAttributes().getUserName() + ".");
     }
   }
@@ -160,8 +155,16 @@ public class DeveloperBootstrapService {
    * @param signUpForm the sign up form to validate
    */
   private void validateSignUpForm(DeveloperSignUpForm signUpForm) throws ApiException {
+    Set<String> developerEmails = new HashSet<>();
+    developerEmails.add(signUpForm.getCreator().getEmail().replace(" ", ""));
+    for(Developer teamMember: signUpForm.getTeam()) {
+      developerEmails.add(teamMember.getEmail().replace(" ", ""));
+    }
+    if(developerEmails.size() != signUpForm.getTeam().size() + 1) {
+      throw new BadRequestException(BotConstants.DUPLICATE_DEVELOPER);
+    }
     if(developerRegistrationService.oneDeveloperExists(signUpForm)){
-      throw new BadRequestException(BotConstants.USER_EXISTS);
+      throw new BadRequestException(BotConstants.DEVELOPER_EXISTS);
     }
     if(StringUtils.isBlank(signUpForm.getAppId())){
       throw new BadRequestException(BotConstants.APP_ID_REQUIRED);
@@ -169,7 +172,9 @@ public class DeveloperBootstrapService {
     if (StringUtils.isBlank(signUpForm.getAppName())) {
       throw new BadRequestException(BotConstants.APP_NAME_REQUIRED);
     }
-    if(developerRegistrationService.botOrAppExist(signUpForm)){
+    if(developerRegistrationService.botOrAppExist(signUpForm) ||
+        reservedContent.contains(signUpForm.getAppId()) ||
+        reservedContent.contains(signUpForm.getBotEmail().replace(" ", ""))){
       throw new BadRequestException(BotConstants.BOT_APP_EXISTS);
     }
     if (StringUtils.isBlank(signUpForm.getCreator().getFirstName()) ||
