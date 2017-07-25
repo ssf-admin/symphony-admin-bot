@@ -75,7 +75,10 @@ public class DeveloperBootstrapService {
     DeveloperBootstrapState developerState = getDeveloperState(developer);
     bootstrap(developerState);
 
-    developerRegistrationService.installApp(developerState);
+    if(StringUtils.isNotBlank(developerState.getDeveloperSignUpForm().getAppId())) {
+      developerRegistrationService.installApp(developerState);
+    }
+
     developerCertService.uploadCerts(developerState);
     developerMessageService.sendBootstrapMessage(developerState);
 
@@ -90,14 +93,21 @@ public class DeveloperBootstrapService {
 
     UserIdList userIdList = new UserIdList();
     userIdList.add(developerState.getUserDetail().getUserSystemInfo().getId());
-    developerRegistrationService.installApp(developerState);
-    for(Developer teamMember : signUpForm.getTeam()) {
+    for (Developer teamMember : signUpForm.getTeam()) {
       developerState = getDeveloperState(teamMember);
       userIdList.add(developerState.getUserDetail().getUserSystemInfo().getId());
-      developerRegistrationService.installApp(developerState);
     }
 
-    RoomDetail roomDetail = developerMessageService.createDeveloperRoom(signUpForm, userIdList);
+    if(StringUtils.isNotBlank(signUpForm.getAppId())) {
+      developerRegistrationService.installApp(developerState);
+      for (Developer teamMember : signUpForm.getTeam()) {
+        developerState = getDeveloperState(teamMember);
+        developerRegistrationService.installApp(developerState);
+      }
+    }
+
+    developerState = getDeveloperState(signUpForm.getCreator());
+    RoomDetail roomDetail = developerMessageService.createDeveloperRoom(developerState, userIdList);
     Stream stream = new Stream();
     stream.setId(roomDetail.getRoomSystemInfo().getId());
     developerState.setDeveloperRoom(stream);
@@ -200,14 +210,8 @@ public class DeveloperBootstrapService {
     if(developerRegistrationService.oneDeveloperExists(signUpForm)){
       throw new BadRequestException(BotConstants.DEVELOPER_EXISTS);
     }
-    if(StringUtils.isBlank(signUpForm.getAppId())){
-      throw new BadRequestException(BotConstants.APP_ID_REQUIRED);
-    }
-    if (StringUtils.isBlank(signUpForm.getAppName())) {
-      throw new BadRequestException(BotConstants.APP_NAME_REQUIRED);
-    }
     if(developerRegistrationService.botOrAppExist(signUpForm) ||
-        reservedContent.contains(signUpForm.getAppId()) ||
+        (StringUtils.isNotBlank(signUpForm.getAppId()) && reservedContent.contains(signUpForm.getAppId())) ||
         reservedContent.contains(signUpForm.getBotEmail().replace(" ", ""))){
       throw new BadRequestException(BotConstants.BOT_APP_EXISTS);
     }
@@ -216,35 +220,42 @@ public class DeveloperBootstrapService {
         StringUtils.isBlank(signUpForm.getCreator().getEmail())) {
       throw new BadRequestException(BotConstants.DEVELOPER_REQUIRED);
     }
-    if (StringUtils.isBlank(signUpForm.getAppDescription())) {
-      throw new BadRequestException(BotConstants.APP_DESCRIPTION_REQUIRED);
+
+    if(StringUtils.isNotBlank(signUpForm.getAppId())){
+      if (StringUtils.isBlank(signUpForm.getAppName())) {
+        throw new BadRequestException(BotConstants.APP_NAME_REQUIRED);
+      }
+      if (StringUtils.isBlank(signUpForm.getAppDescription())) {
+        throw new BadRequestException(BotConstants.APP_DESCRIPTION_REQUIRED);
+      }
+      if (StringUtils.isBlank(signUpForm.getAppDomain())) {
+        throw new BadRequestException(BotConstants.APP_DOMAIN_REQUIRED);
+      }
+      if (StringUtils.isBlank(signUpForm.getAppCompanyName())) {
+        throw new BadRequestException(BotConstants.APP_COMPANY_REQUIRED);
+      }
+      if(StringUtils.isNotBlank(signUpForm.getAppIconUrl()) &&
+          !signUpForm.getAppIconUrl().startsWith("https://")){
+        throw new BadRequestException(BotConstants.ICON_START_WITH_HTTPS);
+      }
+      if (StringUtils.isBlank(signUpForm.getAppUrl())) {
+        throw new BadRequestException(BotConstants.APP_URL_REQUIRED);
+      }
+      if(!signUpForm.getAppUrl().startsWith("https://")){
+        throw new BadRequestException(BotConstants.APP_START_WITH_HTTPS);
+      }
+      try {
+        validateDomain(signUpForm.getAppUrl(), signUpForm.getAppDomain());
+      } catch (MalformedURLException e) {
+        throw new BadRequestException(BotConstants.BAD_APP_URL);
+      }
     }
-    if (StringUtils.isBlank(signUpForm.getAppDomain())) {
-      throw new BadRequestException(BotConstants.APP_DOMAIN_REQUIRED);
-    }
-    if (StringUtils.isBlank(signUpForm.getAppCompanyName())) {
-      throw new BadRequestException(BotConstants.APP_COMPANY_REQUIRED);
-    }
-    if(StringUtils.isNotBlank(signUpForm.getAppIconUrl()) &&
-        !signUpForm.getAppIconUrl().startsWith("https://")){
-      throw new BadRequestException(BotConstants.ICON_START_WITH_HTTPS);
-    }
-    if (StringUtils.isBlank(signUpForm.getAppUrl())) {
-      throw new BadRequestException(BotConstants.APP_URL_REQUIRED);
-    }
-    if(!signUpForm.getAppUrl().startsWith("https://")){
-      throw new BadRequestException(BotConstants.APP_START_WITH_HTTPS);
-    }
+
     if (StringUtils.isBlank(signUpForm.getBotEmail())) {
       throw new BadRequestException(BotConstants.BOT_EMAIL_REQUIRED);
     }
     if (StringUtils.isBlank(signUpForm.getBotName())) {
       throw new BadRequestException(BotConstants.BOT_NAME_REQUIRED);
-    }
-    try {
-      validateDomain(signUpForm.getAppUrl(), signUpForm.getAppDomain());
-    } catch (MalformedURLException e) {
-      throw new BadRequestException(BotConstants.BAD_APP_URL);
     }
   }
 

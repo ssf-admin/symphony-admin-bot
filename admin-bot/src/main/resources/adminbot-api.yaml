@@ -79,7 +79,7 @@ definitions:
   DeveloperWelcomeDetail:
     description: Full details about developer welcome.
     properties:
-      developerSignUpForm:
+      signUpForm:
         $ref: '#/definitions/DeveloperSignUpForm'
         required: true
       welcomeSettings:

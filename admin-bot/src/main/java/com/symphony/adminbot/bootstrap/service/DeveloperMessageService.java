@@ -113,11 +113,13 @@ public class DeveloperMessageService {
     }
   }
 
-  public RoomDetail createDeveloperRoom(DeveloperSignUpForm developerSignUpForm, UserIdList userIdList) throws ApiException {
+  public RoomDetail createDeveloperRoom(DeveloperBootstrapState bootstrapState, UserIdList userIdList) throws ApiException {
     RoomCreate roomCreate = new RoomCreate();
     RoomAttributes roomAttributes = new RoomAttributes();
-    roomAttributes.setDescription("Room for developers to collabrate on their app " + developerSignUpForm.getAppName() + ".");
-    roomAttributes.setName(developerSignUpForm.getAppCompanyName() + " Team Development Room");
+    roomAttributes.setDescription("Room for developers to collaborate.");
+    roomAttributes.setName(" Team Development Room ("
+        + bootstrapState.getUserDetail().getUserAttributes().getUserName() + ")");
+
     roomAttributes.setDiscoverable(false);
     roomAttributes.setMembersCanInvite(true);
     roomCreate.setRoomAttributes(roomAttributes);

@@ -9,24 +9,22 @@ import com.symphony.api.adminbot.model.DeveloperSignUpForm;
  * Created by nick.tarsillo on 7/4/17.
  */
 public class BootstrapTemplateData extends TemplateData {
-  enum ReplacementEnums {
-    BOT_NAME("{BOT_NAME}"),
-    BOT_ID("{BOT_ID}"),
-    BOT_EMAIL("{BOT_EMAIL}"),
-    APP_NAME("{APP_NAME}"),
-    APP_ID("{APP_ID}"),
-    COMPANY_NAME("{COMPANY_NAME}"),
-    FIRST_NAME("{FIRST_NAME}"),
-    EMAIL("{EMAIL}"),
-    LAST_NAME("{LAST_NAME}"),
-    USERNAME("{USERNAME}"),
-    PASSWORD("{PASSWORD}");
+  enum ReplacementEnums implements TemplateEnums {
+    BOT_NAME("BOT_NAME"),
+    BOT_ID("BOT_ID"),
+    BOT_EMAIL("BOT_EMAIL"),
+    APP_NAME("APP_NAME"),
+    APP_ID("APP_ID"),
+    COMPANY_NAME("COMPANY_NAME"),
+    FIRST_NAME("FIRST_NAME"),
+    EMAIL("EMAIL"),
+    LAST_NAME("LAST_NAME"),
+    USERNAME("USERNAME"),
+    PASSWORD("PASSWORD");
 
     private String replacement;
 
-    ReplacementEnums(String replacement){
-      this.replacement = replacement;
-    }
+    ReplacementEnums(String replacement){this.replacement = replacement;}
 
     public String getReplacement() {
       return replacement;
@@ -34,6 +32,8 @@ public class BootstrapTemplateData extends TemplateData {
   }
   
   public BootstrapTemplateData(DeveloperBootstrapState developerBootstrapState){
+    putFields(ReplacementEnums.values());
+
     Developer developer = developerBootstrapState.getDeveloper();
     DeveloperSignUpForm developerSignUpForm = developerBootstrapState.getDeveloperSignUpForm();
 

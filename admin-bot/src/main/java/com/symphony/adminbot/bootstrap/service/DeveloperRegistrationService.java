@@ -11,6 +11,7 @@ import com.symphony.api.adminbot.model.DeveloperSignUpForm;
 import com.symphony.api.clients.ApplicationClient;
 import com.symphony.api.clients.UsersClient;
 import com.symphony.api.pod.client.ApiException;
+import com.symphony.api.pod.client.StringUtil;
 import com.symphony.api.pod.model.ApplicationDetail;
 import com.symphony.api.pod.model.ApplicationInfo;
 import com.symphony.api.pod.model.Feature;
@@ -297,10 +298,12 @@ public class DeveloperRegistrationService {
    * @return if the bot and app does not exist
    */
   public boolean botOrAppExist(DeveloperSignUpForm developerSignUpForm) throws ApiException {
-    PodAppEntitlementList podAppEntitlements = usersClient.listPodApps();
-    for(PodAppEntitlement appEntitlement : podAppEntitlements) {
-      if(appEntitlement.getAppId().equals(developerSignUpForm.getAppId())){
-        return true;
+    if(StringUtils.isNotBlank(developerSignUpForm.getAppId())) {
+      PodAppEntitlementList podAppEntitlements = usersClient.listPodApps();
+      for (PodAppEntitlement appEntitlement : podAppEntitlements) {
+        if (appEntitlement.getAppId().equals(developerSignUpForm.getAppId())) {
+          return true;
+        }
       }
     }
     return usersClient.userExistsByEmail(developerSignUpForm.getBotEmail());

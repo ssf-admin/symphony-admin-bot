@@ -34,11 +34,11 @@ public abstract  class AbstractV1AdminService implements V1ApiService {
     getAdminUserSession(sessionToken);
     DeveloperWelcomeResponse developerWelcomeResponse = new DeveloperWelcomeResponse();
 
-    String message = sendDeveloperWelcome(welcomeDetail.getDeveloperSignUpForm());
+    String message = sendDeveloperWelcome(welcomeDetail.getSignUpForm());
     developerWelcomeResponse.setMessage(message);
 
     if(welcomeDetail.getWelcomeSettings().getAutoBootstrap()) {
-      DeveloperBootstrapInfo bootstrapInfo = bootstrapDevelopers(welcomeDetail.getDeveloperSignUpForm());
+      DeveloperBootstrapInfo bootstrapInfo = bootstrapDevelopers(welcomeDetail.getSignUpForm());
       developerWelcomeResponse.setBootstrapImfo(bootstrapInfo);
     }
 

@@ -9,10 +9,24 @@ import java.util.Map;
  * Data to generate template from
  */
 public class TemplateData {
+  protected interface TemplateEnums {
+    String getReplacement();
+  }
+
   private Map<String, String> replacementHash = new HashMap<>();
 
   public void addData(String replace, String replacement){
     replacementHash.put(replace, replacement);
+  }
+
+  protected void addField(String replace){
+    replacementHash.put(replace, null);
+  }
+
+  protected void putFields(TemplateEnums[] templateEnums) {
+    for(TemplateEnums replacementEnums : templateEnums) {
+      addField(replacementEnums.getReplacement());
+    }
   }
 
   public Map<String, String> getReplacementHash() {
