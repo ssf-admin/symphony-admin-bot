@@ -62,7 +62,9 @@ public class AdminBot extends HttpServlet {
           System.getProperty(BotConfig.CERTS_DIR),
           System.getProperty(BotConfig.KEYS_PASSWORD_FILE));
       tomcatCertManager.buildStoresFromCerts();
-      //tomcatCertManager.refreshStores(Integer.parseInt(System.getProperty(BotConfig.AUTH_PORT)));
+      if(System.getProperty(BotConfig.TOMCAT_RESTART_AUTH_PORT).equals("true")) {
+        tomcatCertManager.refreshStores(Integer.parseInt(System.getProperty(BotConfig.AUTH_PORT)));
+      }
       tomcatCertManager.generateKeyMap();
       tomcatCertManager.setSSLStores();
     } catch (Exception e) {

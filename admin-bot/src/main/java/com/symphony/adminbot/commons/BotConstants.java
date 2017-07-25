@@ -23,6 +23,9 @@ public class BotConstants {
   //For Email Confirmation
   public static final String ADMIN_BOT_NAME = "Admin Bot";
 
+  //Success Messages
+  public static final String DEVELOPER_WELCOME_SUCCESS = "{\"message\":\"Developer welcome succeeded.\"}";
+
   //Bootstrap Error Messages
   public static final String APP_ID_REQUIRED = "App Id is required.";
   public static final String BOT_APP_EXISTS = "Bot or app already exists.";

@@ -11,10 +11,12 @@ import com.symphony.api.adminbot.model.DeveloperBootstrapInfo;
 import com.symphony.api.adminbot.model.DeveloperSignUpForm;
 import com.symphony.api.pod.client.ApiException;
 
+import io.swagger.annotations.Api;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.ws.rs.BadRequestException;
+import javax.ws.rs.InternalServerErrorException;
 import javax.ws.rs.core.Response;
 
 
@@ -33,43 +35,49 @@ public class V1AdminApi extends AbstractV1AdminService {
   }
 
   @Override
-  public Response bootstrapDeveloper(Developer developer) {
+  public DeveloperBootstrapInfo bootstrapDeveloper(Developer developer) {
     DeveloperBootstrapService signUpService = adminBotSession.getBootstrapService();
     try {
-      DeveloperBootstrapInfo partnerBootstrapInfo = signUpService.bootstrapPartner(developer);
-      return Response.ok(partnerBootstrapInfo).build();
-    } catch (Exception e) {
+      DeveloperBootstrapInfo developerBootstrapInfo = signUpService.bootstrapDeveloper(developer);
+      return developerBootstrapInfo;
+    } catch (ApiException e) {
       LOG.error("Bootstrap partner welcome failed:", e);
-      return handleError(Response.Status.INTERNAL_SERVER_ERROR, BotConstants.INTERNAL_ERROR);
+      throw new InternalServerErrorException(BotConstants.INTERNAL_ERROR);
     }
   }
 
   @Override
-  public Response sendDeveloperWelcome(DeveloperSignUpForm signUpForm) {
+  public DeveloperBootstrapInfo bootstrapDevelopers(DeveloperSignUpForm signUpForm) {
+    DeveloperBootstrapService signUpService = adminBotSession.getBootstrapService();
+    try {
+      DeveloperBootstrapInfo developerBootstrapInfo = signUpService.bootstrapDevelopers(signUpForm);
+      return developerBootstrapInfo;
+    } catch (ApiException e) {
+      LOG.error("Bootstrap partner welcome failed:", e);
+      throw new InternalServerErrorException(BotConstants.INTERNAL_ERROR);
+    }
+  }
+
+  @Override
+  public String sendDeveloperWelcome(DeveloperSignUpForm signUpForm) {
     DeveloperBootstrapService signUpService = adminBotSession.getBootstrapService();
     try {
       signUpService.welcomeDeveloper(signUpForm);
     } catch (ApiException e) {
       LOG.error("Send partner welcome failed:", e);
-      return handleError(Response.Status.INTERNAL_SERVER_ERROR, BotConstants.INTERNAL_ERROR);
+      throw new InternalServerErrorException(BotConstants.INTERNAL_ERROR);
     }
 
-    return Response.ok("{\"message\":\"Developer welcome succeeded.\"}").build();
+    return BotConstants.DEVELOPER_WELCOME_SUCCESS;
   }
 
   @Override
   public AdminBotUserSession getAdminUserSession(String sessionToken) {
-    AdminBotUserSession
-        adminSession = adminSessionManager.getAdminSession(sessionToken);
+    AdminBotUserSession adminSession = adminSessionManager.getAdminSession(sessionToken);
     if(adminSession == null) {
       throw new BadRequestException("Admin session not found.");
     }
 
     return adminSession;
-  }
-
-  private Response handleError(Response.Status status, String responseBody){
-    return Response.status(status).entity("{\"code\":" + status.getStatusCode()
-        + ", \"message\": \"" + responseBody + "\"}").build();
   }
 }

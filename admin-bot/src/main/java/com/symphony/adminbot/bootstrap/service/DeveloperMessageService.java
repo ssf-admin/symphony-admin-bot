@@ -6,11 +6,18 @@ import com.symphony.adminbot.commons.BotConstants;
 import com.symphony.adminbot.config.BotConfig;
 import com.symphony.adminbot.util.file.FileUtil;
 import com.symphony.adminbot.util.template.MessageTemplate;
+import com.symphony.api.adminbot.model.DeveloperSignUpForm;
 import com.symphony.api.agent.model.V2Message;
 import com.symphony.api.agent.model.V2MessageSubmission;
 import com.symphony.api.clients.MessagesClient;
 import com.symphony.api.clients.StreamsClient;
+import com.symphony.api.pod.client.ApiException;
+import com.symphony.api.pod.model.ImmutableRoomAttributes;
+import com.symphony.api.pod.model.RoomAttributes;
+import com.symphony.api.pod.model.RoomCreate;
+import com.symphony.api.pod.model.RoomDetail;
 import com.symphony.api.pod.model.Stream;
+import com.symphony.api.pod.model.UserId;
 import com.symphony.api.pod.model.UserIdList;
 
 import org.slf4j.Logger;
@@ -76,6 +83,7 @@ public class DeveloperMessageService {
 
   /**
    * Sends message containing bootstrap package.
+   * If developer room is null, will send to developer IM instead.
    * @param developerState the current state of the user in the sign up process
    */
   public void sendBootstrapMessage(DeveloperBootstrapState developerState) {
@@ -92,11 +100,36 @@ public class DeveloperMessageService {
       v2Message.setMessage(message);
       v2Message.setAttachments(developerState.getCertAttachmentInfo());
 
-      messagesClient.sendMessage(developerState.getDeveloperIM(), v2Message, V2MessageSubmission.FormatEnum.MESSAGEML);
+      Stream stream = developerState.getDeveloperIM();
+      if(developerState.getDeveloperRoom() != null) {
+        stream = developerState.getDeveloperRoom();
+      }
+
+      messagesClient.sendMessage(stream, v2Message, V2MessageSubmission.FormatEnum.MESSAGEML);
       LOG.info("Sent bootstrap message to user " + developerState.getUserDetail().getUserAttributes().getUserName() + ".");
     } catch (Exception e) {
       LOG.error("Error occurred when sending directional message: ", e);
       throw new InternalServerErrorException(BotConstants.INTERNAL_ERROR);
     }
+  }
+
+  public RoomDetail createDeveloperRoom(DeveloperSignUpForm developerSignUpForm, UserIdList userIdList) throws ApiException {
+    RoomCreate roomCreate = new RoomCreate();
+    RoomAttributes roomAttributes = new RoomAttributes();
+    roomAttributes.setDescription("Room for developers to collabrate on their app " + developerSignUpForm.getAppName() + ".");
+    roomAttributes.setName(developerSignUpForm.getAppCompanyName() + " Team Development Room");
+    roomAttributes.setDiscoverable(false);
+    roomAttributes.setMembersCanInvite(true);
+    roomCreate.setRoomAttributes(roomAttributes);
+
+    RoomDetail roomDetail = streamsClient.createRoom(roomCreate);
+
+    for(Long uid : userIdList) {
+      UserId userId = new UserId();
+      userId.setId(uid);
+      streamsClient.addMemberToRoom(roomDetail.getRoomSystemInfo().getId(), userId);
+    }
+
+    return roomDetail;
   }
 }

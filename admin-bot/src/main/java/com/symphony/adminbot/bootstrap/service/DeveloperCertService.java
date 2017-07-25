@@ -13,6 +13,7 @@ import com.symphony.api.pod.model.CompanyCertAttributes;
 import com.symphony.api.pod.model.CompanyCertDetail;
 import com.symphony.api.pod.model.CompanyCertStatus;
 import com.symphony.api.pod.model.CompanyCertType;
+import com.symphony.api.pod.model.Stream;
 
 import org.apache.commons.lang.StringUtils;
 import org.bouncycastle.asn1.x509.AlgorithmIdentifier;
@@ -117,7 +118,8 @@ public class DeveloperCertService {
   }
 
   /**
-   * Uploads certs as a zip attachment to partner IM
+   * Uploads certs as a zip attachment to partner IM.
+   * If developer room is null, will upload to developer IM instead.
    * @param developerState the current state of the partner in the sign up process
    */
   public void uploadCerts(DeveloperBootstrapState developerState){
@@ -138,8 +140,13 @@ public class DeveloperCertService {
       Set<File> attachments = new HashSet<>();
       attachments.add(zip);
 
+      Stream stream = developerState.getDeveloperIM();
+      if(developerState.getDeveloperRoom() != null) {
+        stream = developerState.getDeveloperRoom();
+      }
+
       developerState.setCertAttachmentInfo(
-          attachmentsClient.uploadAttachments(developerState.getDeveloperIM(), attachments));
+          attachmentsClient.uploadAttachments(stream, attachments));
       LOG.info("Uploaded certs to IM for user " + developerState.getUserDetail().getUserAttributes().getUserName() + ".");
     } catch (Exception e){
       LOG.error("Error occurred when uploading attachments: ", e);

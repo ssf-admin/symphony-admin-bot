@@ -11,7 +11,10 @@ import com.symphony.api.adminbot.model.DeveloperSignUpForm;
 import com.symphony.api.clients.SymphonyClient;
 import com.symphony.api.pod.client.ApiException;
 import com.symphony.api.pod.model.ApplicationDetail;
+import com.symphony.api.pod.model.RoomDetail;
+import com.symphony.api.pod.model.Stream;
 import com.symphony.api.pod.model.UserDetail;
+import com.symphony.api.pod.model.UserIdList;
 
 import com.sun.jndi.toolkit.url.Uri;
 import org.apache.commons.lang.StringUtils;
@@ -68,8 +71,76 @@ public class DeveloperBootstrapService {
    * @param developer the bootstrap to base the bootstrap on
    * @return bootstrap info
    */
-  public DeveloperBootstrapInfo bootstrapPartner(Developer developer) throws ApiException {
+  public DeveloperBootstrapInfo bootstrapDeveloper(Developer developer) throws ApiException {
     DeveloperBootstrapState developerState = getDeveloperState(developer);
+    bootstrap(developerState);
+
+    developerRegistrationService.installApp(developerState);
+    developerCertService.uploadCerts(developerState);
+    developerMessageService.sendBootstrapMessage(developerState);
+
+    LOG.info("Bootstraped user " + developerState.getUserDetail().getUserAttributes().getUserName() + ".");
+
+    return developerState.getBootstrapInfo();
+  }
+
+  public DeveloperBootstrapInfo bootstrapDevelopers(DeveloperSignUpForm signUpForm) throws ApiException {
+    DeveloperBootstrapState developerState = getDeveloperState(signUpForm.getCreator());
+    bootstrap(developerState);
+
+    UserIdList userIdList = new UserIdList();
+    userIdList.add(developerState.getUserDetail().getUserSystemInfo().getId());
+    developerRegistrationService.installApp(developerState);
+    for(Developer teamMember : signUpForm.getTeam()) {
+      developerState = getDeveloperState(teamMember);
+      userIdList.add(developerState.getUserDetail().getUserSystemInfo().getId());
+      developerRegistrationService.installApp(developerState);
+    }
+
+    RoomDetail roomDetail = developerMessageService.createDeveloperRoom(signUpForm, userIdList);
+    Stream stream = new Stream();
+    stream.setId(roomDetail.getRoomSystemInfo().getId());
+    developerState.setDeveloperRoom(stream);
+    for(Developer teamMember : developerState.getTeamMembers()) {
+      developerState = getDeveloperState(teamMember);
+      developerState.setDeveloperRoom(stream);
+    }
+    developerCertService.uploadCerts(developerState);
+    developerMessageService.sendBootstrapMessage(developerState);
+
+    return developerState.getBootstrapInfo();
+  }
+
+  /**
+   * Validates that all the fields in the sign up form are valid
+   * Creates partner symphony user with random temp password.
+   * Sends welcome email and message in symphony to partner.
+   * @param signUpForm the partner sign up form
+   */
+  public void welcomeDeveloper(DeveloperSignUpForm signUpForm) throws ApiException {
+    validateSignUpForm(signUpForm);
+    Set<DeveloperBootstrapState> bootstrapStates = getInitialBootstrapStates(signUpForm);
+    for(DeveloperBootstrapState developerState : bootstrapStates){
+      partnerStateCache.put(developerState.getDeveloper(), developerState);
+
+      String randomPassword = UUID.randomUUID().toString().replace("-", "");
+      int randomBegin = (int)(Math.random() * (randomPassword.length() - 3));
+      int randomEnd = ThreadLocalRandom.current().nextInt(randomBegin, randomPassword.length());
+      randomPassword = randomPassword.replace(randomPassword.substring(randomBegin, randomEnd),
+          randomPassword.substring(randomBegin, randomEnd).toUpperCase());
+
+      developerRegistrationService.registerDeveloperUser(developerState, randomPassword);
+      developerEmailService.sendWelcomeEmail(developerState, randomPassword);
+      developerMessageService.sendDirectionalMessage(developerState);
+
+      reservedContent.add(developerState.getDeveloperSignUpForm().getAppId());
+      reservedContent.add(developerState.getDeveloperSignUpForm().getBotEmail().replace(" ", ""));
+
+      LOG.info("Welcomed developer " + developerState.getUserDetail().getUserAttributes().getUserName() + ".");
+    }
+  }
+
+  private void bootstrap(DeveloperBootstrapState developerState) throws ApiException {
     DeveloperSignUpForm signUpForm = developerState.getDeveloperSignUpForm();
     if(developerState.getBootstrapInfo() == null) {
       DeveloperBootstrapInfo developerBootstrapInfo = new DeveloperBootstrapInfo();
@@ -110,43 +181,6 @@ public class DeveloperBootstrapService {
         DeveloperBootstrapState teamMemberState = getDeveloperState(teamMember);
         teamMemberState.setBootstrapInfo(developerBootstrapInfo);
       }
-    }
-
-    developerRegistrationService.installApp(developerState);
-    developerCertService.uploadCerts(developerState);
-    developerMessageService.sendBootstrapMessage(developerState);
-
-    LOG.info("Bootstraped user " + developerState.getUserDetail().getUserAttributes().getUserName() + ".");
-
-    return developerState.getBootstrapInfo();
-  }
-
-  /**
-   * Validates that all the fields in the sign up form are valid
-   * Creates partner symphony user with random temp password.
-   * Sends welcome email and message in symphony to partner.
-   * @param signUpForm the partner sign up form
-   */
-  public void welcomeDeveloper(DeveloperSignUpForm signUpForm) throws ApiException {
-    validateSignUpForm(signUpForm);
-    Set<DeveloperBootstrapState> bootstrapStates = getInitialBootstrapStates(signUpForm);
-    for(DeveloperBootstrapState developerState : bootstrapStates){
-      partnerStateCache.put(developerState.getDeveloper(), developerState);
-
-      String randomPassword = UUID.randomUUID().toString().replace("-", "");
-      int randomBegin = (int)(Math.random() * (randomPassword.length() - 3));
-      int randomEnd = ThreadLocalRandom.current().nextInt(randomBegin, randomPassword.length());
-      randomPassword = randomPassword.replace(randomPassword.substring(randomBegin, randomEnd),
-          randomPassword.substring(randomBegin, randomEnd).toUpperCase());
-
-      developerRegistrationService.registerDeveloperUser(developerState, randomPassword);
-      developerEmailService.sendWelcomeEmail(developerState, randomPassword);
-      developerMessageService.sendDirectionalMessage(developerState);
-
-      reservedContent.add(developerState.getDeveloperSignUpForm().getAppId());
-      reservedContent.add(developerState.getDeveloperSignUpForm().getBotEmail().replace(" ", ""));
-
-      LOG.info("Welcomed developer " + developerState.getUserDetail().getUserAttributes().getUserName() + ".");
     }
   }
 

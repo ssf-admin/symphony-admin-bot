@@ -44,6 +44,7 @@ public class BotConfig {
   public static final String BOOTSTRAP_BOT_ID_ENV = "BOOTSTRAP_BOT_ID";
   public static final String AUTH_PORT_ENV = "AUTH_PORT";
   public static final String SWAGGER_PORT_ENV = "SWAGGER_PORT";
+  public static final String TOMCAT_RESTART_AUTH_PORT_ENV = "TOMCAT_RESTART_AUTH_PORT";
 
   //_____________________________Properties_____________________________//
   /**
@@ -106,6 +107,7 @@ public class BotConfig {
    */
   public final static String AUTH_PORT = "adminbot.auth.port";
   public final static String SWAGGER_PORT = "adminbot.swagger.port";
+  public static final String TOMCAT_RESTART_AUTH_PORT = "tomcat.restart.auth.port";
 
   static {
     PROPERTY_SET.add(new EnvironmentConfigProperty(TOMCAT_KEYSTORE_PASSWORD_ENV, TOMCAT_KEYSTORE_PASSWORD));
@@ -142,6 +144,7 @@ public class BotConfig {
         BOOTSTRAP_MESSAGE_DIRECTIONAL_TEMPLATE));
     PROPERTY_SET.add(new EnvironmentConfigProperty(BOOTSTRAP_MESSAGE_WELCOME_TEMPLATE_ENV,
         BOOTSTRAP_MESSAGE_WELCOME_TEMPLATE));
+    PROPERTY_SET.add(new EnvironmentConfigProperty(TOMCAT_RESTART_AUTH_PORT_ENV, TOMCAT_RESTART_AUTH_PORT));
   }
 
   /**

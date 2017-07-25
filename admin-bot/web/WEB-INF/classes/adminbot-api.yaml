@@ -24,11 +24,11 @@ paths:
           in: header
           required: true
           type: string
-        - name: signUpForm
+        - name: welcomeDetail
           in: body
           required: true
           schema:
-            $ref: '#/definitions/DeveloperSignUpForm'
+            $ref: '#/definitions/DeveloperWelcomeDetail'
       consumes:
         - application/json
       produces:
@@ -37,7 +37,7 @@ paths:
         '200':
           description: OK
           schema:
-            $ref: '#/definitions/SuccessResponse'
+            $ref: '#/definitions/DeveloperWelcomeResponse'
       tags:
         - SignUp
   '/v1/bootstrapDeveloper':
@@ -76,6 +76,22 @@ definitions:
       message:
         type: string
         default: "OK"
+  DeveloperWelcomeDetail:
+    description: Full details about developer welcome.
+    properties:
+      developerSignUpForm:
+        $ref: '#/definitions/DeveloperSignUpForm'
+        required: true
+      welcomeSettings:
+        $ref: '#/definitions/WelcomeSettings'
+  WelcomeSettings:
+    properties:
+      autoBootstrap:
+        type: boolean
+        description: |
+          If true, will automatically bootstrap all developers in sign up form.
+          If false, must call bootstrapDeveloper enpoint to indivdually bootstrap developers (when needed).
+        default: true
   DeveloperSignUpForm:
     type: object
     properties:
@@ -117,21 +133,36 @@ definitions:
     properties:
       firstName:
         type: string
+        description: The first name of the developer.
         required: true
       lastName:
         type: string
+        description: The last name of the developer.
         required: true
       email:
         type: string
+        description: The email of the developer.
         required: true
   DeveloperBootstrapInfo:
     type: object
     properties:
       botUsername:
         type: string
+        description: The service user bootstraped onto pod's username.
       botEmail:
         type: string
+        description: The service user bootstraped onto pod's email.
       appId:
         type: string
+        description: The app bootstraped onto pod's app id.
       appName:
         type: string
+        description: The app bootstraped onto pod's app name.
+  DeveloperWelcomeResponse:
+    description: Response about developer welcome.
+    properties:
+      message:
+        type: string
+      bootstrapImfo:
+        $ref: '#/definitions/DeveloperBootstrapInfo'
+        description: If auto bootstrap was set to true, developer welcome will return bootstrap info.

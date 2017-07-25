@@ -28,6 +28,7 @@ public class DeveloperBootstrapState {
   private UserDetail botDetail;
   private ApplicationDetail applicationDetail;
   private Stream developerIM;
+  private Stream developerRoom;
   private Map<String, CompanyCert> companyCertMap;
   private List<AttachmentInfo> certAttachmentInfo;
   private DeveloperBootstrapInfo bootstrapInfo;
@@ -112,5 +113,13 @@ public class DeveloperBootstrapState {
 
   public void setBotDetail(UserDetail botDetail) {
     this.botDetail = botDetail;
+  }
+
+  public Stream getDeveloperRoom() {
+    return developerRoom;
+  }
+
+  public void setDeveloperRoom(Stream developerRoom) {
+    this.developerRoom = developerRoom;
   }
 }
