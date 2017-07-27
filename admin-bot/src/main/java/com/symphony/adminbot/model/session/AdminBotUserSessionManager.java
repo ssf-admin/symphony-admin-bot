@@ -45,7 +45,7 @@ public class AdminBotUserSessionManager {
     try {
       adminBotUser = adminUserCache.get(adminName);
     } catch (Exception e) {
-      LOG.warn("Could not get user " + adminName + ":", e);
+      LOG.warn("Could not load user " + adminName + " from file.");
     }
     if(adminBotUser == null) {
       adminBotUser = new AdminBotUser(adminName);
