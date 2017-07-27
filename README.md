@@ -11,7 +11,7 @@ Symphony Admin Bot
 **Tomcat Setup**
 1. Download and unzip tomcat: https://tomcat.apache.org/download-80.cgi
 2. Add the following text to server.xml file in tomcat conf folder:
-   - > <Connector port= "{ADD_DESIRED_AUTH_PORT_HERE}"  
+   - > \<Connector port= "{ADD_DESIRED_AUTH_PORT_HERE}"  
        protocol="org.apache.coyote.http11.Http11NioProtocol" 
        SSLEnabled= "true" maxThreads="150" scheme="https" secure="true"  
        keystoreFile="./certs/tomcat.keystore"  
@@ -19,15 +19,15 @@ Symphony Admin Bot
        truststoreFile="./certs/server.truststore"  
        trustManagerClassName="com.symphony.adminbot.model.tomcat.TomcatCertManager" 
        truststorePass="{ADD_TOMCAT_TRUSTORE_PASSWORD}"  
-       clientAuth="true" sslProtocol="TLS" />
-   - > <Connector port= "{ADD_DESIRED_SWAGGER_PORT_HERE}"  
+       clientAuth="true" sslProtocol="TLS" /\>
+   - > \<Connector port= "{ADD_DESIRED_SWAGGER_PORT_HERE}"  
        protocol="org.apache.coyote.http11.Http11NioProtocol" 
        SSLEnabled= "true" maxThreads="150" scheme="https" secure="true"  
        keystoreFile="./certs/tomcat.keystore"  
        keystorePass="{TOMCAT_KEYSTORE_PASSWORD}"  
        truststoreFile="./certs/server.truststore"  
        truststorePass="{ADD_TOMCAT_TRUSTORE_PASSWORD_HERE}"  
-       clientAuth="false" sslProtocol="TLS" /> 
+       clientAuth="false" sslProtocol="TLS" /\> 
 3. Add compiled admin-bot-1.0-SNAPSHOT-jar-with-dependencies.jar to tomcat lib folder.
 4. Add compiled ROOT folder to tomcat webapps folder.
 
