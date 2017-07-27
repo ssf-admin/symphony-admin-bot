@@ -19,8 +19,8 @@ Symphony Admin Bot
        truststoreFile="./certs/server.truststore"  
        trustManagerClassName="com.symphony.adminbot.model.tomcat.TomcatCertManager" 
        truststorePass="{ADD_TOMCAT_TRUSTORE_PASSWORD}"  
-       clientAuth="true" sslProtocol="TLS" /> <br/>
-       <br/><Connector port= "{ADD_DESIRED_SWAGGER_PORT_HERE}"  
+       clientAuth="true" sslProtocol="TLS" />
+   - > <Connector port= "{ADD_DESIRED_SWAGGER_PORT_HERE}"  
        protocol="org.apache.coyote.http11.Http11NioProtocol" 
        SSLEnabled= "true" maxThreads="150" scheme="https" secure="true"  
        keystoreFile="./certs/tomcat.keystore"  
