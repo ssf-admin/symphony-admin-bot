@@ -7,6 +7,7 @@ import com.symphony.api.adminbot.model.DeveloperBootstrapInfo;
 import com.symphony.api.adminbot.model.DeveloperSignUpForm;
 import com.symphony.api.adminbot.model.DeveloperWelcomeDetail;
 import com.symphony.api.adminbot.model.DeveloperWelcomeResponse;
+import com.symphony.api.adminbot.model.WelcomeSettings;
 
 import javax.ws.rs.core.Response;
 
@@ -36,6 +37,10 @@ public abstract  class AbstractV1AdminService implements V1ApiService {
 
     String message = sendDeveloperWelcome(welcomeDetail.getSignUpForm());
     developerWelcomeResponse.setMessage(message);
+
+    if(welcomeDetail.getWelcomeSettings() == null) {
+      welcomeDetail.setWelcomeSettings(new WelcomeSettings());
+    }
 
     if(welcomeDetail.getWelcomeSettings().getAutoBootstrap()) {
       DeveloperBootstrapInfo bootstrapInfo = bootstrapDevelopers(welcomeDetail.getSignUpForm());

@@ -3,6 +3,11 @@ info:
   version: '0.0.1'
   title: Admin Bot
   description: |
+     Current functionality:
+        Creating developer user on pod, and emailing sign in info.
+        Generating and registering bot cert and creating bot service user on pod for developer.
+        Generating and registering app cert and creating new app on pod for developer.
+        Messaging developer within symphony bootstrap info (Certs and bot/app credentials).
 produces:
   - application/json
 tags:
@@ -19,6 +24,7 @@ paths:
           Creates the users in the pod, as defined within the sign up form.
           Sends welcome emails with username and temporary password.
           Sends directional welcome message to users, for when they login.
+          If auto bootstrap option is set, all developers will also be automatically bootstraped.
       parameters:
         - name: sessionToken
           in: header
@@ -44,10 +50,11 @@ paths:
     post:
       summary: Bootstraps a bootstrap.
       description:
+          Used to bootstrap users individually.
           If not already created -
             Creates and registers bot cert, creates bot user.
             Creates and registers app cert, creates app.
-          Sends bootstrap bootstrap package within symphony.
+          Sends bootstrap bootstrap package within symphony to devleoper user.
       parameters:
         - name: sessionToken
           in: header
@@ -78,6 +85,7 @@ definitions:
         default: "OK"
   DeveloperWelcomeDetail:
     description: Full details about developer welcome.
+    type: object
     properties:
       signUpForm:
         $ref: '#/definitions/DeveloperSignUpForm'
@@ -85,6 +93,7 @@ definitions:
       welcomeSettings:
         $ref: '#/definitions/WelcomeSettings'
   WelcomeSettings:
+    type: object
     properties:
       autoBootstrap:
         type: boolean
@@ -101,32 +110,41 @@ definitions:
         type: array
         items:
           $ref: '#/definitions/Developer'
-      appName:
-        type: string
-        required: true
       appId:
         type: string
+        description: the app id
+        required: false
+      appName:
+        type: string
+        description: the app name. This is required if an App Id is provided.
         required: true
       appUrl:
         type: string
+        description: the app url. This is required if an App Id is provided.
         required: true
       appCompanyName:
         type: string
+        description: the app company name. This is required if an App Id is provided.
         required: true
       appDomain:
         type: string
+        description: the app domain. This is required if an App Id is provided.
         required: true
       appDescription:
         type: string
+        description: the app description. This is required if an App Id is provided.
         required: true
       botName:
         type: string
+        description: the bot name
         required: true
       botEmail:
         type: string
+        description: the bot email
         required: true
       appIconUrl:
         type: string
+        description: the app icon url
         required: false
   Developer:
     type: object
