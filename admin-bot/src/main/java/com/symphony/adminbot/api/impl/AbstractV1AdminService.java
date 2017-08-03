@@ -44,7 +44,7 @@ public abstract  class AbstractV1AdminService implements V1ApiService {
 
     if(welcomeDetail.getWelcomeSettings().getAutoBootstrap()) {
       DeveloperBootstrapInfo bootstrapInfo = bootstrapDevelopers(welcomeDetail.getSignUpForm());
-      developerWelcomeResponse.setBootstrapImfo(bootstrapInfo);
+      developerWelcomeResponse.setBootstrapInfo(bootstrapInfo);
     }
 
     return Response.ok(developerWelcomeResponse).build();

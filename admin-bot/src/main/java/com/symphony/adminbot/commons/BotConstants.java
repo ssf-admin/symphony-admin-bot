@@ -27,7 +27,6 @@ public class BotConstants {
   public static final String DEVELOPER_WELCOME_SUCCESS = "Developer welcome succeeded.";
 
   //Bootstrap Error Messages
-  public static final String APP_ID_REQUIRED = "App Id is required.";
   public static final String BOT_APP_EXISTS = "Bot or app already exists.";
   public static final String DEVELOPER_REQUIRED = "All developer fields are required.";
   public static final String APP_NAME_REQUIRED = "App name is required.";
@@ -39,9 +38,10 @@ public class BotConstants {
   public static final String BOT_NAME_REQUIRED = "Bot name is required.";
   public static final String ICON_START_WITH_HTTPS = "Icon url must start with \"https://\".";
   public static final String APP_START_WITH_HTTPS = "App url must start with \"https://\".";
-  public static final String BAD_APP_URL = "Please provide a valid app url.";
   public static final String DOMAIN_MUST_MATCH = "Domain must match app url domain.";
   public static final String DEVELOPER_NOT_FOUND = "Developer not found.";
   public static final String DUPLICATE_DEVELOPER = "Developers cannot have same emails.";
   public static final String DEVELOPER_EXISTS = "One or more developers already exists on pod.";
+  public static final String INVALID_APP_ICON_URL = "The app icon url is invalid.";
+  public static final String INVALID_APP_URL = "The app url is invalid.";
 }

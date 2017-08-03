@@ -22,6 +22,7 @@ paths:
       summary: Sends user welcome messages and emails.
       description:
           Creates the users in the pod, as defined within the sign up form.
+          App name, description, url, domain, company name are required for creating an app.
           Sends welcome emails with username and temporary password.
           Sends directional welcome message to users, for when they login.
           If auto bootstrap option is set, all developers will also be automatically bootstraped.
@@ -116,36 +117,36 @@ definitions:
         required: false
       appName:
         type: string
-        description: the app name. This is required if an App Id is provided.
-        required: true
+        description: the app name. Only required for creating app.
+        required: false
       appUrl:
         type: string
-        description: the app url. This is required if an App Id is provided.
-        required: true
+        description: the app url. Only required for creating app.
+        required: false
       appCompanyName:
         type: string
-        description: the app company name. This is required if an App Id is provided.
-        required: true
+        description: the app company name. Only required for creating app.
+        required: false
       appDomain:
         type: string
-        description: the app domain. This is required if an App Id is provided.
-        required: true
+        description: the app domain. Only required for creating app.
+        required: false
       appDescription:
         type: string
-        description: the app description. This is required if an App Id is provided.
-        required: true
-      botName:
-        type: string
-        description: the bot name
-        required: true
-      botEmail:
-        type: string
-        description: the bot email
-        required: true
+        description: the app description. Only required for creating app.
+        required: false
       appIconUrl:
         type: string
         description: the app icon url
         required: false
+      botName:
+        type: string
+        description: the bot name
+        required: false
+      botEmail:
+        type: string
+        description: the bot email
+        required: true
   Developer:
     type: object
     properties:
@@ -181,6 +182,6 @@ definitions:
     properties:
       message:
         type: string
-      bootstrapImfo:
+      bootstrapInfo:
         $ref: '#/definitions/DeveloperBootstrapInfo'
         description: If auto bootstrap was set to true, developer welcome will return bootstrap info.

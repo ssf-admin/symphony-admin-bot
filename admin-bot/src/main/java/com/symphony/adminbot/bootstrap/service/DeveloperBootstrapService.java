@@ -17,7 +17,9 @@ import com.symphony.api.pod.model.UserDetail;
 import com.symphony.api.pod.model.UserIdList;
 
 import com.sun.jndi.toolkit.url.Uri;
+import org.apache.commons.lang.RandomStringUtils;
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.validator.routines.UrlValidator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -129,6 +131,11 @@ public class DeveloperBootstrapService {
    */
   public void welcomeDeveloper(DeveloperSignUpForm signUpForm) throws ApiException {
     validateSignUpForm(signUpForm);
+
+    if(StringUtils.isBlank(signUpForm.getAppId())) {
+      signUpForm.setAppId(RandomStringUtils.randomAlphanumeric(40).toUpperCase());
+    }
+
     Set<DeveloperBootstrapState> bootstrapStates = getInitialBootstrapStates(signUpForm);
     for(DeveloperBootstrapState developerState : bootstrapStates){
       partnerStateCache.put(developerState.getDeveloper(), developerState);
@@ -221,7 +228,7 @@ public class DeveloperBootstrapService {
       throw new BadRequestException(BotConstants.DEVELOPER_REQUIRED);
     }
 
-    if(StringUtils.isNotBlank(signUpForm.getAppId())){
+    if(signUpFormContainsApp(signUpForm)) {
       if (StringUtils.isBlank(signUpForm.getAppName())) {
         throw new BadRequestException(BotConstants.APP_NAME_REQUIRED);
       }
@@ -235,19 +242,27 @@ public class DeveloperBootstrapService {
         throw new BadRequestException(BotConstants.APP_COMPANY_REQUIRED);
       }
       if(StringUtils.isNotBlank(signUpForm.getAppIconUrl()) &&
-          !signUpForm.getAppIconUrl().startsWith("https://")){
+          !signUpForm.getAppIconUrl().startsWith("https://")) {
         throw new BadRequestException(BotConstants.ICON_START_WITH_HTTPS);
+      }
+      if(StringUtils.isNotBlank(signUpForm.getAppIconUrl()) &&
+          validateUrl(signUpForm.getAppIconUrl())) {
+        throw new BadRequestException(BotConstants.INVALID_APP_ICON_URL);
       }
       if (StringUtils.isBlank(signUpForm.getAppUrl())) {
         throw new BadRequestException(BotConstants.APP_URL_REQUIRED);
       }
-      if(!signUpForm.getAppUrl().startsWith("https://")){
+      if(!signUpForm.getAppUrl().startsWith("https://")) {
         throw new BadRequestException(BotConstants.APP_START_WITH_HTTPS);
+      }
+      if(StringUtils.isNotBlank(signUpForm.getAppUrl()) &&
+          validateUrl(signUpForm.getAppUrl())) {
+        throw new BadRequestException(BotConstants.INVALID_APP_URL);
       }
       try {
         validateDomain(signUpForm.getAppUrl(), signUpForm.getAppDomain());
-      } catch (MalformedURLException e) {
-        throw new BadRequestException(BotConstants.BAD_APP_URL);
+      } catch (Exception e) {
+        throw new BadRequestException(BotConstants.INVALID_APP_URL);
       }
     }
 
@@ -306,6 +321,18 @@ public class DeveloperBootstrapService {
       }
     }
     throw new BadRequestException(BotConstants.DOMAIN_MUST_MATCH);
+  }
+
+  private boolean validateUrl(String url){
+    UrlValidator urlValidator = new UrlValidator();
+    return urlValidator.isValid(url);
+  }
+
+  private boolean signUpFormContainsApp(DeveloperSignUpForm signUpForm) {
+    return StringUtils.isNotBlank(signUpForm.getAppId()) || StringUtils.isNotBlank(signUpForm.getAppName()) ||
+        StringUtils.isNotBlank(signUpForm.getAppIconUrl()) || StringUtils.isNotBlank(signUpForm.getAppUrl()) ||
+        StringUtils.isNotBlank(signUpForm.getAppCompanyName()) || StringUtils.isNotBlank(signUpForm.getAppDomain()) ||
+        StringUtils.isNotBlank(signUpForm.getAppDescription());
   }
 
   private DeveloperBootstrapState getDeveloperState(Developer developer) {
