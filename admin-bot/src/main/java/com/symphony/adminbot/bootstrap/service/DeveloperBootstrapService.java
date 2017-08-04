@@ -246,7 +246,7 @@ public class DeveloperBootstrapService {
         throw new BadRequestException(BotConstants.ICON_START_WITH_HTTPS);
       }
       if(StringUtils.isNotBlank(signUpForm.getAppIconUrl()) &&
-          validateUrl(signUpForm.getAppIconUrl())) {
+          !validateUrl(signUpForm.getAppIconUrl())) {
         throw new BadRequestException(BotConstants.INVALID_APP_ICON_URL);
       }
       if (StringUtils.isBlank(signUpForm.getAppUrl())) {
@@ -256,7 +256,7 @@ public class DeveloperBootstrapService {
         throw new BadRequestException(BotConstants.APP_START_WITH_HTTPS);
       }
       if(StringUtils.isNotBlank(signUpForm.getAppUrl()) &&
-          validateUrl(signUpForm.getAppUrl())) {
+          !validateUrl(signUpForm.getAppUrl())) {
         throw new BadRequestException(BotConstants.INVALID_APP_URL);
       }
       try {
