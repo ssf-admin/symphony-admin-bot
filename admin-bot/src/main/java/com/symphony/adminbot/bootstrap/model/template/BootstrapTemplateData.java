@@ -7,6 +7,8 @@ import com.symphony.api.adminbot.model.DeveloperSignUpForm;
 
 /**
  * Created by nick.tarsillo on 7/4/17.
+ *
+ * Data to generate templates from based on a developer's bootstrap state.
  */
 public class BootstrapTemplateData extends TemplateData {
   enum ReplacementEnums implements TemplateEnums {

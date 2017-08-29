@@ -1,0 +1,36 @@
+swagger: '2.0'
+info:
+  version: '0.0.1'
+  title: Admin Bot
+  description: |
+     Current functionality:
+        Creating developer user on pod, and emailing sign in info.
+        Generating and registering bot cert and creating bot service user on pod for developer.
+        Generating and registering app cert and creating new app on pod for developer.
+        Messaging developer within symphony bootstrap info (Certs and bot/app credentials).
+produces:
+  - application/json
+tags:
+  - Service
+schemes:
+  - http
+  - https
+basePath: '/adminbot'
+paths:
+  '/v1/authenticate':
+    post:
+      summary: Authenticate using a certificate to create and admin session.
+      produces:
+        - application/json
+      responses:
+        '200':
+          schema:
+            $ref: '#/definitions/SessionToken'
+      tags:
+        - Authentication
+definitions:
+  SessionToken:
+    type: object
+    properties:
+      sessionToken:
+        type: string

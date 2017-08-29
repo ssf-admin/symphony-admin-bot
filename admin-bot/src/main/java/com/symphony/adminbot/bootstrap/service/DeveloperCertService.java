@@ -75,7 +75,7 @@ public class DeveloperCertService {
    * Adds company cert info to bootstrap state.
    * @param commonName name for the cert
    * @param password password for cert
-   * @return the common name of the cert
+   * @return details about the cert
    */
   public CompanyCertDetail generateAndRegisterCert(String commonName, String password,
       DeveloperBootstrapState bootstrapState) {
@@ -147,7 +147,16 @@ public class DeveloperCertService {
 
       developerState.setCertAttachmentInfo(
           attachmentsClient.uploadAttachments(stream, attachments));
-      LOG.info("Uploaded certs to IM for user " + developerState.getUserDetail().getUserAttributes().getUserName() + ".");
+
+      if(developerState.getDeveloperRoom() != null) {
+        LOG.info("Uploaded certs to room create by user " + developerState.getUserDetail()
+            .getUserAttributes()
+            .getUserName() + ".");
+      } else {
+        LOG.info("Uploaded certs to IM for user " + developerState.getUserDetail()
+            .getUserAttributes()
+            .getUserName() + ".");
+      }
     } catch (Exception e){
       LOG.error("Error occurred when uploading attachments: ", e);
       throw new InternalServerErrorException(BotConstants.INTERNAL_ERROR);

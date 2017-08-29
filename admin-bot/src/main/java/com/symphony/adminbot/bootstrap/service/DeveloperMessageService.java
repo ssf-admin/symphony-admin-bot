@@ -6,13 +6,11 @@ import com.symphony.adminbot.commons.BotConstants;
 import com.symphony.adminbot.config.BotConfig;
 import com.symphony.adminbot.util.file.FileUtil;
 import com.symphony.adminbot.util.template.MessageTemplate;
-import com.symphony.api.adminbot.model.DeveloperSignUpForm;
 import com.symphony.api.agent.model.V2Message;
 import com.symphony.api.agent.model.V2MessageSubmission;
 import com.symphony.api.clients.MessagesClient;
 import com.symphony.api.clients.StreamsClient;
 import com.symphony.api.pod.client.ApiException;
-import com.symphony.api.pod.model.ImmutableRoomAttributes;
 import com.symphony.api.pod.model.RoomAttributes;
 import com.symphony.api.pod.model.RoomCreate;
 import com.symphony.api.pod.model.RoomDetail;
@@ -113,12 +111,18 @@ public class DeveloperMessageService {
     }
   }
 
-  public RoomDetail createDeveloperRoom(DeveloperBootstrapState bootstrapState, UserIdList userIdList) throws ApiException {
+  /**
+   * Creates room for all developers specified in sign up form. (Bot is also in room.)
+   * @param roomName the name to create the room with
+   * @param userIdList the list of user id's to add to the room
+   * @return details about the room
+   * @throws ApiException
+   */
+  public RoomDetail createDeveloperRoom(String roomName, UserIdList userIdList) throws ApiException {
     RoomCreate roomCreate = new RoomCreate();
     RoomAttributes roomAttributes = new RoomAttributes();
     roomAttributes.setDescription("Room for developers to collaborate.");
-    roomAttributes.setName(" Team Development Room ("
-        + bootstrapState.getUserDetail().getUserAttributes().getUserName() + ")");
+    roomAttributes.setName(roomName);
 
     roomAttributes.setDiscoverable(false);
     roomAttributes.setMembersCanInvite(true);

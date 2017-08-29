@@ -22,4 +22,18 @@
         format: int64
       emailAddress:
         type: string
-        format: email
+        format:
+  Presence:
+    type: object
+    properties:
+      category:
+        type: string
+        enum:
+          - UNDEFINED
+          - AVAILABLE
+          - BUSY
+          - DO_NOT_DISTURB
+          - ON_THE_PHONE
+          - BE_RIGHT_BACK
+          - AWAY
+          - OFFLINE

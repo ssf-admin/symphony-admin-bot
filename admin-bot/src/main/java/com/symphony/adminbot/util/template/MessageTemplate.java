@@ -25,6 +25,20 @@ public class MessageTemplate {
     return message;
   }
 
+  /**
+   * Replaces all occurrences of sequence with given replacement.
+   * Replace sequence will be surrounded in {}. Example: {REPLACE_THIS}
+   *
+   * To use logic templates, add a # in front of replace sequence and close with a second
+   * replacement sequence with a / added in front of it.
+   * Example: {#REPLACE_THIS} Foo bar {/REPLACE_THIS}
+   * If replacement is null for replacement sequence "REPLACE_THIS", "Foo bar" will be removed from the template.
+   *
+   * @param template the template to perform the replacement on
+   * @param replace the sequence to replace
+   * @param replacement the replacement string
+   * @return the new template
+   */
   private String replace(String template, String replace, String replacement){
     String doReplacement = template;
     if(replacement != null){

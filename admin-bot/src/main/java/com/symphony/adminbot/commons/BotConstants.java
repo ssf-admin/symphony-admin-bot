@@ -44,4 +44,5 @@ public class BotConstants {
   public static final String DEVELOPER_EXISTS = "One or more developers already exists on pod.";
   public static final String INVALID_APP_ICON_URL = "The app icon url is invalid.";
   public static final String INVALID_APP_URL = "The app url is invalid.";
+  public static final String BOT_DEVELOPER_EMAIL_SAME = "The bot email must be different than developers' emails.";
 }

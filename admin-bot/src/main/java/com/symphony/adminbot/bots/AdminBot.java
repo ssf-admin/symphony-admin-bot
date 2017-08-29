@@ -5,7 +5,6 @@ import com.symphony.adminbot.commons.BotConstants;
 import com.symphony.adminbot.config.BotConfig;
 import com.symphony.adminbot.model.session.AdminBotSession;
 import com.symphony.adminbot.model.session.AdminBotUserSessionManager;
-import com.symphony.adminbot.model.tomcat.TomcatCertManager;
 import com.symphony.api.adminbot.api.factories.V1ApiServiceFactory;
 import com.symphony.api.clients.AuthorizationClient;
 import com.symphony.api.clients.SymphonyClient;
@@ -38,7 +37,6 @@ import javax.servlet.http.HttpServletResponse;
 public class AdminBot extends HttpServlet {
   private static final Logger LOG = LoggerFactory.getLogger(AdminBot.class);
 
-  private TomcatCertManager tomcatCertManager;
   private AdminBotUserSessionManager adminSessionManager;
 
   @Override

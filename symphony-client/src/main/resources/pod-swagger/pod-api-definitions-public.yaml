@@ -115,20 +115,6 @@ definitions:
         type: string
       value:
         type: string
-  Presence:
-    type: object
-    properties:
-      category:
-        type: string
-        enum:
-          - UNDEFINED
-          - AVAILABLE
-          - BUSY
-          - DO_NOT_DISTURB
-          - ON_THE_PHONE
-          - BE_RIGHT_BACK
-          - AWAY
-          - OFFLINE
   Stream:
     type: object
     properties:
@@ -1220,12 +1206,6 @@ definitions:
       justification:
         description: The reason for the requested action.
         type: string
-  AdminJustifiedAction:
-    type: object
-    properties:
-      justification:
-        description: The reason for the requested action.
-        type: string
   MessageStatusUser:
     type: object
     properties:
@@ -1266,22 +1246,6 @@ definitions:
         type: array
         items:
           $ref: '#/definitions/MessageStatusUser'
-  ApplicationPermission:
-    type: object
-    properties:
-      type:
-        type: string
-        enum:
-          - SEND_MESSAGES
-          - GET_USER_CONNECTIONS
-          - REQUEST_USER_CONNECTIONS
-          - SET_PRESENCE
-          - GET_PRESENCE
-          - GET_BASIC_USER_INFO
-          - GET_EXTENDED_USER_INFO
-          - GET_BASIC_CONTACT_INFO
-          - GET_EXTENDED_CONTACT_INFO
-          - ACT_AS_USER
   ApplicationInfo:
     description: |
       Required information for creating an application.
@@ -1294,19 +1258,13 @@ definitions:
         description: User defined name for the application.
         type: string
       appUrl:
-        description: The url for the app.
-        type: string
-      iconUrl:
-        description: Url to a icon to use for app.
+        description: The url for the app. Must start with "https://".
         type: string
       domain:
         description: Domain for app, that must match app url domain.
         type: string
       publisher:
         description: The publisher for this application.
-        type: string
-      description:
-        description: Description of the application.
         type: string
   ApplicationDetail:
     description: Detailed record of application.
@@ -1318,17 +1276,77 @@ definitions:
       id:
         description: An unique id, used for for updating, getting and deleting an application.
         type: string
+      iconUrl:
+        description: Url to a icon to use for app. Must start with "https://".
+        type: string
+      description:
+        description: Description of the application.
+        type: string
       allowOrigins:
         description: |
           The permitted domains to send or receive a request from.
           The field is for the purpose of CORS which set the app specific "ALLOW-ORIGIN-DOMAINS" header in HTTP.
         type: string
       permissions:
-        description: List of application permissions provisioned for the application
+        description: |
+          List of application permissions provisioned for the application
+          Accepted values:
+            - SEND_MESSAGES
+            - GET_USER_CONNECTIONS
+            - REQUEST_USER_CONNECTIONS
+            - SET_PRESENCE
+            - GET_PRESENCE
+            - GET_BASIC_USER_INFO
+            - GET_EXTENDED_USER_INFO
+            - GET_BASIC_CONTACT_INFO
+            - GET_EXTENDED_CONTACT_INFO
+            - ACT_AS_USER
         type: array
         items:
-          $ref: '#/definitions/ApplicationPermission'
+          type: string
       cert:
         description: The app public certificate in pem format.
         type: string
+  V2PresenceList:
+    type: array
+    items:
+      $ref: '#/definitions/V2Presence'
+  V2Presence:
+    allOf:
+      - $ref: '#/definitions/V2UserPresence'
+      - type: object
+        properties:
+          timestamp:
+            type: integer
+            format: int64
+            description: The time, in milliseconds since Jan 1 1970, when the presence state was set.
+  V2UserPresence:
+    allOf:
+      - $ref: '#/definitions/V2PresenceStatus'
+      - type: object
+        properties:
+          userId:
+            type: integer
+            format: int64
+            description: The ID of the user to whom the presence state relates.
+  V2PresenceStatus:
+    type: object
+    properties:
+      category:
+        type: string
+        description: |
+          Presence status. Possible values are:
+            - UNDEFINED
+            - AVAILABLE
+            - BUSY
+            - DO_NOT_DISTURB
+            - ON_THE_PHONE
+            - BE_RIGHT_BACK
+            - IN_A_MEETING
+            - AWAY
+            - OUT_OF_OFFICE
+            - OFF_WORK
+            - OFFLINE
+    required:
+      - category
 

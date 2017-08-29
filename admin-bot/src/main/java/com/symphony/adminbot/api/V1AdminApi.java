@@ -3,21 +3,23 @@ package com.symphony.adminbot.api;
 import com.symphony.adminbot.api.impl.AbstractV1AdminService;
 import com.symphony.adminbot.bootstrap.service.DeveloperBootstrapService;
 import com.symphony.adminbot.commons.BotConstants;
+import com.symphony.adminbot.config.BotConfig;
+import com.symphony.adminbot.health.HealthCheckFailedException;
+import com.symphony.adminbot.health.HealthcheckHelper;
 import com.symphony.adminbot.model.session.AdminBotSession;
 import com.symphony.adminbot.model.session.AdminBotUserSession;
 import com.symphony.adminbot.model.session.AdminBotUserSessionManager;
 import com.symphony.api.adminbot.model.Developer;
 import com.symphony.api.adminbot.model.DeveloperBootstrapInfo;
 import com.symphony.api.adminbot.model.DeveloperSignUpForm;
+import com.symphony.api.adminbot.model.HealthcheckResponse;
 import com.symphony.api.pod.client.ApiException;
 
-import io.swagger.annotations.Api;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.ws.rs.BadRequestException;
 import javax.ws.rs.InternalServerErrorException;
-import javax.ws.rs.core.Response;
 
 
 /**
@@ -79,5 +81,31 @@ public class V1AdminApi extends AbstractV1AdminService {
     }
 
     return adminSession;
+  }
+
+  @Override
+  public HealthcheckResponse healthcheck() {
+    String agentUrl = System.getProperty(BotConfig.SYMPHONY_AGENT);
+    String podUrl = System.getProperty(BotConfig.SYMPHONY_POD);
+    HealthcheckHelper healthcheckHelper = new HealthcheckHelper(podUrl, agentUrl);
+
+    HealthcheckResponse response = new HealthcheckResponse();
+    try {
+      healthcheckHelper.checkPodConnectivity();
+      response.setPodConnectivityCheck(true);
+    } catch (HealthCheckFailedException e) {
+      response.setPodConnectivityCheck(false);
+      response.setPodConnectivityError(e.getMessage());
+    }
+
+    try {
+      healthcheckHelper.checkAgentConnectivity();
+      response.setAgentConnectivityCheck(true);
+    } catch (HealthCheckFailedException e) {
+      response.setAgentConnectivityCheck(false);
+      response.setAgentConnectivityError(e.getMessage());
+    }
+
+    return response;
   }
 }

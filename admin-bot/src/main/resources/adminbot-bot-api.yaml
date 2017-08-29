@@ -76,7 +76,19 @@ paths:
             $ref: '#/definitions/DeveloperBootstrapInfo'
       tags:
         - SignUp
-
+  '/v1/healthcheck':
+    get:
+      summary: Bootstraps a bootstrap.
+      description:
+          Checks pod and agent connectivity.
+      produces:
+        - application/json
+      responses:
+        '200':
+          schema:
+            $ref: '#/definitions/DeveloperBootstrapInfo'
+      tags:
+        - Healthcheck
 definitions:
   SuccessResponse:
     type: object
@@ -84,6 +96,17 @@ definitions:
       message:
         type: string
         default: "OK"
+  HealthcheckResponse:
+    type: object
+    properties:
+      podConnectivityCheck:
+        type: boolean
+      agentConnectivityCheck:
+        type: boolean
+      podConnectivityError:
+        type: string
+      agentConnectivityError:
+        type: string
   DeveloperWelcomeDetail:
     description: Full details about developer welcome.
     type: object

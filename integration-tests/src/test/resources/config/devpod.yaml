@@ -1,0 +1,6 @@
+auth.base.url=https://apps-dev.symphony.com:8444/adminbot
+bot.base.url=https://apps-dev.symphony.com:8443/adminbot
+bot.truststore.file=bot.user1.truststore
+bot.keystore.file=bot.user1.p12
+bot.truststore.password=changeit
+bot.keystore.password=changeit

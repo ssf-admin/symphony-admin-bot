@@ -11,7 +11,6 @@ import com.symphony.api.adminbot.model.DeveloperSignUpForm;
 import com.symphony.api.clients.ApplicationClient;
 import com.symphony.api.clients.UsersClient;
 import com.symphony.api.pod.client.ApiException;
-import com.symphony.api.pod.client.StringUtil;
 import com.symphony.api.pod.model.ApplicationDetail;
 import com.symphony.api.pod.model.ApplicationInfo;
 import com.symphony.api.pod.model.Feature;
@@ -40,7 +39,6 @@ import java.util.List;
 import java.util.Set;
 
 import javax.ws.rs.InternalServerErrorException;
-import javax.ws.rs.core.Response;
 
 /**
  * Created by nick.tarsillo on 7/2/17.
@@ -196,18 +194,18 @@ public class DeveloperRegistrationService {
     DeveloperSignUpForm signUpForm = bootstrapState.getDeveloperSignUpForm();
 
     ApplicationDetail applicationDetail = new ApplicationDetail();
+    applicationDetail.setDescription(signUpForm.getAppDescription());
 
     ApplicationInfo applicationInfo = new ApplicationInfo();
     applicationInfo.setPublisher(signUpForm.getCreator().getFirstName().toLowerCase()
         + WordUtils.capitalize(signUpForm.getCreator().getLastName()));
     applicationInfo.setAppId(bootstrapState.getDeveloperSignUpForm().getAppId());
     applicationInfo.setAppUrl(signUpForm.getAppUrl());
-    applicationInfo.setDescription(signUpForm.getAppDescription());
     applicationInfo.setDomain(signUpForm.getAppDomain());
     applicationInfo.setName(signUpForm.getAppName());
 
     if(StringUtils.isNotBlank(signUpForm.getAppIconUrl())) {
-      applicationInfo.setIconUrl(signUpForm.getAppIconUrl());
+      applicationDetail.setIconUrl(signUpForm.getAppIconUrl());
     } else {
       String iconUrl = "";
       try {
@@ -217,7 +215,7 @@ public class DeveloperRegistrationService {
       }
       BootstrapTemplateData templateData = new BootstrapTemplateData(bootstrapState);
       MessageTemplate iconTemplate = new MessageTemplate(iconUrl);
-      applicationInfo.setIconUrl(iconTemplate.buildFromData(templateData).replace(" ", ""));
+      applicationDetail.setIconUrl(iconTemplate.buildFromData(templateData).replace(" ", ""));
     }
 
     applicationDetail.setCert(bootstrapState.getCompanyCertMap()
@@ -242,7 +240,7 @@ public class DeveloperRegistrationService {
     UserAppEntitlement userAppEntitlement = new UserAppEntitlement();
     userAppEntitlement.appId(bootstrapState.getBootstrapInfo().getAppId());
     userAppEntitlement.appName(bootstrapState.getDeveloperSignUpForm().getAppName());
-    userAppEntitlement.setListed(false);
+    userAppEntitlement.setListed(true);
     userAppEntitlement.setInstall(true);
 
     userAppEntitlements.add(userAppEntitlement);
