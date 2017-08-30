@@ -45,10 +45,10 @@ public class HealthcheckHelper {
 
   public HealthcheckHelper(String podUrl, String agentUrl) {
     WebTarget agentBaseTarget = ClientBuilder.newClient().target(agentUrl);
-    WebTarget podBaseTarget = ClientBuilder.newClient().target(podUrl);
+    WebTarget podBaseTarget = ClientBuilder.newClient().target(podUrl.replace("/pod", ""));
 
-    podHealthCheckTarget = podBaseTarget.path("v1/podcert");
-    agentHealthCheckTarget = agentBaseTarget.path("v1/healthcheck");
+    podHealthCheckTarget = podBaseTarget.path("webcontroller/HealthCheck");
+    agentHealthCheckTarget = agentBaseTarget.path("v1/HealthCheck");
   }
 
   private Response checkConnectivity(WebTarget target) throws HealthCheckFailedException {
@@ -80,8 +80,8 @@ public class HealthcheckHelper {
       throw new HealthCheckFailedException("Failed to read response entity.");
     }
 
-    String podError = node.get("podConnectivityError").asText();
-    String agentError = node.get("keyManagerConnectivity").asText();
+    String podError = node.get("podConnectivityError") != null ? node.get("podConnectivityError").asText() : null;
+    String agentError = node.get("keyManagerConnectivityError") != null ? node.get("keyManagerConnectivityError").asText() : null;
 
     if(StringUtils.isNotBlank(podError) && StringUtils.isNotBlank(agentError)) {
       throw new HealthCheckFailedException("The pod and the agent are currently having issues. \n"

@@ -30,7 +30,6 @@ import com.symphony.api.agent.model.AttachmentInfo;
 import com.symphony.api.pod.model.ApplicationDetail;
 import com.symphony.api.pod.model.CompanyCert;
 import com.symphony.api.pod.model.Stream;
-import com.symphony.api.pod.model.UserCreate;
 import com.symphony.api.pod.model.UserDetail;
 
 import java.util.List;
