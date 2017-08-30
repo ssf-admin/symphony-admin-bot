@@ -1,6 +1,29 @@
+/*
+ * Copyright 2017 The Symphony Software Foundation
+ *
+ * Licensed to The Symphony Software Foundation (SSF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
+ *
+ */
+
 package com.symphony.adminbot.bootstrap.service;
 
 import com.symphony.adminbot.bootstrap.model.DeveloperBootstrapState;
+import com.symphony.adminbot.bootstrap.model.DeveloperClientHash;
 import com.symphony.adminbot.bootstrap.model.template.BootstrapTemplateData;
 import com.symphony.adminbot.commons.BotConstants;
 import com.symphony.adminbot.config.BotConfig;
@@ -23,16 +46,15 @@ import com.symphony.api.pod.model.UserAppEntitlementList;
 import com.symphony.api.pod.model.UserAttributes;
 import com.symphony.api.pod.model.UserCreate;
 import com.symphony.api.pod.model.UserDetail;
-import com.symphony.security.hash.ClientHash;
-import com.symphony.security.hash.IClientHash;
-import com.symphony.security.utils.CryptoGenerator;
 
+import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.WordUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -100,15 +122,18 @@ public class DeveloperRegistrationService {
     userAttributes.setDepartment(bootstrapState.getDeveloperSignUpForm().getAppCompanyName());
     userCreate.setUserAttributes(userAttributes);
 
-    IClientHash clientHash = new ClientHash();
-    String salt = CryptoGenerator.generateBase64Salt();
-    String clientHashedPassword = clientHash.getClientHashedPassword(developerPassword, salt);
+    DeveloperClientHash clientHash = new DeveloperClientHash();
+    final SecureRandom random = new SecureRandom();
+    byte[] salt = new byte[16];
+    random.nextBytes(salt);
+    String saltString = Base64.encodeBase64String(salt);
+    String clientHashedPassword = clientHash.getClientHashedPassword(developerPassword, saltString);
 
     Password pass = new Password();
     pass.setHPassword(clientHashedPassword);
-    pass.setHSalt(salt);
+    pass.setHSalt(saltString);
     pass.setKhPassword(clientHashedPassword);
-    pass.setKhSalt(salt);
+    pass.setKhSalt(saltString);
     userCreate.setPassword(pass);
 
     List<String> roles = new ArrayList<>();
