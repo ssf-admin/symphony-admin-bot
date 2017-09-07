@@ -40,7 +40,7 @@ import com.symphony.api.pod.client.ApiException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.ws.rs.BadRequestException;
+import javax.ws.rs.ForbiddenException;
 import javax.ws.rs.InternalServerErrorException;
 
 
@@ -99,7 +99,7 @@ public class V1AdminApi extends AbstractV1AdminService {
   public AdminBotUserSession getAdminUserSession(String sessionToken) {
     AdminBotUserSession adminSession = adminSessionManager.getAdminSession(sessionToken);
     if(adminSession == null) {
-      throw new BadRequestException("Admin session not found.");
+      throw new ForbiddenException("Admin session not found.");
     }
 
     return adminSession;

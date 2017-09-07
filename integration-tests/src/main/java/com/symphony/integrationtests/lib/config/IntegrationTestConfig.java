@@ -50,8 +50,8 @@ public class IntegrationTestConfig {
   /**
    * Config
    */
-  public final static String CONFIG_DIR = "bot.config.dir";
-  public final static String CONFIG_FILE = "bot.properties.file";
+  public final static String CONFIG_DIR = "test.config.dir";
+  public final static String CONFIG_FILE = "test.properties.file";
 
   /**
    * Url
@@ -72,8 +72,6 @@ public class IntegrationTestConfig {
   public final static String BOT_KEYSTORE_PASSWORD = "bot.keystore.password";
 
   static {
-    PROPERTY_SET.add(new EnvironmentConfigProperty(CONFIG_DIR_ENV, CONFIG_DIR));
-    PROPERTY_SET.add(new EnvironmentConfigProperty(CONFIG_FILE_ENV, CONFIG_FILE));
     PROPERTY_SET.add(new EnvironmentConfigProperty(AUTH_BASE_URL_ENV, AUTH_BASE_URL));
     PROPERTY_SET.add(new EnvironmentConfigProperty(BOT_BASE_URL_ENV, BOT_BASE_URL));
     PROPERTY_SET.add(new EnvironmentConfigProperty(BOT_TRUSTORE_FILE_ENV, BOT_TRUSTORE_FILE));
@@ -91,17 +89,16 @@ public class IntegrationTestConfig {
 
     Configuration c = null;
     try {
-      if (configDir == null) {
-        configDir = System.getProperty(CONFIG_DIR);
-        if (configDir == null) {
-          configDir = "com/symphony/adminbot/quickstart";
-        }
-      }
-
       if (propFile == null) {
         propFile = System.getProperty(CONFIG_FILE);
         if (propFile == null) {
-          propFile = "bot.properties";
+          propFile = "test.properties";
+        }
+      }
+      if (configDir == null) {
+        configDir = System.getProperty(CONFIG_DIR);
+        if (configDir == null) {
+          configDir = Thread.currentThread().getContextClassLoader().getResource("config/" + propFile).getPath().replace(propFile, "");
         }
       }
       propFile = configDir + "/" + propFile;

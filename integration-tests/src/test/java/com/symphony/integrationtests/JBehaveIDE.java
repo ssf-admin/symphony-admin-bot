@@ -24,6 +24,7 @@ package com.symphony.integrationtests;
 
 import com.symphony.integrationtests.jbehave.report.SymphonyStoryReporter;
 import com.symphony.integrationtests.jbehave.report.SymphonyStoryReporterBuilder;
+import com.symphony.integrationtests.lib.config.IntegrationTestConfig;
 
 import de.codecentric.jbehave.junit.monitoring.JUnitReportingRunner;
 import org.apache.commons.io.FileUtils;
@@ -79,6 +80,7 @@ public class JBehaveIDE extends JUnitStories {
 
 
   public JBehaveIDE() {
+    IntegrationTestConfig.init();
     FileUtils.deleteQuietly(new File("integration-tests/target/jbehave").getAbsoluteFile());
 
     storyPath = System.getProperty(STORY_PATH, "**" + File.separator + "*.story");
@@ -94,9 +96,6 @@ public class JBehaveIDE extends JUnitStories {
 
     embedder.embedderControls().useStoryTimeouts(this.storyTimeout);
     embedder.embedderControls().doFailOnStoryTimeout(Boolean.TRUE);
-    embedder.embedderControls().useThreads(Integer.parseInt(multiThread));
-    embedder.embedderControls().doVerboseFailures(Boolean.TRUE);
-    embedder.embedderControls().doVerboseFiltering(Boolean.FALSE);
 
     String metafilterProperty = System.getProperty(META_FILTERS);
     String[] metafilterProperties = null;

@@ -241,6 +241,7 @@ public class DeveloperRegistrationService {
       BootstrapTemplateData templateData = new BootstrapTemplateData(bootstrapState);
       MessageTemplate iconTemplate = new MessageTemplate(iconUrl);
       applicationDetail.setIconUrl(iconTemplate.buildFromData(templateData).replace(" ", ""));
+      LOG.info("Using icon url: " + applicationDetail.getIconUrl());
     }
 
     applicationDetail.setCert(bootstrapState.getCompanyCertMap()

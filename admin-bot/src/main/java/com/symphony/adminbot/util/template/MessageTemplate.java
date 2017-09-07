@@ -84,6 +84,6 @@ public class MessageTemplate {
       doReplacement = String.join("", (String[]) parseLogic.toArray(new String[parseLogic.size()]));
     }
 
-    return doReplacement;
+    return doReplacement.trim();
   }
 }

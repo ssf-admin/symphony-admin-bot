@@ -232,6 +232,19 @@ public class DeveloperBootstrapService {
    * @param signUpForm the sign up form to validate
    */
   private void validateSignUpForm(DeveloperSignUpForm signUpForm) throws ApiException {
+    if (StringUtils.isBlank(signUpForm.getCreator().getFirstName()) ||
+        StringUtils.isBlank(signUpForm.getCreator().getLastName()) ||
+        StringUtils.isBlank(signUpForm.getCreator().getEmail())) {
+      throw new BadRequestException(BotConstants.DEVELOPER_REQUIRED);
+    }
+    for(Developer teamMember: signUpForm.getTeam()) {
+      if (StringUtils.isBlank(teamMember.getFirstName()) ||
+          StringUtils.isBlank(teamMember.getLastName()) ||
+          StringUtils.isBlank(teamMember.getEmail())) {
+        throw new BadRequestException(BotConstants.DEVELOPER_REQUIRED);
+      }
+    }
+
     Set<String> developerEmails = new HashSet<>();
     developerEmails.add(signUpForm.getCreator().getEmail().replace(" ", ""));
     for(Developer teamMember: signUpForm.getTeam()) {
@@ -254,11 +267,6 @@ public class DeveloperBootstrapService {
     }
     if(developerRegistrationService.oneDeveloperExists(signUpForm)){
       throw new BadRequestException(BotConstants.DEVELOPER_EXISTS);
-    }
-    if (StringUtils.isBlank(signUpForm.getCreator().getFirstName()) ||
-        StringUtils.isBlank(signUpForm.getCreator().getLastName()) ||
-        StringUtils.isBlank(signUpForm.getCreator().getEmail())) {
-      throw new BadRequestException(BotConstants.DEVELOPER_REQUIRED);
     }
     if(developerRegistrationService.botOrAppExist(signUpForm) ||
         (StringUtils.isNotBlank(signUpForm.getAppId()) && reservedContent.contains(signUpForm.getAppId())) ||

@@ -22,10 +22,15 @@
 
 package com.symphony.integrationtests.jbehave.steps.swagger.adminbot;
 
+import static org.junit.Assert.assertEquals;
+
 import com.symphony.api.adminbot.api.AuthenticationApi;
+import com.symphony.api.adminbot.api.SignUpApi;
 import com.symphony.api.adminbot.client.ApiException;
+import com.symphony.api.adminbot.model.DeveloperWelcomeDetail;
 import com.symphony.api.adminbot.model.SessionToken;
 
+import org.jbehave.core.annotations.Then;
 import org.jbehave.core.annotations.When;
 
 /**
@@ -33,9 +38,22 @@ import org.jbehave.core.annotations.When;
  */
 public class AuthenticationSteps extends BaseApiSteps {
   @When("the admin user authenticates using a certificate")
+  @Then("the admin user authenticates using a certificate, receives valid token back")
   public void authenticate() throws ApiException {
     AuthenticationApi authenticationApi = new AuthenticationApi(getAuthClient());
     SessionToken tokenResponse = authenticationApi.v1AuthenticatePost();
     context.setAdminSessionToken(tokenResponse.getSessionToken());
+  }
+
+  @Then("the admin user can not use an invalid session token to identify their session")
+  public void authenticateInvalidToken() {
+    SignUpApi signUpApi = new SignUpApi(getApiClient());
+    try {
+      signUpApi.v1SendDeveloperWelcomePost("Invalid", new DeveloperWelcomeDetail());
+    } catch (ApiException e) {
+      assertEquals("Error code return", 403, e.getCode());
+      assertEquals("Error message return", "{\"code\":403, \"message\": \"Admin session not found"
+          + ".\"}", e.getMessage());
+    }
   }
 }

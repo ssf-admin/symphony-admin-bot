@@ -69,3 +69,12 @@ Symphony Admin Bot
 - >  **adminbot.bootstrap.message.welcome.template** - used for admin bot bootstrap functionality. Message template for developer bootstrap welcome message.
 - >  **adminbot.bootstrap.icon.url.template** - used for admin bot bootstrap functionality. Message template for default app icon url.
 
+**Running Tests**
+- BDD tests run upon compiling the bot, and only require a test configuration to run properly.
+To specify a configuration, run with the following VM option:
+    - > -Dtest.properties.file="CONFIG_FILE_NAME_HERE"
+- Optionally, you can also specify a custom configuration path by running with the following VM option:
+    - > -Dtest.config.dir="CONFIG_PATH_HERE"
+- For default configuration files, look in the default configuration path inside the integration-tests module's test resource "config" folder.
+Example usage of running with default configuration files:
+    - > mvn clean install -Dtest.properties.file="devpod.yaml"

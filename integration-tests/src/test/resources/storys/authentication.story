@@ -1,9 +1,12 @@
 Meta: @standard @agent
 
 Narrative:
-As a user
-I want to perform a test action
-So that I can verify the agent service is running properly
+As a admin bot user
+I want to authenticate using a certificate
+So that I can verify that I can identify my session using a session token
 
-When the admin user authenticates using a certificate
-Then the admin user can use the session token recieved to identify their session
+Scenario: Authenticate using a valid certificate
+Then the admin user authenticates using a certificate, receives valid token back
+
+Scenario: Attempt to use endpoint with invalid session token
+Then the admin user can not use an invalid session token to identify their session

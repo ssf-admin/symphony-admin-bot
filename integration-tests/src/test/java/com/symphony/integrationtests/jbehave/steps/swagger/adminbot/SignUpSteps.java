@@ -23,15 +23,18 @@
 package com.symphony.integrationtests.jbehave.steps.swagger.adminbot;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 import com.symphony.api.adminbot.api.SignUpApi;
 import com.symphony.api.adminbot.client.ApiException;
 import com.symphony.api.adminbot.model.Developer;
 import com.symphony.api.adminbot.model.DeveloperSignUpForm;
 import com.symphony.api.adminbot.model.DeveloperWelcomeDetail;
+import com.symphony.api.adminbot.model.DeveloperWelcomeResponse;
 import com.symphony.api.adminbot.model.WelcomeSettings;
 
 import org.apache.commons.lang.RandomStringUtils;
+import org.jbehave.core.annotations.Given;
 import org.jbehave.core.annotations.Then;
 import org.jbehave.core.annotations.When;
 
@@ -66,25 +69,25 @@ public class SignUpSteps extends BaseApiSteps {
     }
   }
 
-  @When("the admin user creates a valid form for the bootstrap process")
+  @Given("a valid form for the bootstrap process")
   public void createForm() {
     DeveloperSignUpForm developerSignUpForm = new DeveloperSignUpForm();
-    developerSignUpForm.setAppId(RandomStringUtils.random(40));
-    developerSignUpForm.setAppCompanyName(RandomStringUtils.random(30));
-    developerSignUpForm.setAppDescription(RandomStringUtils.random(100));
+    developerSignUpForm.setAppId(RandomStringUtils.randomAlphabetic(40));
+    developerSignUpForm.setAppCompanyName(RandomStringUtils.randomAlphabetic(30));
+    developerSignUpForm.setAppDescription(RandomStringUtils.randomAlphabetic(100));
 
-    String domain = RandomStringUtils.random(20) + ".com";
+    String domain = RandomStringUtils.randomAlphabetic(20) + ".com";
     developerSignUpForm.setAppUrl("https://" + domain);
     developerSignUpForm.setAppDomain(domain);
 
-    developerSignUpForm.setAppName(RandomStringUtils.random(20));
-    developerSignUpForm.setBotEmail(RandomStringUtils.random(10) + "@gmail.com");
-    developerSignUpForm.setBotName(RandomStringUtils.random(10));
+    developerSignUpForm.setAppName(RandomStringUtils.randomAlphabetic(20));
+    developerSignUpForm.setBotEmail(RandomStringUtils.randomAlphabetic(10) + "@gmail.com");
+    developerSignUpForm.setBotName(RandomStringUtils.randomAlphabetic(10));
 
     Developer developer = new Developer();
-    developer.setFirstName(RandomStringUtils.random(10));
-    developer.setLastName(RandomStringUtils.random(10));
-    developer.setEmail(RandomStringUtils.random(10) + "@gmail.com");
+    developer.setFirstName(RandomStringUtils.randomAlphabetic(10));
+    developer.setLastName(RandomStringUtils.randomAlphabetic(10));
+    developer.setEmail(RandomStringUtils.randomAlphabetic(10) + "@gmail.com");
     developerSignUpForm.setCreator(developer);
 
     context.setDeveloperSignUpForm(developerSignUpForm);
@@ -119,45 +122,27 @@ public class SignUpSteps extends BaseApiSteps {
     }
   }
 
-  @When("the admin user modifies the $field field to a random string value of length $value")
-  public void randomStringOfLengthModifyForm(String field, int value) {
-    if(field.equals(FormEnum.APP_ID.getName())) {
-      context.getDeveloperSignUpForm().setAppId(RandomStringUtils.random(value));
-    } else if (field.equals(FormEnum.APP_COMPANY.getName())) {
-      context.getDeveloperSignUpForm().setAppCompanyName(RandomStringUtils.random(value));
-    } else if (field.equals(FormEnum.APP_DESCRIPTION.getName())) {
-      context.getDeveloperSignUpForm().setAppDescription(RandomStringUtils.random(value));
-    } else if (field.equals(FormEnum.APP_ICON_URL.getName())) {
-      context.getDeveloperSignUpForm().setAppIconUrl(RandomStringUtils.random(value));
-    } else if (field.equals(FormEnum.APP_DOMAIN.getName())) {
-      context.getDeveloperSignUpForm().setAppDomain(RandomStringUtils.random(value));
-    } else if (field.equals(FormEnum.APP_NAME.getName())) {
-      context.getDeveloperSignUpForm().setAppName(RandomStringUtils.random(value));
-    } else if (field.equals(FormEnum.APP_URL.getName())) {
-      context.getDeveloperSignUpForm().setAppUrl(RandomStringUtils.random(value));
-    } else if (field.equals(FormEnum.BOT_EMAIL.getName())) {
-      context.getDeveloperSignUpForm().setBotEmail(RandomStringUtils.random(value));
-    } else if (field.equals(FormEnum.BOT_NAME.getName())) {
-      context.getDeveloperSignUpForm().setBotName(RandomStringUtils.random(value));
-    } else if (field.equals(FormEnum.FIRST_NAME.getName())) {
-      context.getDeveloperSignUpForm().getCreator().setFirstName(RandomStringUtils.random(value));
-    } else if (field.equals(FormEnum.LAST_NAME.getName())) {
-      context.getDeveloperSignUpForm().getCreator().setLastName(RandomStringUtils.random(value));
-    } else if (field.equals(FormEnum.EMAIL.getName())) {
-      context.getDeveloperSignUpForm().getCreator().setEmail(RandomStringUtils.random(value));
-    }
+  @When("the admin user sets the $field field to null")
+  public void nullForm(String field) {
+    modifyForm(field, null);
   }
 
-  @When("the admin user adds a team member $first $last with $email as the email to the sign up form")
-  public void addTeamMember(String first, String last, String email) {
+  @When("the admin user modifies the $field field to a random string value of length $value")
+  public void randomStringOfLengthModifyForm(String field, int value) {
+    modifyForm(field, RandomStringUtils.random(value));
+  }
+
+  @When("the admin user adds a team member to the form")
+  public void addTeamMember() {
     Developer developer = new Developer();
-    developer.setFirstName(first);
-    developer.setLastName(last);
-    developer.setEmail(email);
+    developer.setFirstName(RandomStringUtils.randomAlphabetic(40));
+    developer.setLastName(RandomStringUtils.randomAlphabetic(40));
+    developer.setEmail(RandomStringUtils.randomAlphabetic(40) + "@gmail.com");
 
     context.getDeveloperSignUpForm().addTeamItem(developer);
   }
 
+  @When("the admin user sends a developer welcome with automatic bootstrap set to $auto")
   @Then("the admin user sends a developer welcome with automatic bootstrap set to $auto")
   public void developerWelcome(boolean autoBootstrap) throws ApiException {
     SignUpApi signUpApi = new SignUpApi(getApiClient());
@@ -171,7 +156,27 @@ public class SignUpSteps extends BaseApiSteps {
     context.setDeveloperWelcomeResponse(signUpApi.v1SendDeveloperWelcomePost(context.getAdminSessionToken(), developerWelcomeDetail));
   }
 
-  @Then("the admin user sends a developer welcome with automatic bootstrap set to $auto, fail on $exception")
+  @Then("the welcome response contains valid bootstrap data")
+  public void bootstrapValid() throws ApiException {
+    DeveloperWelcomeResponse welcomeResponse = context.getDeveloperWelcomeResponse();
+    DeveloperSignUpForm developerSignUpForm = context.getDeveloperSignUpForm();
+    assertNotNull(welcomeResponse.getBootstrapInfo());
+    assertNotNull(welcomeResponse.getBootstrapInfo().getBotUsername());
+    assertEquals("Bot email response", developerSignUpForm.getBotEmail(),
+        welcomeResponse.getBootstrapInfo().getBotEmail());
+
+    if(developerSignUpForm.getAppName() != null) {
+      assertNotNull(welcomeResponse.getBootstrapInfo().getAppId());
+      assertEquals("App name response", developerSignUpForm.getAppName(),
+          welcomeResponse.getBootstrapInfo().getAppName());
+      if(developerSignUpForm.getAppId() != null) {
+        assertEquals("App name response", developerSignUpForm.getAppId(),
+            welcomeResponse.getBootstrapInfo().getAppId());
+      }
+    }
+  }
+
+  @Then("the admin user cannot send a developer welcome with automatic bootstrap set to $auto, fail on $exception")
   public void developerWelcomeFail(boolean autoBootstrap, Response.Status exception) {
     SignUpApi signUpApi = new SignUpApi(getApiClient());
 
