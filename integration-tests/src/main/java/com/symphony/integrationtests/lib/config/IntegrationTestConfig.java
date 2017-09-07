@@ -110,7 +110,7 @@ public class IntegrationTestConfig {
       for(EnvironmentConfigProperty property: PROPERTY_SET){
         property.initProperty(c);
       }
-    } catch (ConfigurationException e) {
+    } catch (ConfigurationException | NullPointerException e) {
       LOG.error("Configuration init exception: ", e);
     }
   }
