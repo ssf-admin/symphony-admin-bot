@@ -63,9 +63,13 @@ public class BaseApiSteps {
       cks = KeyStore.getInstance("PKCS12");
       tks = KeyStore.getInstance("JKS");
 
-      loadKeyStore(cks, System.getProperty(IntegrationTestConfig.BOT_KEYSTORE_FILE),
+      String keyPath = Thread.currentThread().getContextClassLoader().getResource("cert/"
+          + System.getProperty(IntegrationTestConfig.BOT_KEYSTORE_FILE)).getPath();
+      String trustPath = Thread.currentThread().getContextClassLoader().getResource("cert/"
+          + System.getProperty(IntegrationTestConfig.BOT_TRUSTORE_FILE)).getPath();
+      loadKeyStore(cks, keyPath,
           System.getProperty(IntegrationTestConfig.BOT_KEYSTORE_PASSWORD));
-      loadKeyStore(tks, System.getProperty(IntegrationTestConfig.BOT_TRUSTORE_FILE),
+      loadKeyStore(tks, trustPath,
           System.getProperty(IntegrationTestConfig.BOT_TRUSTORE_PASSWORD));
 
       Client httpClient = ClientBuilder.newBuilder()
