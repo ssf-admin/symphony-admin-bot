@@ -28,12 +28,14 @@ import com.symphony.api.pod.api.StreamsApi;
 import com.symphony.api.pod.client.ApiClient;
 import com.symphony.api.pod.client.ApiException;
 import com.symphony.api.pod.client.Configuration;
-import com.symphony.api.pod.model.RoomCreate;
-import com.symphony.api.pod.model.RoomDetail;
+import com.symphony.api.pod.model.RoomSearchCriteria;
+import com.symphony.api.pod.model.RoomSearchResults;
 import com.symphony.api.pod.model.Stream;
 import com.symphony.api.pod.model.SuccessResponse;
 import com.symphony.api.pod.model.UserId;
 import com.symphony.api.pod.model.UserIdList;
+import com.symphony.api.pod.model.V2RoomAttributes;
+import com.symphony.api.pod.model.V2RoomDetail;
 
 /**
  * Created by nick.tarsillo on 7/1/17.
@@ -66,17 +68,37 @@ public class StreamsClient {
     return stream;
   }
 
-  public RoomDetail createRoom(RoomCreate roomCreate) throws ApiException {
+  public V2RoomDetail createRoom(V2RoomAttributes roomCreate) throws ApiException {
     StreamsApi streamsApi = new StreamsApi(apiClient);
 
-    RoomDetail roomDetail = null;
+    V2RoomDetail roomDetail = null;
     try {
-      roomDetail = streamsApi.v1RoomCreatePost(roomCreate, symAuth.getSessionToken().getToken());
+      roomDetail = streamsApi.v2RoomCreatePost(roomCreate, symAuth.getSessionToken().getToken());
     } catch (ApiException e) {
       throw new ApiException("Could not create room: " + e.getStackTrace());
     }
 
     return roomDetail;
+  }
+
+  public V2RoomDetail getRoomByName(String roomName) throws ApiException {
+    StreamsApi streamsApi = new StreamsApi(apiClient);
+
+    RoomSearchResults results = null;
+    try {
+      RoomSearchCriteria roomSearchCriteria = new RoomSearchCriteria();
+      roomSearchCriteria.setQuery(roomName);
+      results = streamsApi.v2RoomSearchPost(symAuth.getSessionToken().getToken(), roomSearchCriteria, 0, 1);
+    } catch (ApiException e) {
+      throw new ApiException("Could not search for room: " + e.getStackTrace());
+    }
+
+    if (!results.getRooms().isEmpty()
+        && results.getRooms().get(0).getRoomAttributes().getName().equals(roomName)) {
+      return results.getRooms().get(0);
+    } else {
+      return null;
+    }
   }
 
   public SuccessResponse addMemberToRoom(String id, UserId payload) throws ApiException {

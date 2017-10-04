@@ -179,7 +179,6 @@
             <scope>provided</scope>
         </dependency>
 
-
         <dependency>
             <groupId>commons-configuration</groupId>
             <artifactId>commons-configuration</artifactId>

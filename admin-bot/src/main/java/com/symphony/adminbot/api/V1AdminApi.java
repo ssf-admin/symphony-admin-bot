@@ -35,6 +35,7 @@ import com.symphony.api.adminbot.model.Developer;
 import com.symphony.api.adminbot.model.DeveloperBootstrapInfo;
 import com.symphony.api.adminbot.model.DeveloperSignUpForm;
 import com.symphony.api.adminbot.model.HealthcheckResponse;
+import com.symphony.api.adminbot.model.NewTeamMembersDetail;
 import com.symphony.api.pod.client.ApiException;
 
 import org.slf4j.Logger;
@@ -93,6 +94,19 @@ public class V1AdminApi extends AbstractV1AdminService {
     }
 
     return BotConstants.DEVELOPER_WELCOME_SUCCESS;
+  }
+
+  @Override
+  protected DeveloperBootstrapInfo addTeamMembers(NewTeamMembersDetail newTeamMembersDetail) {
+    DeveloperBootstrapService signUpService = adminBotSession.getBootstrapService();
+    try {
+      DeveloperBootstrapInfo developerBootstrapInfo = signUpService.addTeamMembers(
+          newTeamMembersDetail.getTeamCreator(), newTeamMembersDetail.getNewTeamMembers());
+      return developerBootstrapInfo;
+    } catch (ApiException e) {
+      LOG.error("Bootstrap partner welcome failed:", e);
+      throw new InternalServerErrorException(BotConstants.INTERNAL_ERROR);
+    }
   }
 
   @Override

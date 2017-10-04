@@ -76,6 +76,31 @@ paths:
             $ref: '#/definitions/DeveloperBootstrapInfo'
       tags:
         - SignUp
+  '/v1/addTeamMember':
+    post:
+      summary: Adds a new developer to a team.
+      description:
+          Used to add a new team member.
+      parameters:
+        - name: sessionToken
+          in: header
+          required: true
+          type: string
+        - name: newTeamMemberDetail
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/NewTeamMembersDetail'
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      responses:
+        '200':
+         schema:
+            $ref: '#/definitions/DeveloperBootstrapInfo'
+      tags:
+        - SignUp
   '/v1/healthcheck':
     get:
       summary: Bootstraps a bootstrap.
@@ -200,6 +225,15 @@ definitions:
       appName:
         type: string
         description: The app bootstraped onto pod's app name.
+  NewTeamMembersDetail:
+    type: object
+    properties:
+      teamCreator:
+        $ref: '#/definitions/Developer'
+      newTeamMembers:
+        type: array
+        items:
+          $ref: '#/definitions/Developer'
   DeveloperWelcomeResponse:
     description: Response about developer welcome.
     properties:

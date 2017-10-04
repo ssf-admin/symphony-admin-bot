@@ -33,15 +33,16 @@ import com.symphony.api.agent.model.V2MessageSubmission;
 import com.symphony.api.clients.MessagesClient;
 import com.symphony.api.clients.StreamsClient;
 import com.symphony.api.pod.client.ApiException;
-import com.symphony.api.pod.model.RoomAttributes;
-import com.symphony.api.pod.model.RoomCreate;
-import com.symphony.api.pod.model.RoomDetail;
 import com.symphony.api.pod.model.Stream;
 import com.symphony.api.pod.model.UserId;
 import com.symphony.api.pod.model.UserIdList;
+import com.symphony.api.pod.model.V2RoomAttributes;
+import com.symphony.api.pod.model.V2RoomDetail;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.Set;
 
 import javax.ws.rs.InternalServerErrorException;
 
@@ -140,17 +141,15 @@ public class DeveloperMessageService {
    * @return details about the room
    * @throws ApiException
    */
-  public RoomDetail createDeveloperRoom(String roomName, UserIdList userIdList) throws ApiException {
-    RoomCreate roomCreate = new RoomCreate();
-    RoomAttributes roomAttributes = new RoomAttributes();
+  public V2RoomDetail createDeveloperRoom(String roomName, UserIdList userIdList) throws ApiException {
+    V2RoomAttributes roomAttributes = new V2RoomAttributes();
     roomAttributes.setDescription("Room for developers to collaborate.");
     roomAttributes.setName(roomName);
 
     roomAttributes.setDiscoverable(false);
     roomAttributes.setMembersCanInvite(true);
-    roomCreate.setRoomAttributes(roomAttributes);
 
-    RoomDetail roomDetail = streamsClient.createRoom(roomCreate);
+    V2RoomDetail roomDetail = streamsClient.createRoom(roomAttributes);
 
     for(Long uid : userIdList) {
       UserId userId = new UserId();
@@ -159,5 +158,23 @@ public class DeveloperMessageService {
     }
 
     return roomDetail;
+  }
+
+  public void addDevelopersToTeamRoom(String teamRoomId, Set<DeveloperBootstrapState> developerSet) throws ApiException {
+    for(DeveloperBootstrapState developerState: developerSet) {
+      UserId userId = new UserId();
+      userId.setId(developerState.getUserDetail().getUserSystemInfo().getId());
+      streamsClient.addMemberToRoom(teamRoomId, userId);
+    }
+  }
+
+  public String getTeamRoomId(String roomName) throws ApiException {
+    V2RoomDetail v2RoomDetail = streamsClient.getRoomByName(roomName);
+
+    if(v2RoomDetail != null) {
+      return v2RoomDetail.getRoomSystemInfo().getId();
+    } else {
+      return null;
+    }
   }
 }

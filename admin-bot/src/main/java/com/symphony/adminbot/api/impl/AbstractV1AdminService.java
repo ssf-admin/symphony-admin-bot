@@ -22,6 +22,7 @@
 
 package com.symphony.adminbot.api.impl;
 
+import com.symphony.adminbot.commons.BotConstants;
 import com.symphony.adminbot.model.session.AdminBotUserSession;
 import com.symphony.api.adminbot.api.V1ApiService;
 import com.symphony.api.adminbot.model.Developer;
@@ -30,6 +31,7 @@ import com.symphony.api.adminbot.model.DeveloperSignUpForm;
 import com.symphony.api.adminbot.model.DeveloperWelcomeDetail;
 import com.symphony.api.adminbot.model.DeveloperWelcomeResponse;
 import com.symphony.api.adminbot.model.HealthcheckResponse;
+import com.symphony.api.adminbot.model.NewTeamMembersDetail;
 import com.symphony.api.adminbot.model.WelcomeSettings;
 
 import javax.ws.rs.core.Response;
@@ -45,6 +47,8 @@ public abstract class AbstractV1AdminService implements V1ApiService {
   public abstract String sendDeveloperWelcome(DeveloperSignUpForm signUpForm);
 
   public abstract AdminBotUserSession getAdminUserSession(String sessionToken);
+
+  protected abstract DeveloperBootstrapInfo addTeamMembers(NewTeamMembersDetail newTeamMembersDetail);
 
   public abstract HealthcheckResponse healthcheck();
 
@@ -77,6 +81,16 @@ public abstract class AbstractV1AdminService implements V1ApiService {
       developerWelcomeResponse.setBootstrapInfo(bootstrapInfo);
     }
 
+    return Response.ok(developerWelcomeResponse).build();
+  }
+
+  @Override
+  public Response v1AddTeamMemberPost(String sessionToken, NewTeamMembersDetail newTeamMembersDetail) {
+    getAdminUserSession(sessionToken);
+    DeveloperBootstrapInfo developerBootstrapInfo = addTeamMembers(newTeamMembersDetail);
+    DeveloperWelcomeResponse developerWelcomeResponse = new DeveloperWelcomeResponse();
+    developerWelcomeResponse.setMessage(BotConstants.DEVELOPER_WELCOME_SUCCESS);
+    developerWelcomeResponse.setBootstrapInfo(developerBootstrapInfo);
     return Response.ok(developerWelcomeResponse).build();
   }
 }

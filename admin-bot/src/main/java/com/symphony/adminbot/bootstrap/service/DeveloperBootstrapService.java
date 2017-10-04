@@ -33,10 +33,10 @@ import com.symphony.api.adminbot.model.DeveloperSignUpForm;
 import com.symphony.api.clients.SymphonyClient;
 import com.symphony.api.pod.client.ApiException;
 import com.symphony.api.pod.model.ApplicationDetail;
-import com.symphony.api.pod.model.RoomDetail;
 import com.symphony.api.pod.model.Stream;
 import com.symphony.api.pod.model.UserDetail;
 import com.symphony.api.pod.model.UserIdList;
+import com.symphony.api.pod.model.V2RoomDetail;
 
 import com.sun.jndi.toolkit.url.Uri;
 import org.apache.commons.lang.RandomStringUtils;
@@ -48,6 +48,7 @@ import org.slf4j.LoggerFactory;
 import java.net.MalformedURLException;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ThreadLocalRandom;
@@ -61,7 +62,7 @@ import javax.ws.rs.BadRequestException;
 public class DeveloperBootstrapService {
   private static final Logger LOG = LoggerFactory.getLogger(AdminBot.class);
 
-  private ExpiringFileLoaderCache<Developer, DeveloperBootstrapState> partnerStateCache;
+  private ExpiringFileLoaderCache<Developer, DeveloperBootstrapState> developerStateCache;
   private Set<String> reservedContent = new HashSet<>();
 
   private DeveloperRegistrationService developerRegistrationService;
@@ -70,7 +71,7 @@ public class DeveloperBootstrapService {
   private DeveloperEmailService developerEmailService;
 
   public DeveloperBootstrapService(SymphonyClient symClient){
-    partnerStateCache = new ExpiringFileLoaderCache<>(
+    developerStateCache = new ExpiringFileLoaderCache<>(
         System.getProperty(BotConfig.DEVELOPER_JSON_DIR),
         (developer) -> developer.getEmail(),
         BotConstants.EXPIRE_TIME_DAYS,
@@ -132,7 +133,7 @@ public class DeveloperBootstrapService {
     }
 
     developerState = getDeveloperState(signUpForm.getCreator());
-    RoomDetail roomDetail = developerMessageService.createDeveloperRoom(
+    V2RoomDetail roomDetail = developerMessageService.createDeveloperRoom(
         "Team Development Room (" + developerState.getUserDetail().getUserAttributes().getUserName()
             + ")", userIdList);
     Stream stream = new Stream();
@@ -162,25 +163,53 @@ public class DeveloperBootstrapService {
       signUpForm.setAppId(RandomStringUtils.randomAlphanumeric(40).toUpperCase());
     }
 
-    Set<DeveloperBootstrapState> bootstrapStates = getInitialBootstrapStates(signUpForm);
-    for(DeveloperBootstrapState developerState : bootstrapStates){
-      partnerStateCache.put(developerState.getDeveloper(), developerState);
+    Set<Developer> developerSet = new HashSet<>();
+    developerSet.add(signUpForm.getCreator());
+    developerSet.addAll(signUpForm.getTeam());
+    Set<DeveloperBootstrapState> bootstrapStates = getInitialBootstrapStates(developerSet, signUpForm);
+    welcome(bootstrapStates);
+  }
 
-      String randomPassword = UUID.randomUUID().toString().replace("-", "");
-      int randomBegin = (int)(Math.random() * (randomPassword.length() - 3));
-      int randomEnd = ThreadLocalRandom.current().nextInt(randomBegin, randomPassword.length());
-      randomPassword = randomPassword.replace(randomPassword.substring(randomBegin, randomEnd),
-          randomPassword.substring(randomBegin, randomEnd).toUpperCase());
+  /**
+   * Adds a developer to a developer team that was already created.
+   * @param creator the creator of the team.
+   * @param newTeamMembers the team members to add and create.
+   * @return the bootstrap info, if any.
+   */
+  public DeveloperBootstrapInfo addTeamMembers(Developer creator, List<Developer> newTeamMembers) throws ApiException {
+    DeveloperBootstrapState developerState = getDeveloperState(creator);
+    Set<DeveloperBootstrapState> bootstrapStates = getInitialBootstrapStates(new HashSet<>(newTeamMembers),
+        developerState.getDeveloperSignUpForm());
+    welcome(bootstrapStates);
 
-      developerRegistrationService.registerDeveloperUser(developerState, randomPassword);
-      developerEmailService.sendWelcomeEmail(developerState, randomPassword);
-      developerMessageService.sendDirectionalMessage(developerState);
+    if(developerRegistrationService.botOrAppExist(developerState.getDeveloperSignUpForm())) {
+      String roomId = developerMessageService.getTeamRoomId("Team Development Room (" +
+          developerState.getUserDetail().getUserAttributes().getUserName() + ")");
+      if(roomId != null) {
+        Stream stream = new Stream();
+        stream.setId(roomId);
+        for(DeveloperBootstrapState bootstrapState : bootstrapStates) {
+          bootstrapState.setDeveloperRoom(stream);
+        }
+      }
 
-      reservedContent.add(developerState.getDeveloperSignUpForm().getAppId());
-      reservedContent.add(developerState.getDeveloperSignUpForm().getBotEmail().replace(" ", ""));
+      DeveloperBootstrapInfo developerBootstrapInfo = null;
+      for(DeveloperBootstrapState bootstrapState : bootstrapStates) {
+        developerBootstrapInfo = bootstrapDeveloper(bootstrapState.getDeveloper());
+      }
 
-      LOG.info("Welcomed developer " + developerState.getUserDetail().getUserAttributes().getUserName() + ".");
+      return developerBootstrapInfo;
     }
+
+    DeveloperSignUpForm developerSignUpForm =  developerState.getDeveloperSignUpForm();
+    developerSignUpForm.getTeam().addAll(newTeamMembers);
+    for(Developer developer: developerSignUpForm.getTeam()) {
+      developerState = getDeveloperState(developer);
+      developerState.setDeveloperSignUpForm(developerSignUpForm);
+      developerStateCache.put(developer, developerState);
+    }
+
+    return null;
   }
 
   private void bootstrap(DeveloperBootstrapState developerState) throws ApiException {
@@ -318,12 +347,8 @@ public class DeveloperBootstrapService {
    * @param signUpForm the sign up form
    * @return the initial partner states
    */
-  private Set<DeveloperBootstrapState> getInitialBootstrapStates(DeveloperSignUpForm signUpForm)
-      throws ApiException {
-    Set<Developer> developerSet = new HashSet<>();
-    developerSet.add(signUpForm.getCreator());
-    developerSet.addAll(signUpForm.getTeam());
-
+  private Set<DeveloperBootstrapState> getInitialBootstrapStates(Set<Developer> developerSet,
+      DeveloperSignUpForm signUpForm) throws ApiException {
     Set<DeveloperBootstrapState> developerStates = new HashSet<>();
     for(Developer developer : developerSet) {
       DeveloperBootstrapState developerState = new DeveloperBootstrapState();
@@ -340,6 +365,27 @@ public class DeveloperBootstrapService {
     }
 
     return developerStates;
+  }
+
+  private void welcome(Set<DeveloperBootstrapState> bootstrapStates) throws ApiException {
+    for(DeveloperBootstrapState developerState : bootstrapStates) {
+      developerStateCache.put(developerState.getDeveloper(), developerState);
+
+      String randomPassword = UUID.randomUUID().toString().replace("-", "");
+      int randomBegin = (int)(Math.random() * (randomPassword.length() - 3));
+      int randomEnd = ThreadLocalRandom.current().nextInt(randomBegin, randomPassword.length());
+      randomPassword = randomPassword.replace(randomPassword.substring(randomBegin, randomEnd),
+          randomPassword.substring(randomBegin, randomEnd).toUpperCase());
+
+      developerRegistrationService.registerDeveloperUser(developerState, randomPassword);
+      developerEmailService.sendWelcomeEmail(developerState, randomPassword);
+      developerMessageService.sendDirectionalMessage(developerState);
+
+      reservedContent.add(developerState.getDeveloperSignUpForm().getAppId());
+      reservedContent.add(developerState.getDeveloperSignUpForm().getBotEmail().replace(" ", ""));
+
+      LOG.info("Welcomed developer " + developerState.getUserDetail().getUserAttributes().getUserName() + ".");
+    }
   }
 
   private void validateDomain(String url, String domain) throws MalformedURLException {
@@ -377,7 +423,7 @@ public class DeveloperBootstrapService {
   private DeveloperBootstrapState getDeveloperState(Developer developer) {
     DeveloperBootstrapState developerState;
     try {
-      developerState = partnerStateCache.get(developer);
+      developerState = developerStateCache.get(developer);
     } catch (Exception e) {
       LOG.warn("Get developer state failed: ", e);
       throw new BadRequestException(BotConstants.DEVELOPER_NOT_FOUND);
