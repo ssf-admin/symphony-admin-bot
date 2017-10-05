@@ -101,7 +101,7 @@ public class V1AdminApi extends AbstractV1AdminService {
     DeveloperBootstrapService signUpService = adminBotSession.getBootstrapService();
     try {
       DeveloperBootstrapInfo developerBootstrapInfo = signUpService.addTeamMembers(
-          newTeamMembersDetail.getTeamCreator(), newTeamMembersDetail.getNewTeamMembers());
+          newTeamMembersDetail.getExistingTeamMember(), newTeamMembersDetail.getNewTeamMembers());
       return developerBootstrapInfo;
     } catch (ApiException e) {
       LOG.error("Bootstrap partner welcome failed:", e);

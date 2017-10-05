@@ -37,10 +37,15 @@ import com.symphony.api.pod.model.UserIdList;
 import com.symphony.api.pod.model.V2RoomAttributes;
 import com.symphony.api.pod.model.V2RoomDetail;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /**
  * Created by nick.tarsillo on 7/1/17.
  */
 public class StreamsClient {
+  private final Logger LOG = LoggerFactory.getLogger(ApplicationClient.class);
+
   private final ApiClient apiClient;
   private SymphonyAuth symAuth;
 
@@ -92,6 +97,8 @@ public class StreamsClient {
     } catch (ApiException e) {
       throw new ApiException("Could not search for room: " + e.getStackTrace());
     }
+
+    LOG.info("Room search results: " + results);
 
     if (!results.getRooms().isEmpty()
         && results.getRooms().get(0).getRoomAttributes().getName().equals(roomName)) {

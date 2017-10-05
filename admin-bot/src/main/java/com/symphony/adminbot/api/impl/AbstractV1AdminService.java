@@ -85,7 +85,7 @@ public abstract class AbstractV1AdminService implements V1ApiService {
   }
 
   @Override
-  public Response v1AddTeamMemberPost(String sessionToken, NewTeamMembersDetail newTeamMembersDetail) {
+  public Response v1AddTeamMembersPost(String sessionToken, NewTeamMembersDetail newTeamMembersDetail) {
     getAdminUserSession(sessionToken);
     DeveloperBootstrapInfo developerBootstrapInfo = addTeamMembers(newTeamMembersDetail);
     DeveloperWelcomeResponse developerWelcomeResponse = new DeveloperWelcomeResponse();

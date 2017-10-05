@@ -172,29 +172,32 @@ public class DeveloperBootstrapService {
 
   /**
    * Adds a developer to a developer team that was already created.
-   * @param creator the creator of the team.
+   * @param teamMember a member of the team.
    * @param newTeamMembers the team members to add and create.
    * @return the bootstrap info, if any.
    */
-  public DeveloperBootstrapInfo addTeamMembers(Developer creator, List<Developer> newTeamMembers) throws ApiException {
-    DeveloperBootstrapState developerState = getDeveloperState(creator);
+  public DeveloperBootstrapInfo addTeamMembers(Developer teamMember, List<Developer> newTeamMembers) throws ApiException {
+    DeveloperBootstrapState developerState = getDeveloperState(teamMember);
+    developerState = getDeveloperState(developerState.getDeveloperSignUpForm().getCreator());
     Set<DeveloperBootstrapState> bootstrapStates = getInitialBootstrapStates(new HashSet<>(newTeamMembers),
         developerState.getDeveloperSignUpForm());
     welcome(bootstrapStates);
 
     if(developerRegistrationService.botOrAppExist(developerState.getDeveloperSignUpForm())) {
       String roomId = developerMessageService.getTeamRoomId("Team Development Room (" +
-          developerState.getUserDetail().getUserAttributes().getUserName() + ")");
+          developerRegistrationService.getUsername(developerState.getDeveloper().getEmail()) + ")");
       if(roomId != null) {
-        Stream stream = new Stream();
-        stream.setId(roomId);
-        for(DeveloperBootstrapState bootstrapState : bootstrapStates) {
-          bootstrapState.setDeveloperRoom(stream);
-        }
+        developerMessageService.addDevelopersToTeamRoom(roomId, bootstrapStates);
       }
 
-      DeveloperBootstrapInfo developerBootstrapInfo = null;
+      DeveloperBootstrapInfo developerBootstrapInfo = new DeveloperBootstrapInfo();
+      developerBootstrapInfo.setAppId(developerState.getDeveloperSignUpForm().getAppId());
+      developerBootstrapInfo.setAppName(developerState.getDeveloperSignUpForm().getAppName());
+      developerBootstrapInfo.setBotEmail(developerState.getDeveloperSignUpForm().getBotEmail());
+      developerBootstrapInfo.setBotUsername(developerRegistrationService.getUsername(
+          developerState.getDeveloperSignUpForm().getBotEmail()));
       for(DeveloperBootstrapState bootstrapState : bootstrapStates) {
+        bootstrapState.setBootstrapInfo(developerBootstrapInfo);
         developerBootstrapInfo = bootstrapDeveloper(bootstrapState.getDeveloper());
       }
 

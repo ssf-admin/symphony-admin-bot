@@ -76,7 +76,7 @@ paths:
             $ref: '#/definitions/DeveloperBootstrapInfo'
       tags:
         - SignUp
-  '/v1/addTeamMember':
+  '/v1/addTeamMembers':
     post:
       summary: Adds a new developer to a team.
       description:
@@ -228,7 +228,7 @@ definitions:
   NewTeamMembersDetail:
     type: object
     properties:
-      teamCreator:
+      existingTeamMember:
         $ref: '#/definitions/Developer'
       newTeamMembers:
         type: array

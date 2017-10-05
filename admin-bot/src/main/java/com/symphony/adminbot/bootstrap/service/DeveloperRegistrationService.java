@@ -296,6 +296,13 @@ public class DeveloperRegistrationService {
   }
 
   /**
+   * Gets a developer's username.
+   */
+  public String getUsername(String email) throws ApiException {
+    return usersClient.userSearchByEmail(email).getUsername();
+  }
+
+  /**
    * Checks if partners already exist as symphony users.
    * @param signUpForm the sign up form containing the partners
    * @return if all partners do not exist as symphony users
