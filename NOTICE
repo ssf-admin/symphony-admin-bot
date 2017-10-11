@@ -13,6 +13,8 @@ The following components are provided under the Common Development and Distribut
      (CDDL 1.1-GPL2 w/ CPE) JAX-RS (javax.ws.rs.javax.ws.rs-api:2.0.1) (https://jax-rs-spec.java.net/)
      (CDDL 1.0) (GPL2 w/ CPE) javax.annotation API (javax.annotation.*)
      (CDDL + GPLv2 with classpath exception) Jersey (org.glassfish.jersey.*) - https://jersey.java.net/
+     (CDDL/GPLv2+CE) JavaMail API (javax.mail)
+     (CDDL 1.0) JavaBeans Activation Framework (javax.activation)
      (CDDL 1.1-GPL2 w/ CPE) Mimepull (org.jvnet.mimepull.mimepull:1.9.6) - https://mimepull.java.net/
 
  ========================================================================
