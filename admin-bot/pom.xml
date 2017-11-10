@@ -33,6 +33,10 @@
     <packaging>war</packaging>
     <artifactId>admin-bot</artifactId>
 
+    <description>
+        The Admin Bot.
+    </description>
+
     <properties>
         <swagger.source.auth>${basedir}/src/main/resources/adminbot-auth-api.yaml</swagger.source.auth>
         <swagger.source.bot>${basedir}/src/main/resources/adminbot-bot-api.yaml</swagger.source.bot>

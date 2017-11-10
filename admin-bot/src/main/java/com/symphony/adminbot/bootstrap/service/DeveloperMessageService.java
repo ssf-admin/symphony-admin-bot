@@ -177,4 +177,13 @@ public class DeveloperMessageService {
       return null;
     }
   }
+
+  public void setDeveloperStream(DeveloperBootstrapState developerBootstrapState) throws ApiException {
+    Long partnerId = developerBootstrapState.getUserDetail().getUserSystemInfo().getId();
+    UserIdList userIdList = new UserIdList();
+    userIdList.add(partnerId);
+
+    Stream stream = streamsClient.createIM(userIdList);
+    developerBootstrapState.setDeveloperIM(stream);
+  }
 }

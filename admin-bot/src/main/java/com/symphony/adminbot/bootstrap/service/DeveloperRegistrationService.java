@@ -33,6 +33,7 @@ import com.symphony.api.adminbot.model.Developer;
 import com.symphony.api.adminbot.model.DeveloperSignUpForm;
 import com.symphony.api.clients.ApplicationClient;
 import com.symphony.api.clients.UsersClient;
+import com.symphony.api.clients.model.SymphonyUser;
 import com.symphony.api.pod.client.ApiException;
 import com.symphony.api.pod.model.ApplicationDetail;
 import com.symphony.api.pod.model.ApplicationInfo;
@@ -67,6 +68,7 @@ import javax.ws.rs.InternalServerErrorException;
  */
 public class DeveloperRegistrationService {
   private static final Logger LOG = LoggerFactory.getLogger(DeveloperRegistrationService.class);
+
   enum FeaturesEnum{
     EXTERNAL("isExternalIMEnabled"),
     SHARE_FILES_EXTERNAL("canShareFilesExternally"),
@@ -302,6 +304,11 @@ public class DeveloperRegistrationService {
     return usersClient.userSearchByEmail(email).getUsername();
   }
 
+  public void setDeveloperUserDetail(DeveloperBootstrapState developerBootstrapState) throws ApiException {
+    SymphonyUser symphonyUser = usersClient.userSearchByEmail(developerBootstrapState.getDeveloper().getEmail());
+    developerBootstrapState.setUserDetail(usersClient.getUserDetail(symphonyUser.getId()));
+  }
+
   /**
    * Checks if partners already exist as symphony users.
    * @param signUpForm the sign up form containing the partners
@@ -319,6 +326,13 @@ public class DeveloperRegistrationService {
       if (usersClient.userExistsByEmail(email)) {
         return true;
       }
+    }
+    return false;
+  }
+
+  public boolean developerExists(Developer developer) throws ApiException {
+    if (usersClient.userExistsByEmail(developer.getEmail())) {
+      return true;
     }
     return false;
   }

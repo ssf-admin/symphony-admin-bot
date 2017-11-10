@@ -1,0 +1,294 @@
+apiVersion: v1
+kind: Template
+metadata:
+  name: adminbot-dev-build-template
+parameters:
+- name: BOT_NAME
+  description: The Bot name
+  displayName: Bot Name
+  required: true
+  value: "adminbot-dev"
+- name: SEND_EMAIL
+  description: Whether the bot should send emails or not; defaults to false
+  displayName: Send Email?
+  required: true
+  value: "true"
+- name: SYMPHONY_API_HOST
+  description: The Symphony API host
+  displayName: Symphony API host
+  required: true
+  # value: "foundation-dev-api.symphony.com"
+- name: SYMPHONY_POD_HOST
+  description: The Symphony Pod host
+  displayName: Symphony Pod host
+  required: true
+  # value: "foundation-dev.symphony.com"
+objects:
+- apiVersion: v1
+  kind: ImageStream
+  metadata:
+    labels:
+      app: ${BOT_NAME}
+    name: s2i-java-binary
+  spec:
+    dockerImageRepository: "docker.io/maoo/s2i-java-binary"
+- apiVersion: v1
+  kind: ImageStream
+  metadata:
+    labels:
+      app: ${BOT_NAME}
+    name: ${BOT_NAME}
+  spec: {}
+  status:
+    dockerImageRepository: ""
+- apiVersion: v1
+  kind: BuildConfig
+  metadata:
+    name: ${BOT_NAME}
+    labels:
+      app: ${BOT_NAME}
+  spec:
+    output:
+      to:
+        kind: ImageStreamTag
+        name: ${BOT_NAME}:latest
+    postCommit: {}
+    resources: {}
+    runPolicy: Serial
+    source:
+      type: Binary
+      binary:
+    strategy:
+      type: Source
+      sourceStrategy:
+        from:
+          kind: ImageStreamTag
+          name: s2i-java-binary:latest
+    triggers: {}
+- apiVersion: v1
+  kind: DeploymentConfig
+  metadata:
+    labels:
+      app: ${BOT_NAME}
+    name: ${BOT_NAME}
+  spec:
+    replicas: 1
+    selector:
+      app: ${BOT_NAME}
+      deploymentconfig: ${BOT_NAME}
+    strategy:
+      rollingParams:
+        intervalSeconds: 1
+        maxSurge: 25%
+        maxUnavailable: 25%
+        timeoutSeconds: 600
+        updatePeriodSeconds: 1
+      type: Rolling
+    template:
+      metadata:
+        labels:
+          app: ${BOT_NAME}
+          deploymentconfig: ${BOT_NAME}
+      spec:
+        containers:
+        - image: ${BOT_NAME}:latest
+          imagePullPolicy: Always
+          name: ${BOT_NAME}
+          ports:
+          - containerPort: 8080
+            protocol: TCP
+          readinessProbe:
+            httpGet:
+              path: "/symphony/votebot/v1/proposal/1"
+              port: 8080
+            initialDelaySeconds: 15
+            timeoutSeconds: 1
+          resources: {}
+          terminationMessagePath: /dev/termination-log
+          env:
+          - name: LOG4J_FILE
+            value: "/opt/openshift/log4j.properties"
+          - name: SESSION_AUTH
+            value: https://${SYMPHONY_API_HOST}/sessionauth
+          - name: KEY_AUTH
+            value: https://${SYMPHONY_API_HOST}/keyauth
+          - name: SYMPHONY_POD
+            value: https://${SYMPHONY_POD_HOST}/pod
+          - name: SYMPHONY_AGENT
+            value: https://${SYMPHONY_POD_HOST}/agent
+          - name: DOWNLOAD_HOST
+            valueFrom:
+              secretKeyRef:
+                name: symphony.foundation
+                key: download.host
+          - name: DOWNLOAD_PATH
+            valueFrom:
+              secretKeyRef:
+                name: ${BOT_NAME}.certs
+                key: certs.download.path
+          - name: DOWNLOAD_ITEMS
+            valueFrom:
+              secretKeyRef:
+                name: ${BOT_NAME}.certs
+                key: certs.download.items
+          - name: AUTH_TRUSTSTORE_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: ${BOT_NAME}.certs
+                key: auth.truststore.password
+          - name: AUTH_KEYSTORE_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: ${BOT_NAME}.certs
+                key: auth.keystore.password
+          - name: BOT_KEYSTORE_FILE_NAME
+            valueFrom:
+              secretKeyRef:
+                name: ${BOT_NAME}.certs
+                key: bot.keystore.file.name
+          - name: BOT_KEYSTORE_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: ${BOT_NAME}.certs
+                key: bot.keystore.password
+          - name: KEYS_PASSWORD_FILE
+            valueFrom:
+              secretKeyRef:
+                name: ${BOT_NAME}.certs
+                key: keys.password.file
+          - name: CERTS
+            valueFrom:
+              secretKeyRef:
+                name: ${BOT_NAME}.certs
+                key: certs.dir
+          - name: AUTH_KEYSTORE_FILE
+            valueFrom:
+              secretKeyRef:
+                name: ${BOT_NAME}.certs
+                key: auth.keystore.file
+          - name: AUTH_TRUSTSTORE_FILE
+            valueFrom:
+              secretKeyRef:
+                name: ${BOT_NAME}.certs
+                key: auth.truststore.file
+          - name: GOOGLE_CRED
+            valueFrom:
+              secretKeyRef:
+                name: ${BOT_NAME}.certs
+                key: google.cred.file
+          - name: GOOGLE_SERVICE_ID
+            valueFrom:
+              secretKeyRef:
+                name: ${BOT_NAME}.certs
+                key: google.service.id
+          - name: GMAIL_ADDRESS
+            valueFrom:
+              secretKeyRef:
+                name: ${BOT_NAME}.certs
+                key: adminbot.gmail.address
+          - name: DEVELOPER_JSON_DIR
+            valueFrom:
+              secretKeyRef:
+                name: ${BOT_NAME}.certs
+                key: adminbot.developer.json.dir
+          - name: USER_JSON_DIR
+            valueFrom:
+              secretKeyRef:
+                name: ${BOT_NAME}.certs
+                key: adminbot.user.json.dir
+          - name: DEVELOPER_P12_DIR
+            valueFrom:
+              secretKeyRef:
+                name: ${BOT_NAME}.certs
+                key: adminbot.developer.p12.dir
+          - name: BOOTSTRAP_EMAIL_SUBJECT_TEMPLATE
+            valueFrom:
+              secretKeyRef:
+                name: ${BOT_NAME}.certs
+                key: adminbot.bootstrap.email.subject.template
+          - name: BOOTSTRAP_EMAIL_MESSAGE_TEMPLATE
+            valueFrom:
+              secretKeyRef:
+                name: ${BOT_NAME}.certs
+                key: adminbot.bootstrap.message.subject.template
+          - name: BOOTSTRAP_MESSAGE_DIRECTIONAL_TEMPLATE
+            valueFrom:
+              secretKeyRef:
+                name: ${BOT_NAME}.certs
+                key: adminbot.bootstrap.message.directional.template
+          - name: BOOTSTRAP_MESSAGE_WELCOME_TEMPLATE
+            valueFrom:
+              secretKeyRef:
+                name: ${BOT_NAME}.certs
+                key: adminbot.bootstrap.message.welcome.template
+          - name: BOOTSTRAP_ICON_URL_TEMPLATE_ENV
+            valueFrom:
+              secretKeyRef:
+                name: ${BOT_NAME}.certs
+                key: adminbot.bootstrap.icon.url.template
+          - name: BOOTSTRAP_BOT_ID_ENV
+            valueFrom:
+              secretKeyRef:
+                name: ${BOT_NAME}.certs
+                key: adminbot.bootstrap.bot.id
+          - name: AUTH_PORT_ENV
+            valueFrom:
+              secretKeyRef:
+                name: ${BOT_NAME}.certs
+                key: adminbot.auth.port
+          - name: SWAGGER_PORT
+            valueFrom:
+              secretKeyRef:
+                name: ${BOT_NAME}.certs
+                key: adminbot.swagger.port
+        dnsPolicy: ClusterFirst
+        restartPolicy: Always
+        securityContext: {}
+        terminationGracePeriodSeconds: 30
+    test: false
+    triggers:
+    - type: ConfigChange
+    - imageChangeParams:
+        automatic: true
+        containerNames:
+        - ${BOT_NAME}
+        from:
+          kind: ImageStreamTag
+          name: ${BOT_NAME}:latest
+      type: ImageChange
+  status: {}
+- apiVersion: v1
+  kind: Service
+  metadata:
+    annotations:
+      openshift.io/generated-by: OpenShiftNewApp
+    labels:
+      app: ${BOT_NAME}
+    name: ${BOT_NAME}
+  spec:
+    ports:
+    - name: healthcheck-tcp
+      port: ${SWAGGER_PORT}
+      protocol: TCP
+      targetPort: ${SWAGGER_PORT}
+    selector:
+      app: ${BOT_NAME}
+      deploymentconfig: ${BOT_NAME}
+    sessionAffinity: None
+    type: ClusterIP
+  status:
+    loadBalancer: {}
+- apiVersion: v1
+  kind: Route
+  metadata:
+    name: ${BOT_NAME}
+    labels:
+      app: ${BOT_NAME}
+  spec:
+    to:
+      kind: Service
+      name: ${BOT_NAME}
+      weight: 100
+    port:
+      targetPort: healthcheck-tcp
+    wildcardPolicy: None

@@ -1,0 +1,10 @@
+after_success: ./after-success.sh $TRAVIS_BRANCH $TRAVIS_PULL_REQUEST
+
+language: java
+
+install: true
+script:
+- "mvn clean package"
+
+jdk:
+  - oraclejdk8

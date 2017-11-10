@@ -181,6 +181,7 @@ public class DeveloperBootstrapService {
     developerState = getDeveloperState(developerState.getDeveloperSignUpForm().getCreator());
     Set<DeveloperBootstrapState> bootstrapStates = getInitialBootstrapStates(new HashSet<>(newTeamMembers),
         developerState.getDeveloperSignUpForm());
+
     welcome(bootstrapStates);
 
     if(developerRegistrationService.botOrAppExist(developerState.getDeveloperSignUpForm())) {
@@ -380,9 +381,14 @@ public class DeveloperBootstrapService {
       randomPassword = randomPassword.replace(randomPassword.substring(randomBegin, randomEnd),
           randomPassword.substring(randomBegin, randomEnd).toUpperCase());
 
-      developerRegistrationService.registerDeveloperUser(developerState, randomPassword);
-      developerEmailService.sendWelcomeEmail(developerState, randomPassword);
-      developerMessageService.sendDirectionalMessage(developerState);
+      if(!developerRegistrationService.developerExists(developerState.getDeveloper())) {
+        developerRegistrationService.registerDeveloperUser(developerState, randomPassword);
+        developerEmailService.sendWelcomeEmail(developerState, randomPassword);
+        developerMessageService.sendDirectionalMessage(developerState);
+      } else {
+        developerRegistrationService.setDeveloperUserDetail(developerState);
+        developerMessageService.setDeveloperStream(developerState);
+      }
 
       reservedContent.add(developerState.getDeveloperSignUpForm().getAppId());
       reservedContent.add(developerState.getDeveloperSignUpForm().getBotEmail().replace(" ", ""));
