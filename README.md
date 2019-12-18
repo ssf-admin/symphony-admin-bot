@@ -1,4 +1,7 @@
 # symphony-admin-bot
+
+[![FINOS - Archived](https://cdn.jsdelivr.net/gh/finos/contrib-toolbox@master/images/badge-archived.svg)](https://finosfoundation.atlassian.net/wiki/display/FINOS/Archived)
+
 Symphony Admin Bot
 
 **Features**
